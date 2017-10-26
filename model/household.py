@@ -15,64 +15,74 @@ class Household:
     def __init__(self, householdId, economy):
         self.householdId = householdId
         self.economy = economy
-        self.pastIncomes = [0]
-        self.pastEffectivelySuppliedLabour = [0]
-        self.pastUtilities = [0]
-        
+        self.pastIncomes = []
+        self.pastEffectivelySuppliedLabour = []
+        self.pastUtilities = []
+        self.effectivelySuppliedLabour = None
+        self.effectivelyConsumedGoods = None
+
         # TODO: put real values
         self.indexationStrategy = 0.5
         self.substitutionStrategy = 0.5
         self.prevConsumptionShare = 0
+        self.prevSavingsBalance = 0
     
-    def getWage(self):
+    def getReservationWage(self):
+        """ Equation (1) """
         if self.getExpectedInflation() > 0:
             return self.prevWage * (1 + self.indexationStrategy*self.getExpectedInflation())
         else:
             return self.prevWage                   
     
     def getExpectedInflation(self):
-        # TODO: implement
-        return 0.02
+        """ Equation (17) """
+        return Parameters.Chi*self.getPerceivedInflationTarget()+(1-Parameters.Chi)*self.economy.goodsMarket.getPastInflationTrend()
+    
+    def getPerceivedInflationTarget(self):
+        if Parameters.AllHouseholdsSameExpectation:
+            if self.economy.homogeneousNoiseInflationTarget is None:
+                self.economy.homogeneousNoiseInflationTarget = random.gauss(0,Parameters.NoiseInflationTargetPerceptionSD)
+            return Parameters.InflationTarget + self.economy.homogeneousNoiseInflationTarget
+            
+        return Parameters.InflationTarget + random.gauss(0,Parameters.NoiseInflationTargetPerceptionSD)
     
     def getConsumptionDemand(self):
+        """ Equation (2) """
         return self.getConsumptionShare()*self.getPermanentIncome()
         
     def getConsumptionShare(self):
-        return self.prevConsumptionShare - self.substitutionStrategy*(self.economy.getInterestRate()-self.getExpectedInflation()-self.economy.getNaturalInterestRate())
+        """ Equation (6) """
+        return self.prevConsumptionShare - self.substitutionStrategy*(self.economy.centralBank.getInterestRate()-self.getExpectedInflation()-Parameters.NaturalInterestRate)
     
     def getPermanentIncome(self):
+        """ Equation (3) """
         summation = 0
-        for l in range(self.economy.currentPeriod+1):
-            summation = summation + Parameters.Ro**(self.economy.currentPeriod-l)*self.pastIncomes[l-1]/self.economy.pastPriceLevels[l-1]
-        
+        for l in range(self.economy.currentPeriod):
+            summation = summation + Parameters.Ro**(self.economy.currentPeriod-l)*self.pastIncomes[l]/self.economy.goodsMarket.pastPrices[l]
+        summation = summation + self.getCurrentIncome()/self.economy.goodsMarket.getCurrentPrice()
         return (1-Parameters.Ro)*summation
     
     def getCurrentIncome(self):
-        return self.getWage()*self.getEffectivelySuppliedLabour() + self.economy.prevTotalProfits/self.economy.getNmbHouseholds() + self.prevSavingsBalance(1+self.economy.prevInterestRate)
+        """ Equation (4) """
+        return self.getReservationWage()*self.effectivelySuppliedLabour + self.economy.firm.getPrevProfit()/self.economy.getNumberOfHouseholds() + self.prevSavingsBalance(1+self.economy.centralBank.prevInterestRate)
     
-    def getEffectivelySuppliedLabour(self):
-        # TODO: implement
-        return 0.8
-    
-    def getLabourSipply(self):
+    def getLabourSupply(self):
         return Parameters.InnelasticLabourSupply
     
-    def updateSavingsBalance(self, income, consumption, priceLevel):
-        self.savingsBalance = income - consumption*priceLevel
+    def getSavingsBalance(self, income, consumption, priceLevel):
+        """ Equation (5) """
+        return income - consumption*priceLevel
         
     def getSmoothedUtility(self):
+        """ Equation (7) """
         summation = 0
-        for l in range(self.economy.currentPeriod+1):
-            summation = summation + Parameters.Ro**(self.economy.currentPeriod-l)*self.pastUtilities[l-1]
-        
+        for l in range(self.economy.currentPeriod):
+            summation = summation + Parameters.Ro**(self.economy.currentPeriod-l)*self.pastUtilities[l]
+        summation = summation + self.getUtility()
         return (1-Parameters.Ro)*summation
     
     def getUtility(self):
-        return math.log(self.getConsumption())
-        
-    def getConsumption(self):
-        # TODO: implement
-        return 20
+        return math.log(self.effectivelyConsumedGoods)
     
     def imitateSomeone(self):
         other = self.selectHouseholdToImitate()
@@ -103,6 +113,7 @@ class Household:
             sumOfUtility = sumOfUtility + math.exp(hh.getSmoothedUtility())
         
         for hh in households:
+            """ Equation (8) """
             hh['probability'] = hh['smoothedUtility']/sumOfUtility
             
         pointInCDF = random.randint(0,1)
@@ -114,3 +125,15 @@ class Household:
 
     def getPrevEffectivelySuppliedLabour(self):
         return self.pastEffectivelySuppliedLabour[self.economy.currentPeriod-2]
+    
+    def nextPeriod(self):
+        """ Prepare the object for a clean next period """
+        self.pastEffectivelySuppliedLabour.append(self.effectivelySuppliedLabour)
+        self.pastIncomes.append(self.getCurrentIncome())
+        self.pastUtilities.append(self.getUtility())
+        self.prevConsumptionShare = self.getConsumptionShare()
+        self.prevSavingsBalance = self.getSavingsBalance()
+        self.effectivelySuppliedLabour = None
+        self.effectivelyConsumedGoods = None
+        
+        

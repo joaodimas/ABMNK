@@ -3,20 +3,24 @@
 """
 Created on Tue Oct 24 16:43:26 2017
 
-@author: jdimas
+@author: João Dimas and Umberto Collodel
 """
 from model.economy import Economy
-from model.household import Household
 from model.parameters import Parameters
+from model.data import PeriodData
+from model.util.export_to_csv import ExportToCSV
 
 # Simulation
-Parameters.setInitialParameters()
-economy = Economy(Parameters.InitialPriceLevel)
-for i in range(Parameters.NmbHouseholds):
-    householdId = i+1
-    household = Household(householdId, economy)
-    economy.households.append(household)
-    
-#print(len(economy.households))
+Parameters.init()
+simulationNumber = 1
 
-print(economy.households[2].getPermanentIncome())
+# Create a virtual economy with agents
+economy = Economy(1)
+
+allPeriodsData = ["var1", "var2", "var3"] # TODO: CSV header
+for t in Parameters.Periods:
+    economy.runCurrentPeriod()
+    allPeriodsData.append(PeriodData.getCurrentPeriodData(economy))
+    economy.nextPeriod()
+    
+ExportToCSV.exportTimeSeriesData(allPeriodsData)

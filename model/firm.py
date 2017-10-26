@@ -3,7 +3,7 @@
 """
 Created on Tue Oct 24 16:47:09 2017
 
-@author: jdimas
+@author: João Dimas and Umberto Collodel
 """
 
 from model.parameters import Parameters
@@ -12,42 +12,57 @@ class Firm:
     
     def __init__(self, economy):
         self.economy = economy
-        self.pastProfits = [0]
-        self.pastPrices = [0]
+        self.pastProfits = []
+        self.pastHiredLabour = []
+        self.pastSoldGoods = []
     
     def getProduction(self):
-        return Parameters.TechnologyFactor*sum([hh.getEffectivelySuppliedLabour() for hh in self.economy.households])**(1-Parameters.Alpha)
+        """ Equation (9) """
+        return Parameters.TechnologyFactor*self.getEffectivelyHiredLabour()**(1-Parameters.Alpha)
     
     def getTotalCost(self):
-        return sum([hh.getWage() * hh.getEffectivelySuppliedLabour() for hh in self.economy.households])
+        """ Equation (10) """
+        return sum([hh.getReservationWage() * hh.getEffectivelySuppliedLabour() for hh in self.economy.households])
     
     def getMarginalCost(self):
+        """ Equation (11) """
         return self.getTotalCost()/((1-Parameters.Alpha)*self.getProduction())
     
-    def getPrice(self):
+    def getSellingPrice(self):
+        """ Equation (12) """
         return (1+Parameters.Markup)*self.getTotalCost()/((1-Parameters.Alpha)*self.getProduction())
     
     def getProfit(self):
-        return self.getPrice()*self.economy.getEquilibriumGoodsQuantity() - self.getTotalCost()
+        """ Equation (13) """
+        return self.getSellingPrice()*self.getEffectivelySoldGoods() - self.getTotalCost()
     
-    def getPrevProfitTrend(self):
-        # Explain in the paper: the original paper defines the labour demand in t+1. To get it in t, we had to shift back one period. 
+    def getEffectivelyHiredLabour(self):
+        return sum([hh.getEffectivelySuppliedLabour() for hh in self.economy.households])
+        
+    def getEffectivelySoldGoods(self):
+        return sum([hh.effectivelyConsumedGoods for hh in self.economy.households])
+    
+    def getPastProfitTrend(self):
+        # The original paper defines the labour demand in t+1. To get it in t, we had to shift back one period. 
         summation = 0
         for l in range(self.economy.currentPeriod):
-            summation = summation + Parameters.Ro**(self.economy.currentPeriod-1-l)*self.pastProfits[l-1]/self.economy.pastPriceLevels[l-1]
-        
+            summation = summation + Parameters.Ro**(self.economy.currentPeriod-1-l)*self.pastProfits[l]/self.economy.goodsMarket.pastPrices[l]
         return (1-Parameters.Ro)*summation
     
     def getPrevProfit(self):
         return self.pastProfits[self.economy.currentPeriod-2]
     
-    def getPrevPrice(self):
-        return self.pastPrices[self.economy.currentPeriod-2]
-    
     def getLabourDemand(self):
-        profitTrend = self.getProfitTrend()
-        prevTotalLabour = sum([hh.getPrevEffectivelySuppliedLabour() for hh in self.economy.households])
-        if self.getPrevProfit()/self.getPrices() >= profitTrend:
-            return prevTotalLabour * (1+Parameters.Epsilon)
+        """ Equation (14) and (15) """
+
+        prevHiredLabour = sum([hh.getPrevEffectivelySuppliedLabour() for hh in self.economy.households])
+        if self.getPrevProfit()/self.getSellingPrice() >= self.getPastProfitTrend():
+            return prevHiredLabour * (1+Parameters.Epsilon)
         else:
-            return prevTotalLabour * (1-Parameters.Epsilon)
+            return prevHiredLabour * (1-Parameters.Epsilon)
+        
+    def nextPeriod(self):
+        """ Prepare the object for a clean next period """
+        self.pastProfits.append(self.getProfit())
+        self.pastHiredLabour.append(self.getEffectivelyHiredLabour())
+        self.pastSoldGoods.append(self.getEffectivelySoldGoods())
