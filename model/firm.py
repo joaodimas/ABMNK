@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Tue Oct 24 16:47:09 2017
+Project for course Quantitative Methods in Finance, Prof. Eric Vansteenberghe.
+Université Paris 1 Panthéon-Sorbonne
+Program: Master 2 Financial Economics, 2017.
+Authors: João Dimas (joaohenriqueavila@gmail.com) and Umberto Collodel (umberto.collodel@gmail.com)
 
-@author: João Dimas and Umberto Collodel
+Replication of an agent-based model described in:
+Salle, I., Yıldızoğlu, M., & Sénégas, M.-A. (2013). Inflation targeting in a learning economy: An ABM perspective. Economic Modelling, 34, 114–128.
 """
 
 from model.parameters import Parameters
+from model.util.logger import Logger
 
 class Firm:
     
@@ -15,14 +20,19 @@ class Firm:
         self.pastProfits = []
         self.pastHiredLabour = []
         self.pastSoldGoods = []
+        self.sellingPrice = None
+        self.totalCost = None
     
     def getProduction(self):
         """ Equation (9) """
-        return Parameters.TechnologyFactor*self.getEffectivelyHiredLabour()**(1-Parameters.Alpha)
+        return Parameters.TechnologyFactor*self.economy.labourMarket.aggregateHiredLabour**(1-Parameters.Alpha)
     
     def getTotalCost(self):
         """ Equation (10) """
-        return sum([hh.getReservationWage() * hh.getEffectivelySuppliedLabour() for hh in self.economy.households])
+        if self.totalCost is None:
+            self.totalCost = sum([hh.getReservationWage() * hh.effectivelySuppliedLabour for hh in self.economy.households])
+            
+        return self.totalCost
     
     def getMarginalCost(self):
         """ Equation (11) """
@@ -30,33 +40,37 @@ class Firm:
     
     def getSellingPrice(self):
         """ Equation (12) """
-        return (1+Parameters.Markup)*self.getTotalCost()/((1-Parameters.Alpha)*self.getProduction())
+        if self.sellingPrice is None:
+            self.sellingPrice = (1+Parameters.Mu)*self.getTotalCost()/((1-Parameters.Alpha)*self.getProduction())
+            
+        #Logger.trace("[Firm] getSellingPrice(): {:.4f}", self.sellingPrice, economy=self.economy)
+        return self.sellingPrice
     
     def getProfit(self):
         """ Equation (13) """
-        return self.getSellingPrice()*self.getEffectivelySoldGoods() - self.getTotalCost()
-    
-    def getEffectivelyHiredLabour(self):
-        return sum([hh.getEffectivelySuppliedLabour() for hh in self.economy.households])
-        
-    def getEffectivelySoldGoods(self):
-        return sum([hh.effectivelyConsumedGoods for hh in self.economy.households])
-    
+        return self.economy.goodsMarket.currentPrice*self.economy.goodsMarket.aggregateSoldGoods - self.getTotalCost()
+            
     def getPastProfitTrend(self):
-        # The original paper defines the labour demand in t+1. To get it in t, we had to shift back one period. 
+        # TODO: The original paper defines the labour demand in t+1. To get it in t, we had to shift back one period. 
+        #Logger.trace("[Firm] Calculating past profit trend.", economy=self.economy)
         summation = 0
         for l in range(self.economy.currentPeriod):
+            #Logger.trace("[Firm] Summing past profit of period {:d}.", l, economy=self.economy)
             summation = summation + Parameters.Ro**(self.economy.currentPeriod-1-l)*self.pastProfits[l]/self.economy.goodsMarket.pastPrices[l]
-        return (1-Parameters.Ro)*summation
-    
-    def getPrevProfit(self):
-        return self.pastProfits[self.economy.currentPeriod-2]
+        
+        pastProfitTrend = (1-Parameters.Ro)*summation
+        #Logger.trace("[Firm] Past profit trend is {:.2f}.", pastProfitTrend, economy=self.economy)
+        return pastProfitTrend
     
     def getLabourDemand(self):
+        
+        if self.economy.currentPeriod == 0: # TODO: See comment on Parameters class. This was not explicit in the paper, therefore we assumed.
+            return Parameters.InitialLabourDemand
+        
         """ Equation (14) and (15) """
 
-        prevHiredLabour = sum([hh.getPrevEffectivelySuppliedLabour() for hh in self.economy.households])
-        if self.getPrevProfit()/self.getSellingPrice() >= self.getPastProfitTrend():
+        prevHiredLabour = self.pastHiredLabour[-1]
+        if self.pastProfits[-1]/self.economy.goodsMarket.pastPrices[-1] >= self.getPastProfitTrend():
             return prevHiredLabour * (1+Parameters.Epsilon)
         else:
             return prevHiredLabour * (1-Parameters.Epsilon)
@@ -64,5 +78,11 @@ class Firm:
     def nextPeriod(self):
         """ Prepare the object for a clean next period """
         self.pastProfits.append(self.getProfit())
-        self.pastHiredLabour.append(self.getEffectivelyHiredLabour())
-        self.pastSoldGoods.append(self.getEffectivelySoldGoods())
+        self.pastHiredLabour.append(self.economy.labourMarket.aggregateHiredLabour)
+        self.pastSoldGoods.append(self.economy.goodsMarket.aggregateSoldGoods)
+        self.sellingPrice = None
+        self.totalCost = None
+        
+        assert len(self.pastProfits) == self.economy.currentPeriod+1
+        assert len(self.pastHiredLabour) == self.economy.currentPeriod+1
+        assert len(self.pastSoldGoods) == self.economy.currentPeriod+1        
