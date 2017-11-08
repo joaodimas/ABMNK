@@ -26,10 +26,12 @@ class Household:
         self.effectivelySuppliedLabour = None
         self.effectivelyConsumedGoods = None
         self.expectedInflation = None
+        self.perceivedInflationTarget = None
         self.consumptionDemand = None
         self.consumptionShare = None
         self.currentIncome = None
         self.reservationWage = None
+        self.permanentIncome = None        
 
         self.indexationStrategy = Parameters.InitialMeanIndexationStrategy
         self.substitutionStrategy = Parameters.InitialMeanSubstitutionStrategy
@@ -37,36 +39,43 @@ class Household:
         self.prevSubstitutionStrategy = self.substitutionStrategy
         self.prevConsumptionShare = 0
         self.prevSavingsBalance = 0
-        self.prevWage = random.randint(Parameters.InitialReservationWageRange[0], Parameters.InitialReservationWageRange[1]) # Not explicit in the model. We are assuming.
+        self.prevWage = 0
     
     def getReservationWage(self):      
-        """ Equation (1) """
         if self.reservationWage is None:
-            if self.getExpectedInflation() > 0:
-                self.reservationWage = self.prevWage * (1 + self.indexationStrategy*self.getExpectedInflation())
+            if self.economy.currentPeriod == 0:
+                # TODO: Not explicit in the model. We are assuming.
+                self.reservationWage = random.randint(Parameters.InitialReservationWageRange[0], Parameters.InitialReservationWageRange[1])
+                return self.reservationWage
             else:
-                self.reservationWage = self.prevWage                   
+                """ Equation (1) """
+                if self.getExpectedInflation() > 0:
+                    self.reservationWage = self.prevWage * (1 + self.indexationStrategy * self.getExpectedInflation())
+                else:
+                    self.reservationWage = self.prevWage 
+                    
         return self.reservationWage
     
     def getExpectedInflation(self):
         """ Equation (17) """
         if self.expectedInflation is None:
-            self.expectedInflation = Parameters.Chi*self.getPerceivedInflationTarget()+(1-Parameters.Chi)*self.economy.goodsMarket.getPastInflationTrend()
+            self.expectedInflation = Parameters.Chi * self.getPerceivedInflationTarget() + (1 - Parameters.Chi) * self.economy.goodsMarket.getPastInflationTrend()
 
         return self.expectedInflation
     
     def getPerceivedInflationTarget(self):
-        if Parameters.AllHouseholdsSameExpectation:
-            if self.economy.homogeneousNoiseInflationTarget is None:
-                self.economy.homogeneousNoiseInflationTarget = random.gauss(0,Parameters.NoiseInflationTargetPerceptionSD)
-            return Parameters.InflationTarget + self.economy.homogeneousNoiseInflationTarget
-            
-        return Parameters.InflationTarget + random.gauss(0,Parameters.NoiseInflationTargetPerceptionSD)
+        if self.perceivedInflationTarget is None:
+            if Parameters.AllHouseholdsSameExpectation:
+                self.perceivedInflationTarget = Parameters.InflationTarget + self.economy.getHomogeneousNoiseInflationTarget()
+            else:
+                self.perceivedInflationTarget = Parameters.InflationTarget + random.gauss(0,Parameters.NoiseInflationTargetPerceptionSD)
+
+        return self.perceivedInflationTarget
     
     def getConsumptionDemand(self):
         """ Equation (2) """
         if self.consumptionDemand is None:
-            self.consumptionDemand = self.getConsumptionShare()*self.getPermanentIncome()
+            self.consumptionDemand = self.getConsumptionShare() * self.getPermanentIncome()
 
         #Logger.trace("[Household {:03d}] getConsumptionDemand(): {:.2f}.", (self.householdId, self.consumptionDemand),self.economy)
         return self.consumptionDemand
@@ -74,7 +83,7 @@ class Household:
     def getConsumptionShare(self):
         """ Equation (6) """
         if self.consumptionShare is None:
-            self.consumptionShare = self.prevConsumptionShare - self.substitutionStrategy*(self.economy.centralBank.getNominalInterestRate()-self.getExpectedInflation()-Parameters.NaturalInterestRate)
+            self.consumptionShare = self.prevConsumptionShare - self.substitutionStrategy * (self.economy.centralBank.nominalInterestRate - self.getExpectedInflation() - Parameters.NaturalInterestRate)
             if self.consumptionShare > Parameters.MaxConsumptionShare:
                 self.consumptionShare = Parameters.MaxConsumptionShare
             elif self.consumptionShare < Parameters.MinConsumptionShare:
@@ -85,36 +94,39 @@ class Household:
     
     def getPermanentIncome(self):
         """ Permanent income in Real terms """
-        if self.economy.currentPeriod == 0: # TODO: This is not explicit in the paper. We are assuming.
-            return self.getCurrentIncome()        
-        
-        """ Equation (3) """
-        #Logger.trace("[Household {:03d}] Calculating permanent income.", self.householdId, economy=self.economy)
-        summation = 0
-        for l in range(self.economy.currentPeriod):
-            #Logger.trace("[Household {:03d}] Summing past income of period {:d}.", (self.householdId, l), economy=self.economy)
-            summation = summation + Parameters.Ro**(self.economy.currentPeriod-l)*self.pastIncomes[l]/self.economy.goodsMarket.pastPrices[l]
-        summation = summation + self.getCurrentIncome()/self.economy.goodsMarket.currentPrice
-        permanentIncome = (1-Parameters.Ro)*summation
-        #Logger.trace("[Household {:03d}] Permanent income is {:.2f}.", (self.householdId, permanentIncome), economy=self.economy)
+        if self.permanentIncome is None:
+            if self.economy.currentPeriod == 0: # TODO: This is not explicit in the paper. We are assuming.
+                self.permanentIncome = self.getCurrentNominalIncome() / self.economy.goodsMarket.currentPrice
+            else:
+                """ Equation (3) """
+                #Logger.trace("[Household {:03d}] Calculating permanent income.", self.householdId, economy=self.economy)
+                summation = 0
+                for l in range(self.economy.currentPeriod):
+                    #Logger.trace("[Household {:03d}] Summing past income of period {:d}.", (self.householdId, l), economy=self.economy)
+                    summation = summation + Parameters.Ro ** (self.economy.currentPeriod - l) * self.pastIncomes[l] / self.economy.goodsMarket.pastPrices[l]
+                summation = summation + self.getCurrentNominalIncome() / self.economy.goodsMarket.currentPrice
+                permanentIncome = (1 - Parameters.Ro) * summation
+                #Logger.trace("[Household {:03d}] Permanent income is {:.2f}.", (self.householdId, permanentIncome), economy=self.economy)
+                self.permanentIncome = permanentIncome
+            
         return permanentIncome
     
-    def getCurrentIncome(self):
+    def getCurrentNominalIncome(self):
         """ Equation (4) """
         """ Current income in Nominal terms """
         if self.currentIncome is None:
-            pastProfit = self.economy.firm.pastProfits[-1] if len(self.economy.firm.pastProfits) > 0 else 0
-            self.currentIncome = self.getReservationWage()*self.effectivelySuppliedLabour + pastProfit/len(self.economy.households) + self.prevSavingsBalance*(1+self.economy.centralBank.prevInterestRate)
-            Logger.trace("[Household {:03d}] Current income: {:.2f}", (self.householdId, self.currentIncome), economy=self.economy)
+            pastProfit = self.economy.firm.pastProfits[-1] if self.economy.currentPeriod > 0 else 0
+            self.currentIncome = self.getReservationWage() * self.effectivelySuppliedLabour + pastProfit/len(self.economy.households) + self.prevSavingsBalance * (1 + self.economy.centralBank.prevInterestRate)
+            Logger.trace("[Household {:03d}] Current nominal income: {:.2f}", (self.householdId, self.currentIncome), economy=self.economy)
         
-        #Logger.trace("[Household {:03d}] getCurrentIncome(): {:.2f}", (self.householdId, self.currentIncome), economy=self.economy)
+        #Logger.trace("[Household {:03d}] getCurrentNominalIncome(): {:.2f}", (self.householdId, self.currentIncome), economy=self.economy)
         return self.currentIncome
     
     def getLabourSupply(self):
         return Parameters.InnelasticLabourSupply
     
     def getSavingsBalance(self):
-        return self.getCurrentIncome() - self.effectivelyConsumedGoods*self.economy.goodsMarket.currentPrice
+        return self.getCurrentNominalIncome() - self.effectivelyConsumedGoods * self.economy.goodsMarket.currentPrice
         
     def getSmoothedUtility(self):
         """ Equation (7) """
@@ -211,7 +223,7 @@ class Household:
     def nextPeriod(self):
         """ Prepare the object for a clean next period """
         self.pastEffectivelySuppliedLabour.append(self.effectivelySuppliedLabour)
-        self.pastIncomes.append(self.getCurrentIncome())
+        self.pastIncomes.append(self.getCurrentNominalIncome())
         self.pastUtilities.append(self.getUtility())
         self.prevConsumptionShare = self.getConsumptionShare()
         self.prevSavingsBalance = self.getSavingsBalance()
@@ -219,10 +231,12 @@ class Household:
         self.effectivelySuppliedLabour = None
         self.effectivelyConsumedGoods = None
         self.expectedInflation = None
+        self.perceivedInflationTarget = None
         self.consumptionDemand = None
         self.consumptionShare = None
         self.currentIncome = None
         self.reservationWage = None
+        self.permanentIncome = None
 
         
         assert len(self.pastEffectivelySuppliedLabour) == self.economy.currentPeriod+1

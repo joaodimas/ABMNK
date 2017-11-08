@@ -16,7 +16,7 @@ class PeriodData:
                 economy.labourMarket.getUnemploymentRate(),
                 economy.goodsMarket.getCurrentInflation(),
                 economy.goodsMarket.currentPrice,
-                economy.centralBank.getNominalInterestRate(),
+                economy.centralBank.nominalInterestRate,
                 economy.firm.getProduction(),
                 economy.labourMarket.aggregateHiredLabour,
                 economy.firm.getTotalCost(),

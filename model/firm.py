@@ -12,6 +12,7 @@ Salle, I., Yıldızoğlu, M., & Sénégas, M.-A. (2013). Inflation targeting in 
 
 from model.parameters import Parameters
 from model.util.logger import Logger
+from model.util.math import Math
 
 class Firm:
     
@@ -22,13 +23,15 @@ class Firm:
         self.pastSoldGoods = []
         self.sellingPrice = None
         self.totalCost = None
+        self.profit = None
+        self.labourDemand = Parameters.InitialLabourDemand
     
     def getProduction(self):
         """ Equation (9) """
-        return Parameters.TechnologyFactor*self.economy.labourMarket.aggregateHiredLabour**(1-Parameters.Alpha)
+        return Parameters.TechnologyFactor * self.economy.labourMarket.aggregateHiredLabour ** (1 - Parameters.Alpha)
     
     def getTotalCost(self):
-        """ Equation (10) """
+        """ Equation (10), wage bill """
         if self.totalCost is None:
             self.totalCost = sum([hh.getReservationWage() * hh.effectivelySuppliedLabour for hh in self.economy.households])
             
@@ -41,39 +44,37 @@ class Firm:
     def getSellingPrice(self):
         """ Equation (12) """
         if self.sellingPrice is None:
-            self.sellingPrice = (1+Parameters.Mu)*self.getTotalCost()/((1-Parameters.Alpha)*self.getProduction())
+            self.sellingPrice = (1 + Parameters.Mu) * self.getTotalCost() / ((1 - Parameters.Alpha) * self.getProduction())
             
         #Logger.trace("[Firm] getSellingPrice(): {:.4f}", self.sellingPrice, economy=self.economy)
         return self.sellingPrice
     
+    def getProfitRate(self):
+        return self.getProfit() / self.getTotalCost()
+    
     def getProfit(self):
         """ Equation (13) """
-        return self.economy.goodsMarket.currentPrice*self.economy.goodsMarket.aggregateSoldGoods - self.getTotalCost()
+        if self.profit is None:
+            self.profit = self.economy.goodsMarket.currentPrice*self.economy.goodsMarket.aggregateSoldGoods - self.getTotalCost()
+        
+        if self.economy.goodsMarket.aggregateSoldGoods == self.getProduction():
+            theoreticalProfitRate = (Parameters.Mu + Parameters.Alpha)/(1 + Parameters.Mu) * Parameters.TechnologyFactor * self.economy.labourMarket.aggregateHiredLabour ** (1 - Parameters.Alpha)
+            assert Math.isEquivalent(theoreticalProfitRate, self.getProfitRate()), "We sold all production but profit rate is different from expected theoretically. theoreticalProfitRate: {:.2f}, profitRate: {:.2f}".format(theoreticalProfitRate, self.getProfitRate())
+        return self.profit
             
-    def getPastProfitTrend(self):
-        # TODO: The original paper defines the labour demand in t+1. To get it in t, we had to shift back one period. 
-        #Logger.trace("[Firm] Calculating past profit trend.", economy=self.economy)
+    def getProfitTrend(self):
         summation = 0
         for l in range(self.economy.currentPeriod):
-            #Logger.trace("[Firm] Summing past profit of period {:d}.", l, economy=self.economy)
-            summation = summation + Parameters.Ro**(self.economy.currentPeriod-1-l)*self.pastProfits[l]/self.economy.goodsMarket.pastPrices[l]
-        
-        pastProfitTrend = (1-Parameters.Ro)*summation
-        #Logger.trace("[Firm] Past profit trend is {:.2f}.", pastProfitTrend, economy=self.economy)
-        return pastProfitTrend
+            summation = summation + Parameters.Ro ** (self.economy.currentPeriod - l) * self.pastProfits[l] / self.economy.goodsMarket.pastPrices[l]
+            
+        summation = summation + self.getProfit() / self.economy.goodsMarket.currentPrice        
+        return (1 - Parameters.Ro) * summation
     
-    def getLabourDemand(self):
-        
-        if self.economy.currentPeriod == 0: # TODO: See comment on Parameters class. This was not explicit in the paper, therefore we assumed.
-            return Parameters.InitialLabourDemand
-        
-        """ Equation (14) and (15) """
-
-        prevHiredLabour = self.pastHiredLabour[-1]
-        if self.pastProfits[-1]/self.economy.goodsMarket.pastPrices[-1] >= self.getPastProfitTrend():
-            return prevHiredLabour * (1+Parameters.Epsilon)
+    def chooseNextPeriodLabourDemand(self):
+        if self.getProfit()/self.goodsMarket.currentPrice >= self.getProfitTrend():
+            self.labourDemand = self.labourDemand * (1 + Parameters.Epsilon)
         else:
-            return prevHiredLabour * (1-Parameters.Epsilon)
+            self.labourDemand = self.labourDemand * (1 - Parameters.Epsilon)
         
     def nextPeriod(self):
         """ Prepare the object for a clean next period """
@@ -82,6 +83,9 @@ class Firm:
         self.pastSoldGoods.append(self.economy.goodsMarket.aggregateSoldGoods)
         self.sellingPrice = None
         self.totalCost = None
+        self.labourDemand = None
+        self.profit = None
+        self.chooseNextPeriodLabourDemand()
         
         assert len(self.pastProfits) == self.economy.currentPeriod+1
         assert len(self.pastHiredLabour) == self.economy.currentPeriod+1

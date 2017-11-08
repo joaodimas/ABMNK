@@ -16,13 +16,11 @@ class CentralBank:
     def __init__(self, economy):
         self.economy = economy
         self.prevInterestRate = 0
-        self.nominalInterestRate = None
         
-    def getNominalInterestRate(self):
+    def setNominalInterestRate(self):
         """ Equation (16) """
-        if self.nominalInterestRate is None:
-            self.nominalInterestRate = (1+Parameters.InflationTarget)*(1+Parameters.NaturalInterestRate)*((1+self.economy.goodsMarket.getCurrentInflation())/(1+Parameters.InflationTarget))**Parameters.Phi_inflation*((1+Parameters.NaturalUnemploymentRate)/(1+self.economy.labourMarket.getUnemploymentRate()))**Parameters.Phi_unemployment
-        return self.nominalInterestRate
+        # TODO: The paper says that the central bank sets current interest rate according to current inflation and unemployment. The current interest rate is used by households to make decisions of consumption in current period. Therefore, we need an interest rate before we can even calculate current inflation and current unemployment. For that reason, we are assuming that the Central Bank looks at the previous values of inflation and unemployment.
+        self.nominalInterestRate = (1+Parameters.InflationTarget)*(1+Parameters.NaturalInterestRate)*((1+self.economy.goodsMarket.getPrevInflation())/(1+Parameters.InflationTarget))**Parameters.Phi_inflation*((1+Parameters.NaturalUnemploymentRate)/(1+self.economy.labourMarket.prevUnemploymentRate))**Parameters.Phi_unemployment
     
     def nextPeriod(self):
         self.nominalInterestRate = None

@@ -17,6 +17,7 @@ from model.firm import Firm
 from model.household import Household
 from model.parameters import Parameters
 from model.util.logger import Logger
+import random
 
 class Economy:
     def __init__(self, simulationNumber):
@@ -45,8 +46,9 @@ class Economy:
     def runCurrentPeriod(self):
         Logger.info("", economy=self)
         Logger.info("SIMULATING CURRENT PERIOD", economy=self)
+        self.centralBank.setNominalInterestRate()
         self.labourMarket.matchFirmAndWorkers()
-        self.goodsMarket.matchFirmAndWorkers()
+        self.goodsMarket.matchFirmAndConsumers()
         
         # We store the current strategies in different variables because households imitate the behaviour of past period. This will be used in the learn() function.
         for hh in self.households:
@@ -65,10 +67,17 @@ class Economy:
         
         self.firm.nextPeriod()
         self.goodsMarket.nextPeriod()
+        self.labourMarket.nextPeriod()
         self.centralBank.nextPeriod()
         self.currentPeriod = self.currentPeriod + 1
         self.homogeneousNoiseInflationTarget = None
         
+    def getHomogeneousNoiseInflationTarget(self):
+        if self.homogeneousNoiseInflationTarget is None:
+            self.homogeneousNoiseInflationTarget = random.gauss(0,Parameters.NoiseInflationTargetPerceptionSD)
+            
+        return self.homogeneousNoiseInflationTarget
+    
     def describeCurrentPeriod(self):
         Logger.info("", economy=self)
         Logger.info("RESULTS OF CURRENT PERIOD", economy=self)
@@ -76,7 +85,7 @@ class Economy:
         Logger.info("Unemployment rate: {:.2%}",self.labourMarket.getUnemploymentRate(), economy=self)
         Logger.info("Inflation: {:.2%}",self.goodsMarket.getCurrentInflation(), economy=self)
         Logger.info("Price: {:.2f}",self.goodsMarket.currentPrice, economy=self)
-        Logger.info("Interest rate: {:.2%}",self.centralBank.getNominalInterestRate(), economy=self)
+        Logger.info("Interest rate: {:.2%}",self.centralBank.nominalInterestRate, economy=self)
         Logger.info("Production: {:.2f}",self.firm.getProduction(), economy=self)
         Logger.info("Hired labour: {:.2f}",self.labourMarket.aggregateHiredLabour, economy=self)
         Logger.info("Total cost: {:.2f}",self.firm.getTotalCost(), economy=self)
