@@ -21,8 +21,8 @@ class SystemConfig:
     LogLevel = {"Console": ["INFO"], "File":["INFO"]}
     EnableProfilingMainThread = False
     Scenario = 1
-    ExperimentsPerScenario = 2
-    RunsPerExperiment = 10
+    ExperimentsPerScenario = 1
+    RunsPerExperiment = 1
 
 def describeModelParameters():
     parameters = {}

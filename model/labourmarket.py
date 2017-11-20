@@ -42,14 +42,13 @@ class LabourMarket:
 
     def getRealWageRate(self):
         realWageRate = self.getNominalWageRate()/self.economy.goodsMarket.currentPrice
-        assert Math.isEquivalent(realWageRate, self.economy.firm.getTotalCost()/len(self.economy.households)/self.economy.goodsMarket.currentPrice), "realWageRate: {:.4f}. self.economy.firm.getTotalCost()/len(self.economy.households)/self.economy.goodsMarket.currentPrice: {:.4f}".format(realWageRate, self.economy.firm.getTotalCost()/len(self.economy.households)/self.economy.goodsMarket.currentPrice)
         #TODO: Check why its not working
-        # assert Math.isEquivalent(realWageRate, (1-Parameters.Alpha)/(1+Parameters.Mu)*self.aggregateHiredLabour**(-Parameters.Alpha)), "realWageRate: {:.4f}. (1-Parameters.Alpha)/(1+Parameters.Mu)*self.aggregateHiredLabour**(-Parameters.Alpha): {:.4f}".format(realWageRate, (1-Parameters.Alpha)/(1+Parameters.Mu)*self.aggregateHiredLabour**(-Parameters.Alpha))
+        assert Math.isEquivalent(realWageRate, (1-Parameters.Alpha)/(1+Parameters.Mu)*self.aggregateHiredLabour**(-Parameters.Alpha)), "realWageRate: {:.4f}. (1-Parameters.Alpha)/(1+Parameters.Mu)*self.aggregateHiredLabour**(-Parameters.Alpha): {:.4f}".format(realWageRate, (1-Parameters.Alpha)/(1+Parameters.Mu)*self.aggregateHiredLabour**(-Parameters.Alpha))
         return realWageRate
 
     def getNominalWageRate(self):
         if self.nominalWageRate is None:
-            self.nominalWageRate = sum([hh.getReservationWage() * hh.effectivelySuppliedLabour for hh in self.economy.households])/len(self.economy.households)
+            self.nominalWageRate = sum([hh.getReservationWage() * hh.effectivelySuppliedLabour for hh in self.economy.households])/self.aggregateHiredLabour
         return self.nominalWageRate
 
     def matchFirmAndWorkers(self):

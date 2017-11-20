@@ -15,13 +15,11 @@ class Parameters:
     @classmethod
     def init(cls):
         # Parameters
-        cls.Periods = 200
-        cls.NumberOfHouseholds = 50
+        cls.Periods = 800
+        cls.NumberOfHouseholds = 500
         cls.Ro = 0 # [0,1[
         cls.InitialPriceLevel = 1
         cls.InnelasticLabourSupply = 1
-
-
 
         cls.IndexationStrategySD = 0.05
         cls.SubstitutionStrategySD = 0.05
@@ -51,7 +49,7 @@ class Parameters:
         cls.AllHouseholdsSameExpectation = False
 
         # TODO: Initial values: The paper doesn't explicit these initial values, therefore we are assuming some values that make the model work.
-        cls.InitialLabourDemand = 10 # We need a high initial labour demand so all households have positive income. Otherwise, some will not consume and will have negative infinite utility (u=log(c)).
+        cls.InitialLabourDemand = 400 # We need a high initial labour demand so all households have positive income. Otherwise, some will not consume and will have negative infinite utility (u=log(c)).
         cls.InitialMeanIndexationStrategy = 1
         cls.InitialMeanSubstitutionStrategy = 0.5
         cls.InitialReservationWageRange = [10, 20] # We need this initial heterogeneity so the price is not higher than all wages at period 0. This way, some households will be able to consume.
