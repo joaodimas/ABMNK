@@ -11,15 +11,19 @@ Salle, I., Yıldızoğlu, M., & Sénégas, M.-A. (2013). Inflation targeting in 
 """
 from model.economy import Economy
 from model.parameters import Parameters
-from model.data import PeriodData
+from model.resultsdata import ResultsData
 from model.util.export_to_csv import ExportToCSV
 from model.util.logger import Logger
+from model.scenarii.scenarii import Scenarii
 import datetime, cProfile, io, pstats, os, time
 
 class SystemConfig:
     LogLevel = {"Console": ["INFO"], "File":["INFO"]}
     EnableProfilingMainThread = False
-    
+    Scenario = 1
+    ExperimentsPerScenario = 1
+    RunsPerExperiment = 1
+
 def describeModelParameters():
     parameters = {}
     obj = Parameters()
@@ -33,48 +37,59 @@ def describeModelParameters():
 
     return desc
 
+#for hh in economy.households:
+#    print(hh.householdId)
+#    print(hh.getReservationWage())
+#    print(hh.effectivelySuppliedLabour)
+
 if __name__ == '__main__':
-    
+
     pr = None
     if(SystemConfig.EnableProfilingMainThread):
         pr = cProfile.Profile()
         pr.enable()
-        
-    try:
-        timestamp = datetime.datetime.now()
-        Logger.initialize(timestamp, SystemConfig.LogLevel)
-        # Simulation
-        Parameters.init()
-        parameters = describeModelParameters()
-        Logger.info(parameters)
-        THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
-        with open(os.path.join(THIS_FOLDER, "./data/ABMNK."+timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss")+".params.txt"), "w", newline='') as f:
-            print(parameters, file=f)
-        
-        simulationNumber = 1 # Possible extension: multiple simulations to average the results.
-        
-        Logger.info("Starting simulation {:d}".format(simulationNumber))
 
-        allPeriodsData = [PeriodData.getHeader()]
-        # Create a virtual economy with agents
-        simulationStartTime = time.time()
-        economy = Economy(1)
-        for t in range(Parameters.Periods):
-            economy.runCurrentPeriod()
-            allPeriodsData.append(PeriodData.getCurrentPeriodData(economy))
-            economy.describeCurrentPeriod()
-            economy.nextPeriod()
-        simulationEndTime = time.time()
-            
-        Logger.info("Simulation completed in {:.2f} seconds", (simulationEndTime - simulationStartTime))
-        Logger.info("Saving data...")
-        ExportToCSV.exportTimeSeriesData(allPeriodsData, timestamp, simulationNumber)
+    try:
+        generalTimestamp = datetime.datetime.now()
+        granularResults = [ResultsData.getHeader()]
+        Logger.initialize(generalTimestamp, SystemConfig.LogLevel, SystemConfig.Scenario)
+        for experiment in range(1, SystemConfig.ExperimentsPerScenario+1):
+            Parameters.init()
+            Scenarii.setExperiment(SystemConfig.Scenario, experiment)
+            parameters = describeModelParameters()
+            Logger.info(parameters)
+            THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
+            with open(os.path.join(THIS_FOLDER, "./data/ABMNK.Scenario{:d}.Experiment{:d}."+generalTimestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss")+".params.txt".format(SystemConfig.Scenario, experiment)), "w", newline='') as f:
+                print(parameters, file=f)
+
+            for run in range(1, SystemConfig.RunsPerExperiment+1):
+                timestamp = datetime.datetime.now()
+
+                Logger.info("Starting run {:d}. Scenario {:d}. Experiment {:d}".format(run, SystemConfig.Scenario, experiment))
+
+                # Create a virtual economy with agents
+                simulationStartTime = time.time()
+                economy = Economy(SystemConfig.Scenario, experiment, run)
+                for t in range(Parameters.Periods):
+                    economy.runCurrentPeriod()
+                    if t >= 100 and t % 50 == 0: # Ignore the first 100 executions and collect data every 50 periods afterwards.
+                        granularResults.append(ResultsData.getCurrentPeriodData(economy))
+                    economy.describeCurrentPeriod()
+                    economy.nextPeriod()
+
+                Logger.info("Simulation completed in {:.2f} seconds. Scenario {:d}. Experiment {:d}. Run {:d}.", (datetime.datetime.now() - simulationStartTime).timestamp(), SystemConfig.Scenario, experiment, run)
+
+
+        Logger.info("All simulations completed. Total time {:.2f} seconds.".format(datetime.datetime.now() - generalTimestamp))
+        Logger.info("Saving granular data...")
+        ExportToCSV.exportTimeSeriesData(granularResults, SystemConfig.Scenario, generalTimestamp)
+        Logger.info("Saving aggregate statistics...")
+        ExportToCSV.exportTimeSeriesData(ResultsData.getAggregateStatistics(granularResults), SystemConfig.Scenario, generalTimestamp)
         Logger.info("ALL PROCESSES FINISHED!")
-        
     except Exception as e:
         Logger.logger.exception("Error")
         raise e
-            
+
     if(SystemConfig.EnableProfilingMainThread):
         pr.disable()
         with io.StringIO() as s:

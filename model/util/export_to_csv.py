@@ -13,12 +13,23 @@ import csv, os
 class ExportToCSV:
 
     @classmethod
-    def exportTimeSeriesData(cls, data, timestamp, simulation = None):
+    def exportAggregateStatistics(cls, data, scenario, timestamp):
 
         if data is None:
             return
 
-        suffix = "[{:d}]".format(simulation) if simulation != None else "[MEAN]"
+        suffix = "[AggregateStatistics][Scenario{:d}]".format(scenario)
+
+        cls.writeFile(data, suffix, timestamp)
+
+
+    @classmethod
+    def exportTimeSeriesData(cls, data, scenario, timestamp):
+
+        if data is None:
+            return
+
+        suffix = "[GranularData][Scenario{:d}]".format(scenario)
 
         cls.writeFile(data, suffix, timestamp)
 
@@ -32,4 +43,3 @@ class ExportToCSV:
         with open(os.path.join(THIS_FOLDER, "../../data/ABMNK.[LATEST]"+suffix+".csv"), "w", newline='') as f:
             writer = csv.writer(f, dialect='excel')
             writer.writerows(flatData)
-    

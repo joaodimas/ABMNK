@@ -20,10 +20,13 @@ from model.util.logger import Logger
 import random
 
 class Economy:
-    def __init__(self, simulationNumber):
+    def __init__(self, scenario, experiment, run):
         Logger.debug("Initializing Economy")
-        self.simulationNumber = simulationNumber
-        self.currentPeriod = 0       
+        self.scenario = scenario
+        self.experiment = experiment
+        self.run = run
+
+        self.currentPeriod = 0
         self.households = []
         for i in range(Parameters.NumberOfHouseholds):
             householdId = i+1
@@ -34,26 +37,26 @@ class Economy:
         self.labourMarket = LabourMarket(self)
         self.goodsMarket = GoodsMarket(self)
         self.firm = Firm(self)
-        
+
         # TODO: We are assuming that initially all households choose random strategies based on initial mean values set in Parameters.
         Logger.debug("Households are mutating randomly to define their initial strategies")
         for hh in self.households:
             hh.mutateRandomly()
-        
+
         # Only used if Parameters.AllHouseholdsSameExpectation == True
         self.homogeneousNoiseInflationTarget = None
-         
+
     def runCurrentPeriod(self):
         Logger.info("", economy=self)
         Logger.info("SIMULATING CURRENT PERIOD", economy=self)
         self.centralBank.setNominalInterestRate()
         self.labourMarket.matchFirmAndWorkers()
         self.goodsMarket.matchFirmAndConsumers()
-        
+
         # We store the current strategies in different variables because households imitate the behaviour of past period. This will be used in the learn() function.
         for hh in self.households:
             hh.prevIndexationStrategy = hh.indexationStrategy
-            hh.prevSubstitutionStrategy = hh.substitutionStrategy        
+            hh.prevSubstitutionStrategy = hh.substitutionStrategy
 
         Logger.debug("[Learning] Households are learning.", economy=self)
         for hh in self.households:
@@ -64,20 +67,20 @@ class Economy:
         Logger.info("Preparing next period.", economy=self)
         for hh in self.households:
             hh.nextPeriod()
-        
+
         self.firm.nextPeriod()
         self.goodsMarket.nextPeriod()
         self.labourMarket.nextPeriod()
         self.centralBank.nextPeriod()
         self.currentPeriod = self.currentPeriod + 1
         self.homogeneousNoiseInflationTarget = None
-        
+
     def getHomogeneousNoiseInflationTarget(self):
         if self.homogeneousNoiseInflationTarget is None:
             self.homogeneousNoiseInflationTarget = random.gauss(0,Parameters.NoiseInflationTargetPerceptionSD)
-            
+
         return self.homogeneousNoiseInflationTarget
-    
+
     def describeCurrentPeriod(self):
         Logger.info("", economy=self)
         Logger.info("RESULTS OF CURRENT PERIOD", economy=self)

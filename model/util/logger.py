@@ -19,7 +19,7 @@ class Logger:
         if(cls.logger.isEnabledFor(logging.INFO)):
             cls.logger.info(cls.format(message, args, economy))
 
-    @classmethod   
+    @classmethod
     def debug(cls, message, args=None, economy=None):
         if(cls.logger.isEnabledFor(logging.DEBUG)):
             cls.logger.debug(cls.format(message, args, economy))
@@ -40,13 +40,13 @@ class Logger:
     @classmethod
     def format(cls, message, args, economy):
         if(economy != None):
-            message = "[SIM {:03d}][PERIOD {:04d}] " + message
+            message = "[SCENARIO {:d}][EXP {:02d}][RUN {:02d}][T={:04d}] " + message
             if(isinstance(args, tuple)):
-                args = (economy.simulationNumber, economy.currentPeriod) + args
+                args = (economy.scenario, economy.experiment, economy.run, economy.currentPeriod) + args
             elif(args != None):
-                args = (economy.simulationNumber, economy.currentPeriod, args)
+                args = (economy.scenario, economy.experiment, economy.run, economy.currentPeriod, args)
             else:
-                args = (economy.simulationNumber, economy.currentPeriod)
+                args = (economy.scenario, economy.experiment, economy.run, economy.currentPeriod)
         if(isinstance(args, tuple)):
             message = message.format(*args)
         elif(isinstance(args, numbers.Number)):
@@ -55,14 +55,14 @@ class Logger:
         return message
 
     @classmethod
-    def initialize(cls, timestamp, loglevel):
+    def initialize(cls, timestamp, loglevel, scenario):
 
         #Add custom level TRACE
-        logging.TRACE = 9 
+        logging.TRACE = 9
         logging.addLevelName(logging.TRACE, "TRACE")
         def trace(self, message, *args, **kws):
             if self.isEnabledFor(logging.TRACE):
-                self._log(logging.TRACE, message, args, **kws) 
+                self._log(logging.TRACE, message, args, **kws)
         logging.Logger.trace = trace
 
 
@@ -98,21 +98,21 @@ class Logger:
         # create an INFO file handler
         if "File" in loglevel:
             if("INFO" in loglevel["File"]):
-                handler = logging.FileHandler(os.path.join(THIS_FOLDER, "../../data/ABMNK."+timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss")+".INFO.log"))
+                handler = logging.FileHandler(os.path.join(THIS_FOLDER, "../../data/ABMNK.Scenario{:d}."+timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss")+".INFO.log".format(scenario)))
                 handler.setLevel(logging.INFO)
                 handler.setFormatter(formatter)
                 cls.logger.addHandler(handler)
 
             # create a DEBUG file handler
             if("DEBUG" in loglevel["File"]):
-                handler = logging.FileHandler(os.path.join(THIS_FOLDER, "../../data/ABMNK."+timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss")+".DEBUG.log"))
+                handler = logging.FileHandler(os.path.join(THIS_FOLDER, "../../data/ABMNK.Scenario{:d}."+timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss")+".DEBUG.log".format(scenario)))
                 handler.setLevel(logging.DEBUG)
                 handler.setFormatter(formatter)
                 cls.logger.addHandler(handler)
 
             # create a TRACE file handler
             if("TRACE" in loglevel["File"]):
-                handler = logging.FileHandler(os.path.join(THIS_FOLDER, "../../data/ABMNK."+timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss")+".TRACE.log"))
+                handler = logging.FileHandler(os.path.join(THIS_FOLDER, "../../data/ABMNK.Scenario{:d}."+timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss")+".TRACE.log".format(scenario)))
                 handler.setLevel(logging.TRACE)
                 handler.setFormatter(formatter)
                 cls.logger.addHandler(handler)

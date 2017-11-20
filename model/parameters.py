@@ -15,14 +15,14 @@ class Parameters:
     @classmethod
     def init(cls):
         # Parameters
-        cls.Periods = 1000
+        cls.Periods = 200
         cls.NumberOfHouseholds = 100
         cls.Ro = 0 # [0,1[
         cls.InitialPriceLevel = 1
         cls.InnelasticLabourSupply = 1
-        
-        
-        
+
+
+
         cls.IndexationStrategySD = 0.05
         cls.SubstitutionStrategySD = 0.05
         # Slow learning
@@ -34,7 +34,7 @@ class Parameters:
         # Active learning 2
         cls.ProbImitation = 0.15
         cls.ProbMutation = 0.1
-        
+
         cls.TechnologyFactor = 1
         cls.Alpha = 0.2 # [0,1[
         cls.Mu = 0.1 # Markup
@@ -49,7 +49,7 @@ class Parameters:
         cls.Chi = 0.1
         cls.NoiseInflationTargetPerceptionSD = 0.02
         cls.AllHouseholdsSameExpectation = False
-        
+
         # TODO: Initial values: The paper doesn't explicit these initial values, therefore we are assuming some values that make the model work.
         cls.InitialLabourDemand = 10 # We need a high initial labour demand so all households have positive income. Otherwise, some will not consume and will have negative infinite utility (u=log(c)).
         cls.InitialMeanIndexationStrategy = 1
