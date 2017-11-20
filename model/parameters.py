@@ -15,8 +15,8 @@ class Parameters:
     @classmethod
     def init(cls):
         # Parameters
-        cls.Periods = 200
-        cls.NumberOfHouseholds = 100
+        cls.Periods = 800
+        cls.NumberOfHouseholds = 500
         cls.Ro = 0 # [0,1[
         cls.InitialPriceLevel = 1
         cls.InnelasticLabourSupply = 1

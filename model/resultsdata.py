@@ -36,7 +36,7 @@ class ResultsData:
 
     @classmethod
     def getAggregateStatistics(cls, resultsdata, scenario):
-        result = ["scenario", "statistic", "inflation_gap", "unemployment", "mean_indexation_strategy", "mean_substitution_strategy", "var_indexation_strategy", "var_substitution_strategy"]
+        result = [["scenario", "statistic", "inflation_gap", "unemployment", "mean_indexation_strategy", "mean_substitution_strategy", "var_indexation_strategy", "var_substitution_strategy"]]
 
         resultsdata = resultsdata[1:]
         # Mean

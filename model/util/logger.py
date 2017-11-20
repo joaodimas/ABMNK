@@ -98,21 +98,21 @@ class Logger:
         # create an INFO file handler
         if "File" in loglevel:
             if("INFO" in loglevel["File"]):
-                handler = logging.FileHandler(os.path.join(THIS_FOLDER, "../../data/ABMNK.Scenario{:d}."+timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss")+".INFO.log".format(scenario)))
+                handler = logging.FileHandler(os.path.join(THIS_FOLDER, ("../../data/ABMNK.Scenario{:d}."+timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss")+".INFO.log").format(scenario)))
                 handler.setLevel(logging.INFO)
                 handler.setFormatter(formatter)
                 cls.logger.addHandler(handler)
 
             # create a DEBUG file handler
             if("DEBUG" in loglevel["File"]):
-                handler = logging.FileHandler(os.path.join(THIS_FOLDER, "../../data/ABMNK.Scenario{:d}."+timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss")+".DEBUG.log".format(scenario)))
+                handler = logging.FileHandler(os.path.join(THIS_FOLDER, ("../../data/ABMNK.Scenario{:d}."+timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss")+".DEBUG.log").format(scenario)))
                 handler.setLevel(logging.DEBUG)
                 handler.setFormatter(formatter)
                 cls.logger.addHandler(handler)
 
             # create a TRACE file handler
             if("TRACE" in loglevel["File"]):
-                handler = logging.FileHandler(os.path.join(THIS_FOLDER, "../../data/ABMNK.Scenario{:d}."+timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss")+".TRACE.log".format(scenario)))
+                handler = logging.FileHandler(os.path.join(THIS_FOLDER, ("../../data/ABMNK.Scenario{:d}."+timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss")+".TRACE.log").format(scenario)))
                 handler.setLevel(logging.TRACE)
                 handler.setFormatter(formatter)
                 cls.logger.addHandler(handler)
