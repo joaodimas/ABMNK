@@ -15,14 +15,14 @@ from model.resultsdata import ResultsData
 from model.util.export_to_csv import ExportToCSV
 from model.util.logger import Logger
 from model.scenarii.scenarii import Scenarii
-import datetime, cProfile, io, pstats, os, time
+import datetime, cProfile, io, pstats, os, time, multiprocessing, functools
 
 class SystemConfig:
     LogLevel = {"Console": ["INFO"], "File":["INFO"]}
     EnableProfilingMainThread = False
     Scenario = 1
-    ExperimentsPerScenario = 17
-    RunsPerExperiment = 20
+    ExperimentsPerScenario = 2
+    RunsPerExperiment = 10
 
 def describeModelParameters():
     parameters = {}
@@ -37,10 +37,27 @@ def describeModelParameters():
 
     return desc
 
-#for hh in economy.households:
-#    print(hh.householdId)
-#    print(hh.getReservationWage())
-#    print(hh.effectivelySuppliedLabour)
+def simulate(run, experiment):
+    try:
+        granularResults = []
+        runStartTime = time.time()
+
+        Logger.info("Starting run {:d}. Scenario {:d}. Experiment {:d}".format(run, SystemConfig.Scenario, experiment))
+
+        # Create a virtual economy with agents
+        economy = Economy(SystemConfig.Scenario, experiment, run)
+        for t in range(Parameters.Periods):
+            economy.runCurrentPeriod()
+            if t >= 99 and t % 50 == 49: # Ignore the first 100 executions and collect data every 50 periods afterwards.
+                granularResults.append(ResultsData.getCurrentPeriodData(economy))
+            economy.describeCurrentPeriod()
+            economy.nextPeriod()
+
+        Logger.info("Simulation completed in {:.2f} seconds. Scenario {:d}. Experiment {:d}. Run {:d}.", ((time.time() - runStartTime), SystemConfig.Scenario, experiment, run))
+        return granularResults
+    except Exception as e:
+        Logger.logger.exception("Error")
+        raise e
 
 if __name__ == '__main__':
 
@@ -63,23 +80,12 @@ if __name__ == '__main__':
             with open(os.path.join(THIS_FOLDER, ("./data/ABMNK.Scenario{:d}.Experiment{:d}."+generalTimestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss")+".params.txt").format(SystemConfig.Scenario, experiment)), "w", newline='') as f:
                 print(parameters, file=f)
 
-            for run in range(1, SystemConfig.RunsPerExperiment+1):
-                runStartTime = time.time()
-
-                Logger.info("Starting run {:d}. Scenario {:d}. Experiment {:d}".format(run, SystemConfig.Scenario, experiment))
-
-                # Create a virtual economy with agents
-                simulationStartTime = time.time()
-                economy = Economy(SystemConfig.Scenario, experiment, run)
-                for t in range(Parameters.Periods):
-                    economy.runCurrentPeriod()
-                    if t >= 99 and t % 50 == 0: # Ignore the first 100 executions and collect data every 50 periods afterwards.
-                        granularResults.append(ResultsData.getCurrentPeriodData(economy))
-                    economy.describeCurrentPeriod()
-                    economy.nextPeriod()
-
-                Logger.info("Simulation completed in {:.2f} seconds. Scenario {:d}. Experiment {:d}. Run {:d}.", ((time.time() - runStartTime), SystemConfig.Scenario, experiment, run))
-
+            processes = []
+            pool = multiprocessing.Pool(SystemConfig.RunsPerExperiment)
+            partial_simulate = functools.partial(simulate, experiment=experiment) # Run simulations
+            listOfResults = pool.imap_unordered(partial_simulate, range(SystemConfig.RunsPerExperiment)) # Obtain results
+            for result in listOfResults:
+                granularResults = granularResults + result
 
         Logger.info("All simulations completed. Total time {:.2f} seconds.", time.time() - aggregateStartTime)
         Logger.info("Saving granular data...")
