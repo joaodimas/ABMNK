@@ -1,0 +1,28 @@
+InitialMeanIndexationStrategy: 1
+IndexationStrategySD: 0.2
+TechnologyFactor: 1
+AllHouseholdsSameExpectation: True
+MaxConsumptionShare: 1.5
+SubstitutionStrategySD: 0.09
+InitialMeanSubstitutionStrategy: 0.5
+InitialPriceLevel: 1
+InitialReservationWageRange: [10, 20]
+Phi_unemployment: 0.7
+Epsilon: 0.01
+NoiseInflationTargetPerceptionSD: 0
+InitialLabourDemand: 400
+InnelasticLabourSupply: 1
+NaturalUnemploymentRate: 0
+InflationTarget: 0.02
+Periods: 800
+ProbMutation: 0.1
+Alpha: 0.25
+Ro: 0.9
+Chi: 1
+Phi_inflation: 2
+ProbImitation: 0.15
+Mu: 0.1
+NumberOfHouseholds: 500
+NaturalInterestRate: 0
+MinConsumptionShare: 0.5
+
