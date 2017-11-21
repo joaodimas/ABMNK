@@ -21,9 +21,9 @@ from model.scenarii.scenarii import Scenarii
 import datetime, os, time, multiprocessing, functools, operator
 
 class SystemConfig:
-    LogLevel = {"Console": [], "File":["INFO"]} # Set INFO, DEBUG or TRACE for Console and File.
+    LogLevel = {"Console": ["DEBUG"], "File":["INFO"]} # Set INFO, DEBUG or TRACE for Console and File.
 
-    Scenario = 1 # 1 to 5
+    Scenario = 5 # 1 to 5
     ExperimentsPerScenario = 17 # up to 17. default: 17
     RunsPerExperiment = 20 # default: 20.
 
