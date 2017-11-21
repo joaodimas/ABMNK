@@ -8,6 +8,9 @@ Authors: João Dimas (joaohenriqueavila@gmail.com) and Umberto Collodel (umberto
 
 Replication of an agent-based model described in:
 Salle, I., Yıldızoğlu, M., & Sénégas, M.-A. (2013). Inflation targeting in a learning economy: An ABM perspective. Economic Modelling, 34, 114–128.
+
+Technical information on README.md
+
 """
 
 from model.parameters import Parameters
@@ -50,7 +53,6 @@ class Firm:
         if self.sellingPrice is None:
             self.sellingPrice = (1 + Parameters.Mu) * self.getTotalCost() / ((1 - Parameters.Alpha) * self.getProduction())
 
-        #Logger.trace("[Firm] getSellingPrice(): {:.4f}", self.sellingPrice, economy=self.economy)
         return self.sellingPrice
 
     def getProfitRate(self):
@@ -61,16 +63,12 @@ class Firm:
         if self.profit is None:
             self.profit = self.economy.goodsMarket.currentPrice*self.economy.goodsMarket.aggregateSoldGoods - self.getTotalCost()
 
-# TODO:Check why this assert is not working.
-#        if self.economy.goodsMarket.aggregateSoldGoods == self.getProduction():
-#            theoreticalProfitRate = (Parameters.Mu + Parameters.Alpha)/(1 + Parameters.Mu) * Parameters.TechnologyFactor * self.economy.labourMarket.aggregateHiredLabour ** (1 - Parameters.Alpha)
-#            assert Math.isEquivalent(theoreticalProfitRate, self.profit/self.getTotalCost()), "We sold all production but profit rate is different from expected theoretically. theoreticalProfitRate: {:.2f}, profitRate: {:.2f}".format(theoreticalProfitRate, self.profit/self.getTotalCost())
         return self.profit
 
     def getProfitTrend(self):
         summation = 0
-        for l in range(self.economy.currentPeriod):
-            summation = summation + Parameters.Ro ** (self.economy.currentPeriod - l) * self.pastProfits[l] / self.economy.goodsMarket.pastPrices[l]
+        for l in range(self.economy.currentPeriod-1):
+            summation = summation + Parameters.Ro ** (self.economy.currentPeriod - 1 - l) * self.pastProfits[l] / self.economy.goodsMarket.pastPrices[l]
 
         summation = summation + self.getProfit() / self.economy.goodsMarket.currentPrice
         return (1 - Parameters.Ro) * summation
@@ -92,6 +90,6 @@ class Firm:
         self.profit = None
         self.production = None
 
-        assert len(self.pastProfits) == self.economy.currentPeriod+1
-        assert len(self.pastHiredLabour) == self.economy.currentPeriod+1
-        assert len(self.pastSoldGoods) == self.economy.currentPeriod+1
+        assert len(self.pastProfits) == self.economy.currentPeriod
+        assert len(self.pastHiredLabour) == self.economy.currentPeriod
+        assert len(self.pastSoldGoods) == self.economy.currentPeriod

@@ -1,23 +1,25 @@
 # -*- coding: utf-8 -*-
+"""
+Project for course Quantitative Methods in Finance, Prof. Eric Vansteenberghe.
+Université Paris 1 Panthéon-Sorbonne
+Program: Master 2 Financial Economics, 2017.
+Authors: João Dimas (joaohenriqueavila@gmail.com) and Umberto Collodel (umberto.collodel@gmail.com)
+
+Replication of an agent-based model described in:
+Salle, I., Yıldızoğlu, M., & Sénégas, M.-A. (2013). Inflation targeting in a learning economy: An ABM perspective. Economic Modelling, 34, 114–128.
+
+Technical information on README.md
+
+"""
 
 from model.parameters import Parameters
 
-class Scenario1:
+"""
 
-    @classmethod
-    def setLearningLevel(cls, level):
-        if level == 0:
-            # Learning level 0
-            Parameters.ProbImitation = 0.05
-            Parameters.ProbMutation = 0.01
-        elif level == 1:
-            # Learning level 1
-            Parameters.ProbImitation = 0.1
-            Parameters.ProbMutation = 0.05
-        elif level == 2:
-            # Learning level 2
-            Parameters.ProbImitation = 0.15
-            Parameters.ProbMutation = 0.1
+Sets parameters for Scenario 1.
+
+"""
+class Scenario1:
 
     @classmethod
     def setExperiment(cls, experiment):
@@ -25,12 +27,11 @@ class Scenario1:
         Parameters.NoiseInflationTargetPerceptionSD = 0 # Perfect precision
         Parameters.Chi = 1
 
-        if experiment == 1:
-            cls.setExperiment1()
+        getattr(cls, 'setExperiment{:d}'.format(experiment))()
 
     @classmethod
     def setExperiment1(cls):
-        cls.setLearningLevel(1)
+        Parameters.setLearningLevel(1)
         Parameters.Ro = 0.9
         Parameters.SubstitutionStrategySD = 0.33
         Parameters.IndexationStrategySD = 0.18
@@ -39,7 +40,7 @@ class Scenario1:
 
     @classmethod
     def setExperiment2(cls):
-        cls.setLearningLevel(0)
+        Parameters.setLearningLevel(0)
         Parameters.Ro = 0.45
         Parameters.SubstitutionStrategySD = 0.36
         Parameters.IndexationStrategySD = 0.25
@@ -48,7 +49,7 @@ class Scenario1:
 
     @classmethod
     def setExperiment3(cls):
-        cls.setLearningLevel(0)
+        Parameters.setLearningLevel(0)
         Parameters.Ro = 0.45
         Parameters.SubstitutionStrategySD = 0.07
         Parameters.IndexationStrategySD = 0.14
@@ -57,7 +58,7 @@ class Scenario1:
 
     @classmethod
     def setExperiment4(cls):
-        cls.setLearningLevel(0)
+        Parameters.setLearningLevel(0)
         Parameters.Ro = 0.45
         Parameters.SubstitutionStrategySD = 0.16
         Parameters.IndexationStrategySD = 0.4
@@ -66,7 +67,7 @@ class Scenario1:
 
     @classmethod
     def setExperiment5(cls):
-        cls.setLearningLevel(2)
+        Parameters.setLearningLevel(2)
         Parameters.Ro = 0.9
         Parameters.SubstitutionStrategySD = 0.2
         Parameters.IndexationStrategySD = 0.09
@@ -75,7 +76,7 @@ class Scenario1:
 
     @classmethod
     def setExperiment6(cls):
-        cls.setLearningLevel(2)
+        Parameters.setLearningLevel(2)
         Parameters.Ro = 0.45
         Parameters.SubstitutionStrategySD = 0.18
         Parameters.IndexationStrategySD = 0.33
@@ -84,7 +85,7 @@ class Scenario1:
 
     @classmethod
     def setExperiment7(cls):
-        cls.setLearningLevel(1)
+        Parameters.setLearningLevel(1)
         Parameters.Ro = 0
         Parameters.SubstitutionStrategySD = 0.4
         Parameters.IndexationStrategySD = 0.16
@@ -93,7 +94,7 @@ class Scenario1:
 
     @classmethod
     def setExperiment8(cls):
-        cls.setLearningLevel(1)
+        Parameters.setLearningLevel(1)
         Parameters.Ro = 0.9
         Parameters.SubstitutionStrategySD = 0.41
         Parameters.IndexationStrategySD = 0.38
@@ -102,7 +103,7 @@ class Scenario1:
 
     @classmethod
     def setExperiment9(cls):
-        cls.setLearningLevel(1)
+        Parameters.setLearningLevel(1)
         Parameters.Ro = 0.45
         Parameters.SubstitutionStrategySD = 0.23
         Parameters.IndexationStrategySD = 0.23
@@ -111,7 +112,7 @@ class Scenario1:
 
     @classmethod
     def setExperiment10(cls):
-        cls.setLearningLevel(1)
+        Parameters.setLearningLevel(1)
         Parameters.Ro = 0
         Parameters.SubstitutionStrategySD = 0.12
         Parameters.IndexationStrategySD = 0.27
@@ -120,7 +121,7 @@ class Scenario1:
 
     @classmethod
     def setExperiment11(cls):
-        cls.setLearningLevel(2)
+        Parameters.setLearningLevel(2)
         Parameters.Ro = 0.9
         Parameters.SubstitutionStrategySD = 0.09
         Parameters.IndexationStrategySD = 0.2
@@ -129,7 +130,7 @@ class Scenario1:
 
     @classmethod
     def setExperiment12(cls):
-        cls.setLearningLevel(2)
+        Parameters.setLearningLevel(2)
         Parameters.Ro = 0.45
         Parameters.SubstitutionStrategySD = 0.38
         Parameters.IndexationStrategySD = 0.31
@@ -138,7 +139,7 @@ class Scenario1:
 
     @classmethod
     def setExperiment13(cls):
-        cls.setLearningLevel(2)
+        Parameters.setLearningLevel(2)
         Parameters.Ro = 0.45
         Parameters.SubstitutionStrategySD = 0.29
         Parameters.IndexationStrategySD = 0.05
@@ -147,7 +148,7 @@ class Scenario1:
 
     @classmethod
     def setExperiment14(cls):
-        cls.setLearningLevel(1)
+        Parameters.setLearningLevel(1)
         Parameters.Ro = 0
         Parameters.SubstitutionStrategySD = 0.25
         Parameters.IndexationStrategySD = 0.36
@@ -156,7 +157,7 @@ class Scenario1:
 
     @classmethod
     def setExperiment15(cls):
-        cls.setLearningLevel(0)
+        Parameters.setLearningLevel(0)
         Parameters.Ro = 0.45
         Parameters.SubstitutionStrategySD = 0.27
         Parameters.IndexationStrategySD = 0.12
@@ -165,7 +166,7 @@ class Scenario1:
 
     @classmethod
     def setExperiment16(cls):
-        cls.setLearningLevel(1)
+        Parameters.setLearningLevel(1)
         Parameters.Ro = 0.9
         Parameters.SubstitutionStrategySD = 0.05
         Parameters.IndexationStrategySD = 0.29
@@ -174,7 +175,7 @@ class Scenario1:
 
     @classmethod
     def setExperiment17(cls):
-        cls.setLearningLevel(1)
+        Parameters.setLearningLevel(1)
         Parameters.Ro = 0
         Parameters.SubstitutionStrategySD = 0.14
         Parameters.IndexationStrategySD = 0.07

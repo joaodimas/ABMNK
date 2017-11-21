@@ -6,8 +6,10 @@ Authors: João Dimas (joaohenriqueavila@gmail.com) and Umberto Collodel (umberto
 
 Replication of an agent-based model described in:
 Salle, I., Yıldızoğlu, M., & Sénégas, M.-A. (2013). Inflation targeting in a learning economy: An ABM perspective. Economic Modelling, 34, 114–128.
-"""
 
+Technical information on README.md
+
+"""
 class Math:
 
     @classmethod

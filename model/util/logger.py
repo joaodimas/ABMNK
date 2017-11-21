@@ -6,6 +6,9 @@ Authors: João Dimas (joaohenriqueavila@gmail.com) and Umberto Collodel (umberto
 
 Replication of an agent-based model described in:
 Salle, I., Yıldızoğlu, M., & Sénégas, M.-A. (2013). Inflation targeting in a learning economy: An ABM perspective. Economic Modelling, 34, 114–128.
+
+Technical information on README.md
+
 """
 
 import logging, os, numbers
@@ -98,21 +101,21 @@ class Logger:
         # create an INFO file handler
         if "File" in loglevel:
             if("INFO" in loglevel["File"]):
-                handler = logging.FileHandler(os.path.join(THIS_FOLDER, ("../../data/ABMNK.Scenario{:d}."+timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss")+".INFO.log").format(scenario)))
+                handler = logging.FileHandler(os.path.join(THIS_FOLDER, ("../../data/ABMNK.{}.Scenario({:d}).INFO.log").format(timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss"), scenario)))
                 handler.setLevel(logging.INFO)
                 handler.setFormatter(formatter)
                 cls.logger.addHandler(handler)
 
             # create a DEBUG file handler
             if("DEBUG" in loglevel["File"]):
-                handler = logging.FileHandler(os.path.join(THIS_FOLDER, ("../../data/ABMNK.Scenario{:d}."+timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss")+".DEBUG.log").format(scenario)))
+                handler = logging.FileHandler(os.path.join(THIS_FOLDER, ("../../data/ABMNK.{}.Scenario({:d}).DEBUG.log").format(timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss"), scenario)))
                 handler.setLevel(logging.DEBUG)
                 handler.setFormatter(formatter)
                 cls.logger.addHandler(handler)
 
             # create a TRACE file handler
             if("TRACE" in loglevel["File"]):
-                handler = logging.FileHandler(os.path.join(THIS_FOLDER, ("../../data/ABMNK.Scenario{:d}."+timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss")+".TRACE.log").format(scenario)))
+                handler = logging.FileHandler(os.path.join(THIS_FOLDER, ("../../data/ABMNK.{}.Scenario({:d}).TRACE.log").format(timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss"), scenario)))
                 handler.setLevel(logging.TRACE)
                 handler.setFormatter(formatter)
                 cls.logger.addHandler(handler)

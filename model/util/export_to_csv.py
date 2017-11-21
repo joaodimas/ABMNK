@@ -6,6 +6,9 @@ Authors: João Dimas (joaohenriqueavila@gmail.com) and Umberto Collodel (umberto
 
 Replication of an agent-based model described in:
 Salle, I., Yıldızoğlu, M., & Sénégas, M.-A. (2013). Inflation targeting in a learning economy: An ABM perspective. Economic Modelling, 34, 114–128.
+
+Technical information on README.md
+
 """
 
 import csv, os
@@ -18,28 +21,26 @@ class ExportToCSV:
         if data is None:
             return
 
-        suffix = "[AggregateStatistics][Scenario{:d}]".format(scenario)
+        prefix = "Scenario({:d})".format(scenario)
+        suffix = "AggregateStatistics"
 
-        cls.writeFile(data, suffix, timestamp)
+        cls.writeFile(data, prefix, suffix, timestamp)
 
 
     @classmethod
-    def exportTimeSeriesData(cls, data, scenario, timestamp):
+    def exportGranularData(cls, data, scenario, timestamp):
 
         if data is None:
             return
 
-        suffix = "[GranularData][Scenario{:d}]".format(scenario)
+        prefix = "Scenario({:d})".format(scenario)
+        suffix = "GranularData"
 
-        cls.writeFile(data, suffix, timestamp)
+        cls.writeFile(data, prefix, suffix, timestamp)
 
     @classmethod
-    def writeFile(cls, flatData, suffix, timestamp):
+    def writeFile(cls, flatData, prefix, suffix, timestamp):
         THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
-        with open(os.path.join(THIS_FOLDER, "../../data/ABMNK."+timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss")+suffix+".csv"), "w", newline='') as f:
-            writer = csv.writer(f, dialect='excel')
-            writer.writerows(flatData)
-
-        with open(os.path.join(THIS_FOLDER, "../../data/ABMNK.[LATEST]"+suffix+".csv"), "w", newline='') as f:
+        with open(os.path.join(THIS_FOLDER, "../../data/ABMNK.{}.{}.{}.csv".format(timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss"), prefix, suffix)), "w", newline='') as f:
             writer = csv.writer(f, dialect='excel')
             writer.writerows(flatData)

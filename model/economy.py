@@ -8,6 +8,9 @@ Authors: João Dimas (joaohenriqueavila@gmail.com) and Umberto Collodel (umberto
 
 Replication of an agent-based model described in:
 Salle, I., Yıldızoğlu, M., & Sénégas, M.-A. (2013). Inflation targeting in a learning economy: An ABM perspective. Economic Modelling, 34, 114–128.
+
+Technical information on README.md
+
 """
 
 from model.labourmarket import LabourMarket
@@ -21,12 +24,12 @@ import random
 
 class Economy:
     def __init__(self, scenario, experiment, run):
-        Logger.debug("Initializing Economy")
+        Logger.trace("Initializing Economy")
         self.scenario = scenario
         self.experiment = experiment
         self.run = run
 
-        self.currentPeriod = 0
+        self.currentPeriod = 1
         self.households = []
         for i in range(Parameters.NumberOfHouseholds):
             householdId = i+1
@@ -39,7 +42,7 @@ class Economy:
         self.firm = Firm(self)
 
         # TODO: We are assuming that initially all households choose random strategies based on initial mean values set in Parameters.
-        Logger.debug("Households are mutating randomly to define their initial strategies")
+        Logger.trace("Households are mutating randomly to define their initial strategies")
         for hh in self.households:
             hh.mutateRandomly()
 
@@ -47,7 +50,7 @@ class Economy:
         self.homogeneousNoiseInflationTarget = None
 
     def runCurrentPeriod(self):
-        Logger.info("", economy=self)
+        Logger.debug("", economy=self)
         Logger.info("SIMULATING CURRENT PERIOD", economy=self)
         self.centralBank.setNominalInterestRate()
         self.labourMarket.matchFirmAndWorkers()
@@ -58,13 +61,13 @@ class Economy:
             hh.prevIndexationStrategy = hh.indexationStrategy
             hh.prevSubstitutionStrategy = hh.substitutionStrategy
 
-        Logger.debug("[Learning] Households are learning.", economy=self)
+        Logger.trace("[Learning] Households are learning.", economy=self)
         for hh in self.households:
             hh.learn() # Mutate or imitate
 
     def nextPeriod(self):
         """ Prepare the object for a clean next period """
-        Logger.info("Preparing next period.", economy=self)
+        Logger.debug("Preparing next period.", economy=self)
         for hh in self.households:
             hh.nextPeriod()
 
@@ -82,19 +85,19 @@ class Economy:
         return self.homogeneousNoiseInflationTarget
 
     def describeCurrentPeriod(self):
-        Logger.info("", economy=self)
-        Logger.info("RESULTS OF CURRENT PERIOD", economy=self)
-        Logger.info("----------------------------", economy=self)
-        Logger.info("Unemployment rate: {:.2%}",self.labourMarket.getUnemploymentRate(), economy=self)
-        Logger.info("Inflation: {:.2%}",self.goodsMarket.getCurrentInflation(), economy=self)
-        Logger.info("Price: {:.2f}",self.goodsMarket.currentPrice, economy=self)
-        Logger.info("Interest rate: {:.2%}",self.centralBank.nominalInterestRate, economy=self)
-        Logger.info("Production: {:.2f}",self.firm.getProduction(), economy=self)
-        Logger.info("Hired labour: {:.2f}",self.labourMarket.aggregateHiredLabour, economy=self)
-        Logger.info("Total cost: {:.2f}",self.firm.getTotalCost(), economy=self)
-        Logger.info("Total revenue: {:.2f}",self.goodsMarket.aggregateSoldGoods*self.goodsMarket.currentPrice, economy=self)
-        Logger.info("Total profit: {:.2f}",self.firm.getProfit(), economy=self)
-        Logger.info("Goods sold: {:.2f}", self.goodsMarket.aggregateSoldGoods, economy=self)
-        Logger.info("Nominal wage rate: {:.2f}",self.labourMarket.getNominalWageRate(), economy=self)
-        Logger.info("Real wage rate: {:.2f}",self.labourMarket.getRealWageRate(), economy=self)
-        Logger.info("----------------------------", economy=self)
+        Logger.debug("", economy=self)
+        Logger.debug("RESULTS OF CURRENT PERIOD", economy=self)
+        Logger.debug("----------------------------", economy=self)
+        Logger.debug("Unemployment rate: {:.2%}",self.labourMarket.getUnemploymentRate(), economy=self)
+        Logger.debug("Inflation: {:.2%}",self.goodsMarket.getCurrentInflation(), economy=self)
+        Logger.debug("Price: {:.2f}",self.goodsMarket.currentPrice, economy=self)
+        Logger.debug("Interest rate: {:.2%}",self.centralBank.nominalInterestRate, economy=self)
+        Logger.debug("Production: {:.2f}",self.firm.getProduction(), economy=self)
+        Logger.debug("Hired labour: {:.2f}",self.labourMarket.aggregateHiredLabour, economy=self)
+        Logger.debug("Total cost: {:.2f}",self.firm.getTotalCost(), economy=self)
+        Logger.debug("Total revenue: {:.2f}",self.goodsMarket.aggregateSoldGoods*self.goodsMarket.currentPrice, economy=self)
+        Logger.debug("Total profit: {:.2f}",self.firm.getProfit(), economy=self)
+        Logger.debug("Goods sold: {:.2f}", self.goodsMarket.aggregateSoldGoods, economy=self)
+        Logger.debug("Nominal wage rate: {:.2f}",self.labourMarket.getNominalWageRate(), economy=self)
+        Logger.debug("Real wage rate: {:.2f}",self.labourMarket.getRealWageRate(), economy=self)
+        Logger.debug("----------------------------", economy=self)

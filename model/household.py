@@ -8,6 +8,9 @@ Authors: João Dimas (joaohenriqueavila@gmail.com) and Umberto Collodel (umberto
 
 Replication of an agent-based model described in:
 Salle, I., Yıldızoğlu, M., & Sénégas, M.-A. (2013). Inflation targeting in a learning economy: An ABM perspective. Economic Modelling, 34, 114–128.
+
+Technical information on README.md
+
 """
 import math
 import random
@@ -44,10 +47,9 @@ class Household:
 
     def getReservationWage(self):
         if self.reservationWage is None:
-            if self.economy.currentPeriod == 0:
-                # TODO: Not explicit in the model. We are assuming.
+            if self.economy.currentPeriod == 1:
+                # TODO: Not explicit in the model. We are assuming a random initial reservation wage.
                 self.reservationWage = random.randint(Parameters.InitialReservationWageRange[0], Parameters.InitialReservationWageRange[1])
-                return self.reservationWage
             else:
                 """ Equation (1) """
                 if self.getExpectedInflation() > 0:
@@ -78,7 +80,6 @@ class Household:
         if self.consumptionDemand is None:
             self.consumptionDemand = self.getConsumptionShare() * self.getPermanentIncome()
 
-        #Logger.trace("[Household {:03d}] getConsumptionDemand(): {:.2f}.", (self.householdId, self.consumptionDemand),self.economy)
         return self.consumptionDemand
 
     def getConsumptionShare(self):
@@ -90,23 +91,19 @@ class Household:
             elif self.consumptionShare < Parameters.MinConsumptionShare:
                 self.consumptionShare = Parameters.MinConsumptionShare
 
-        #Logger.trace("[Household {:03d}] getConsumptionShare(): {:.2f}", (self.householdId, self.consumptionShare), economy=self.economy)
         return self.consumptionShare
 
     def getPermanentIncome(self):
         """ Permanent income in Real terms """
         if self.permanentIncome is None:
-            if self.economy.currentPeriod == 0: # TODO: This is not explicit in the paper. We are assuming.
+            if self.economy.currentPeriod == 1: # TODO: This is not explicit in the paper. We are assuming.
                 self.permanentIncome = self.getCurrentNominalIncome() / self.economy.goodsMarket.currentPrice
             else:
                 """ Equation (3) """
-                #Logger.trace("[Household {:03d}] Calculating permanent income.", self.householdId, economy=self.economy)
                 summation = 0
-                for l in range(self.economy.currentPeriod):
-                    #Logger.trace("[Household {:03d}] Summing past income of period {:d}.", (self.householdId, l), economy=self.economy)
-                    summation = summation + Parameters.Ro ** (self.economy.currentPeriod - l) * self.pastIncomes[l] / self.economy.goodsMarket.pastPrices[l]
+                for l in range(self.economy.currentPeriod-1):
+                    summation = summation + Parameters.Ro ** (self.economy.currentPeriod - 1 - l) * self.pastIncomes[l] / self.economy.goodsMarket.pastPrices[l]
                 summation = summation + self.getCurrentNominalIncome() / self.economy.goodsMarket.currentPrice
-                #Logger.trace("[Household {:03d}] Permanent income is {:.2f}.", (self.householdId, permanentIncome), economy=self.economy)
                 self.permanentIncome = (1 - Parameters.Ro) * summation
 
         return self.permanentIncome
@@ -115,11 +112,10 @@ class Household:
         """ Equation (4) """
         """ Current income in Nominal terms """
         if self.currentIncome is None:
-            pastProfit = self.economy.firm.pastProfits[-1] if self.economy.currentPeriod > 0 else 0
+            pastProfit = self.economy.firm.pastProfits[-1] if self.economy.currentPeriod > 1 else 0
             self.currentIncome = self.getReservationWage() * self.effectivelySuppliedLabour + pastProfit/len(self.economy.households) + self.prevSavingsBalance * (1 + self.economy.centralBank.prevInterestRate)
             Logger.trace("[Household {:03d}] Current nominal income: {:.2f}", (self.householdId, self.currentIncome), economy=self.economy)
 
-        #Logger.trace("[Household {:03d}] getCurrentNominalIncome(): {:.2f}", (self.householdId, self.currentIncome), economy=self.economy)
         return self.currentIncome
 
     def getLabourSupply(self):
@@ -130,28 +126,24 @@ class Household:
 
     def getSmoothedUtility(self):
         """ Equation (7) """
-        #Logger.trace("[Household {:03d}] Calculating smoothed utility.", self.householdId, economy=self.economy)
         if self.smoothedUtility is None:
             summation = 0
-            for l in range(self.economy.currentPeriod):
-                #Logger.trace("[Household {:03d}] Summing past utility of period {:d}.", (self.householdId, l), economy=self.economy)
-                summation = summation + Parameters.Ro**(self.economy.currentPeriod-l)*self.pastUtilities[l]
+            for l in range(self.economy.currentPeriod-1):
+                summation = summation + Parameters.Ro**(self.economy.currentPeriod-1-l)*self.pastUtilities[l]
             summation = summation + self.getUtility()
             self.smoothedUtility = (1-Parameters.Ro)*summation
-        #Logger.trace("[Household {:03d}] Smoothed utility is {:.2f}.", (self.householdId, smoothedUtility), economy=self.economy)
         return self.smoothedUtility
 
     def getUtility(self):
-        # TODO: Gambiarra
+        # TODO: The paper does not specify what would happend when a household has 0 consumption. Since this might happen, and the log function is undefined for 0, we specify a fixed negative utility.
         return math.log(self.effectivelyConsumedGoods) if self.effectivelyConsumedGoods > 0 else -1000
-        #return math.log(self.effectivelyConsumedGoods)
 
     def imitateSomeone(self):
         other = self.selectHouseholdToImitate()
         self.indexationStrategy = other.prevIndexationStrategy
         self.substitutionStrategy = other.prevSubstitutionStrategy
 
-        Logger.debug("[Learning][Household {:03d}] Finished imitation. New indexation strategy: {:.2f}, new substitution strategy: {:.2f}.", (self.householdId, self.indexationStrategy, self.substitutionStrategy), economy=self.economy)
+        Logger.trace("[Learning][Household {:03d}] Finished imitation. New indexation strategy: {:.2f}, new substitution strategy: {:.2f}.", (self.householdId, self.indexationStrategy, self.substitutionStrategy), economy=self.economy)
 
     def mutateRandomly(self):
         meanIndexationStrategy = statistics.mean([hh.indexationStrategy for hh in self.economy.households])
@@ -169,7 +161,7 @@ class Household:
         self.indexationStrategy = newIndexationStrategy
         self.substitutionStrategy = newSubstitutionStrategy
 
-        Logger.debug("[Learning][Household {:03d}] Finished mutation. New indexation strategy: {:.2f}, new substitution strategy: {:.2f}.", (self.householdId, self.indexationStrategy, self.substitutionStrategy), economy=self.economy)
+        Logger.trace("[Learning][Household {:03d}] Finished mutation. New indexation strategy: {:.2f}, new substitution strategy: {:.2f}.", (self.householdId, self.indexationStrategy, self.substitutionStrategy), economy=self.economy)
 
     def selectHouseholdToImitate(self):
         # TODO: Since the original paper is not explicit about this, we assume the following:
@@ -186,6 +178,9 @@ class Household:
             households.append({'household': hh, 'smoothedUtility': math.exp(smoothedUtility)})
             sumOfUtility = sumOfUtility + math.exp(hh.getSmoothedUtility())
 
+        if sumOfUtility == 0: # No household had utility. Imitate self.
+            return self
+
         Logger.trace("[Learning][Household {:03d}] Sum of exp(smoothedUtility) is: {:.2f}.", (self.householdId, sumOfUtility), economy=self.economy)
         for hh in households:
             """ Equation (8) """
@@ -201,7 +196,7 @@ class Household:
             sumOfProbabilities = sumOfProbabilities + hh['probability']
             Logger.trace("[Learning][Household {:03d}] Looking at household {:03d}, sum of probabilities so far: {:.2f}", (self.householdId, hh["household"].householdId, sumOfProbabilities), economy=self.economy)
             if sumOfProbabilities > pointInCDF:
-                Logger.debug("[Learning][Household {:03d}] We passed the selected point in CDF. Household {:03d} is chosen.", (self.householdId, hh["household"].householdId), economy=self.economy)
+                Logger.trace("[Learning][Household {:03d}] We passed the selected point in CDF. Household {:03d} is chosen.", (self.householdId, hh["household"].householdId), economy=self.economy)
                 return hh['household']
 
         assert False, "No household selected to imitate. Why?!"
@@ -210,17 +205,17 @@ class Household:
         Logger.trace("[Learning][Household {:03d}] Learning. Imitate or mutate?", self.householdId, economy=self.economy)
         pointInCDF = random.random()
         if Parameters.ProbImitation >= pointInCDF:
-            Logger.debug("[Learning][Household {:03d}] Imitate someone!", self.householdId, economy=self.economy)
+            Logger.trace("[Learning][Household {:03d}] Imitate someone!", self.householdId, economy=self.economy)
             self.imitateSomeone()
         elif Parameters.ProbImitation + Parameters.ProbMutation >= pointInCDF:
-            Logger.debug("[Learning][Household {:03d}] Mutate randomly!", self.householdId, economy=self.economy)
+            Logger.trace("[Learning][Household {:03d}] Mutate randomly!", self.householdId, economy=self.economy)
             self.mutateRandomly()
         else:
-            Logger.debug("[Learning][Household {:03d}] None. Staying as he was.", self.householdId, economy=self.economy)
+            Logger.trace("[Learning][Household {:03d}] None. Staying as he was.", self.householdId, economy=self.economy)
 
 
     def getPrevEffectivelySuppliedLabour(self):
-        return self.pastEffectivelySuppliedLabour[self.economy.currentPeriod-2] if len(self.pastEffectivelySuppliedLabour) > 0 else 0
+        return self.pastEffectivelySuppliedLabour[self.economy.currentPeriod-3] if len(self.pastEffectivelySuppliedLabour) > 0 else 0
 
     def nextPeriod(self):
         """ Prepare the object for a clean next period """
@@ -242,7 +237,7 @@ class Household:
         self.smoothedUtility = None
 
 
-        assert len(self.pastEffectivelySuppliedLabour) == self.economy.currentPeriod+1
-        assert len(self.pastIncomes) == self.economy.currentPeriod+1
-        assert len(self.pastUtilities) == self.economy.currentPeriod+1
+        assert len(self.pastEffectivelySuppliedLabour) == self.economy.currentPeriod
+        assert len(self.pastIncomes) == self.economy.currentPeriod
+        assert len(self.pastUtilities) == self.economy.currentPeriod
 
