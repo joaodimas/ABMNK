@@ -21,11 +21,11 @@ from model.scenarii.scenarii import Scenarii
 import datetime, os, time, multiprocessing, functools, operator
 
 class SystemConfig:
-    LogLevel = {"Console": ["DEBUG"], "File":["INFO"]} # Set INFO, DEBUG or TRACE for Console and File.
+    LogLevel = {"Console": ["DEBUG"], "File":["DEBUG"]} # Set INFO, DEBUG or TRACE for Console and File.
 
-    Scenario = 5 # 1 to 5
-    ExperimentsPerScenario = 17 # up to 17. default: 17
-    RunsPerExperiment = 20 # default: 20.
+    Scenario = 5 # Corresponds to a module in scenarii folder
+    Experiments = [15] # Corresponds to methods in the chosen scenario.
+    RunsPerExperiment = 1 # Number of independent executions of each experiment.
 
 def describeModelParameters():
     parameters = {}
@@ -72,7 +72,7 @@ if __name__ == '__main__':
         Logger.initialize(generalTimestamp, SystemConfig.LogLevel, SystemConfig.Scenario)
 
         # Run each experiment
-        for experiment in range(1, SystemConfig.ExperimentsPerScenario+1):
+        for experiment in SystemConfig.Experiments:
             Parameters.init()
             Scenarii.setExperiment(SystemConfig.Scenario, experiment)
 

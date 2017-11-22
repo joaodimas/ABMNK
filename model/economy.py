@@ -20,7 +20,7 @@ from model.firm import Firm
 from model.household import Household
 from model.parameters import Parameters
 from model.util.logger import Logger
-import random
+import random, statistics
 
 class Economy:
     def __init__(self, scenario, experiment, run):
@@ -100,4 +100,6 @@ class Economy:
         Logger.debug("Goods sold: {:.2f}", self.goodsMarket.aggregateSoldGoods, economy=self)
         Logger.debug("Nominal wage rate: {:.2f}",self.labourMarket.getNominalWageRate(), economy=self)
         Logger.debug("Real wage rate: {:.2f}",self.labourMarket.getRealWageRate(), economy=self)
+        Logger.debug("Mean index. strat: {:.2f}", statistics.mean([hh.indexationStrategy for hh in self.households]), economy=self)
+        Logger.debug("Mean subs. strat: {:.2f}", statistics.mean([hh.substitutionStrategy for hh in self.households]), economy=self)
         Logger.debug("----------------------------", economy=self)

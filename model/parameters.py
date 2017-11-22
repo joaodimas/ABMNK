@@ -41,8 +41,8 @@ class Parameters:
         # TODO: Initial values: The paper doesn't explicit these initial values, therefore we are assuming some values that make the model work.
         cls.InitialPriceLevel = 1
         cls.InitialLabourDemand = 400
-        cls.InitialMeanIndexationStrategy = 1
-        cls.InitialMeanSubstitutionStrategy = 0.5
+        cls.InitialMeanIndexationStrategy = 0.3
+        cls.InitialMeanSubstitutionStrategy = 0.3
         cls.InitialReservationWageRange = [10, 20]
 
     @classmethod

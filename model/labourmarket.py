@@ -16,6 +16,7 @@ Technical information on README.md
 from model.util.logger import Logger
 from model.util.math import Math
 from model.parameters import Parameters
+import math
 
 class LabourMarket:
 
@@ -33,7 +34,9 @@ class LabourMarket:
 
     def getRealWageRate(self):
         realWageRate = self.getNominalWageRate()/self.economy.goodsMarket.currentPrice
-        assert Math.isEquivalent(realWageRate, (1-Parameters.Alpha)/(1+Parameters.Mu)*self.aggregateHiredLabour**(-Parameters.Alpha)), "realWageRate: {:.4f}. (1-Parameters.Alpha)/(1+Parameters.Mu)*self.aggregateHiredLabour**(-Parameters.Alpha): {:.4f}".format(realWageRate, (1-Parameters.Alpha)/(1+Parameters.Mu)*self.aggregateHiredLabour**(-Parameters.Alpha))
+        
+        if not (math.isinf(realWageRate) or math.isnan(realWageRate)):
+            assert Math.isEquivalent(realWageRate, (1-Parameters.Alpha)/(1+Parameters.Mu)*self.aggregateHiredLabour**(-Parameters.Alpha)), "nominalWage: {:.4f}. realWageRate: {:.4f}. (1-Parameters.Alpha)/(1+Parameters.Mu)*self.aggregateHiredLabour**(-Parameters.Alpha): {:.4f}".format(self.getNominalWageRate(), realWageRate, (1-Parameters.Alpha)/(1+Parameters.Mu)*self.aggregateHiredLabour**(-Parameters.Alpha))
         return realWageRate
 
     def getNominalWageRate(self):

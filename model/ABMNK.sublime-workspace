@@ -1,0 +1,1098 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"Max",
+				"MaxMagnituteOfChangeInTechEnv"
+			],
+			[
+				"max",
+				"maxMagnitudeOfChange\tparam"
+			],
+			[
+				"curr",
+				"currentPeriod"
+			],
+			[
+				"Cyc",
+				"TypeOfCycle"
+			],
+			[
+				"tec",
+				"techId\tstatement"
+			],
+			[
+				"tech",
+				"technology"
+			],
+			[
+				"closes",
+				"closestTech"
+			],
+			[
+				"Nu",
+				"NumberOfTasks"
+			],
+			[
+				"sumO",
+				"sumOfHammingDist\tstatement"
+			],
+			[
+				"cl",
+				"clearAllFakes\tfunction"
+			],
+			[
+				"ass",
+				"assertEqual\tfunction"
+			],
+			[
+				"exp",
+				"expPrice\tstatement"
+			],
+			[
+				"mark",
+				"marketSize\tstatement"
+			],
+			[
+				"M",
+				"MaximumOptimalTechnologies\tstatement"
+			],
+			[
+				"Optimal",
+				"MaximumOptimalTechnologies\tstatement"
+			],
+			[
+				"cur",
+				"currentOptimalTechs\tstatement"
+			],
+			[
+				"curre",
+				"currentOptimalTechs"
+			],
+			[
+				"Initial",
+				"InitialOptimalTechnologies\tstatement"
+			],
+			[
+				"mean",
+				"meanMarketSize"
+			],
+			[
+				"re",
+				"revenues\tstatement"
+			],
+			[
+				"PEriodSta",
+				"PeriodStartOfGrowth\tstatement"
+			],
+			[
+				"RateOf",
+				"RateOfGrowthInMeanMarketSize\tstatement"
+			],
+			[
+				"get",
+				"getFirmFlatData\tfunction"
+			],
+			[
+				"business",
+				"business_cycles\tmodule"
+			],
+			[
+				"wri",
+				"writeFile\tfunction"
+			],
+			[
+				"Period",
+				"PeriodRangeToSavePanelData"
+			],
+			[
+				"in",
+				"industry\tstatement"
+			],
+			[
+				"att",
+				"attractionForImitation\tstatement"
+			],
+			[
+				"attrac",
+				"attractionForResearch\tstatement"
+			],
+			[
+				"imi",
+				"imitating\tstatement"
+			],
+			[
+				"cros",
+				"crossSectionalData"
+			],
+			[
+				"crossse",
+				"crosssectional_data\tmodule"
+			],
+			[
+				"times",
+				"timestamp\tparam"
+			],
+			[
+				"is",
+				"isEquivalent\tfunction"
+			],
+			[
+				"period",
+				"periodData\tstatement"
+			],
+			[
+				"sum",
+				"sumOfP\tstatement"
+			],
+			[
+				"true",
+				"trueTotalNmbCombs\tstatement"
+			],
+			[
+				"assertEq",
+				"assertEquivalent\tfunction"
+			],
+			[
+				"min",
+				"minDistance\tstatement"
+			],
+			[
+				"da",
+				"datetime\tclass"
+			],
+			[
+				"indus",
+				"industry\tstatement"
+			],
+			[
+				"updateSumOf",
+				"updateSumOfActiveSurvivorsMC\tfunction"
+			],
+			[
+				"totalI",
+				"totalInvestmentInImitation\tstatement"
+			],
+			[
+				"totalIn",
+				"totalInvestmentInInnovation\tstatement"
+			],
+			[
+				"append",
+				"appendFakeRandom\tfunction"
+			],
+			[
+				"indu",
+				"industry\tstatement"
+			],
+			[
+				"partia",
+				"partial_runSimulation\tstatement"
+			],
+			[
+				"list",
+				"listOfResults\tparam"
+			],
+			[
+				"Num",
+				"NumberOfSimulations\tstatement"
+			],
+			[
+				"result",
+				"resultQueue\tstatement"
+			],
+			[
+				"rele",
+				"release"
+			],
+			[
+				"process",
+				"processResults"
+			],
+			[
+				"Indus",
+				"IndustrySimulation\tclass"
+			],
+			[
+				"multi",
+				"multiAggregateData\tstatement"
+			],
+			[
+				"ind",
+				"industry"
+			],
+			[
+				"sim",
+				"simulate"
+			],
+			[
+				"Industry",
+				"IndustrySimulation"
+			],
+			[
+				"Atomic",
+				"AtomicCounter\tclass"
+			],
+			[
+				"proce",
+				"processResearch"
+			],
+			[
+				"IS",
+				"isEnabledForTrace\tfunction"
+			],
+			[
+				"prev",
+				"prevTechnology"
+			],
+			[
+				"previous",
+				"previousOptimal\tstatement"
+			],
+			[
+				"current",
+				"currentPeriod\tstatement"
+			],
+			[
+				"gene",
+				"generateStochasticCycle\tfunction"
+			],
+			[
+				"totalInvest",
+				"totalInvestmentInResearch\tstatement"
+			],
+			[
+				"total",
+				"totalInvestmentInResearch"
+			],
+			[
+				"Tech",
+				"Technology"
+			],
+			[
+				"taskTo",
+				"taskToCopy"
+			],
+			[
+				"flip",
+				"flipRandomTask"
+			],
+			[
+				"exitin",
+				"exitingFirms\tstatement"
+			],
+			[
+				"sur",
+				"survivorsOfPreviousPeriod\tstatement"
+			],
+			[
+				"prob",
+				"probOfBeingObserved\tstatement"
+			],
+			[
+				"av",
+				"averageProximityToOptimalTech"
+			],
+			[
+				"activeSurviv",
+				"activeSurvivorsOfPreviousPeriod\tstatement"
+			],
+			[
+				"Imi",
+				"ImitationCost\tstatement"
+			],
+			[
+				"attraction",
+				"attractionForNoResearch\tstatement"
+			],
+			[
+				"we",
+				"wealth\tstatement"
+			],
+			[
+				"attract",
+				"attractionForInnovation\tstatement"
+			],
+			[
+				"Cost",
+				"InnovationCost\tstatement"
+			],
+			[
+				"old",
+				"oldTechnology\tstatement"
+			],
+			[
+				"getProbOf",
+				"getProbOfInnovation"
+			],
+			[
+				"getProb",
+				"getProbOfResearch\tfunction"
+			],
+			[
+				"firm",
+				"firmId\tstatement"
+			],
+			[
+				"Inno",
+				"InnovationCost\tstatement"
+			],
+			[
+				"attr",
+				"attractionForRD\tstatement"
+			],
+			[
+				"market",
+				"marketSize"
+			],
+			[
+				"RateO",
+				"RateOfPersistenceInDemand"
+			],
+			[
+				"out",
+				"output"
+			],
+			[
+				"incumbe",
+				"incumbentFirms"
+			],
+			[
+				"calcu",
+				"calculateHIndex"
+			],
+			[
+				"active",
+				"activeIncumbentFirms"
+			],
+			[
+				"Lo",
+				"LogLevel\tstatement"
+			],
+			[
+				"consol",
+				"consoleTrace\tstatement"
+			],
+			[
+				"magni",
+				"magnitudeOfChange"
+			],
+			[
+				"youn",
+				"youngestAge"
+			],
+			[
+				"survivors",
+				"survivorsOfPreviousPeriod"
+			],
+			[
+				"youngest",
+				"youngestAge\tstatement"
+			],
+			[
+				"currentSum",
+				"currentSumOfHammingDistances\tstatement"
+			],
+			[
+				"currentSumO",
+				"currentSumOfHammingDistances"
+			],
+			[
+				"ne",
+				"newTech"
+			],
+			[
+				"inactive",
+				"inactiveIncumbentFirms\tstatement"
+			],
+			[
+				"inac",
+				"inactiveIncumbentFirms"
+			],
+			[
+				"survivor",
+				"survivorsOfCurrentPeriod\tstatement"
+			],
+			[
+				"surviv",
+				"survivorsOfCurrentPeriod\tstatement"
+			],
+			[
+				"updateExp",
+				"updateExpPrice"
+			],
+			[
+				"survi",
+				"survivorsOfPreviousPeriod\tstatement"
+			],
+			[
+				"previ",
+				"previousPeriodSurvivors\tstatement"
+			],
+			[
+				"nextPErio",
+				"nextPeriodIncumbentFirms\tstatement"
+			],
+			[
+				"potentia",
+				"potentialEntrants\tstatement"
+			],
+			[
+				"incumbent",
+				"incumbentFirms\tstatement"
+			],
+			[
+				"acti",
+				"activeIncumbentFirms\tstatement"
+			],
+			[
+				"class",
+				"classmethod\tclass"
+			],
+			[
+				"Number",
+				"NumberOfPeriods\tstatement"
+			],
+			[
+				"exit",
+				"exitingFirms\tstatement"
+			],
+			[
+				"ente",
+				"enteringFirms\tstatement"
+			],
+			[
+				"Firm",
+				"FirmStatus\tclass"
+			],
+			[
+				"outs",
+				"outsiderFirms"
+			],
+			[
+				"e",
+				"exitingFirms"
+			],
+			[
+				"decide",
+				"decideIfLeaves\tfunction"
+			],
+			[
+				"deci",
+				"decideIfEnters\tfunction"
+			],
+			[
+				"descri",
+				"describeActiveFirms\tfunction"
+			],
+			[
+				"p",
+				"processPeriod\tfunction"
+			],
+			[
+				"getExp",
+				"getExpProfits"
+			],
+			[
+				"getEx",
+				"getExpectedEquilibriumPrice\tfunction"
+			],
+			[
+				"cu",
+				"currentSumOfMarginalCosts\tstatement"
+			],
+			[
+				"firms",
+				"activeFirms\tstatement"
+			],
+			[
+				"getEqui",
+				"getEquilibriumOutputRate\tfunction"
+			],
+			[
+				"Fi",
+				"FixedCost\tstatement"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "labourmarket.py",
+			"settings":
+			{
+				"buffer_size": 4718,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/LaTeXing/LaTeX.sublime-build",
+					""
+				],
+				[
+					"Packages/LaTeXing/LaTeX.sublime-build",
+					"Clean up Files"
+				]
+			],
+			[
+				"Packages/LaTeXing/LaTeX.sublime-build",
+				""
+			]
+		],
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				]
+			],
+			[
+				"Packages/Python/Python.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 67.0,
+		"last_filter": "enable linting",
+		"selected_items":
+		[
+			[
+				"enable linting",
+				"Anaconda: Enable linting on this file"
+			],
+			[
+				"disable linting",
+				"Anaconda: Disable linting on this file"
+			],
+			[
+				"push",
+				"git: push"
+			],
+			[
+				"stage",
+				"git: quick stage"
+			],
+			[
+				"stack",
+				"Automatic Backups: Step backward in history"
+			],
+			[
+				"quick s",
+				"git: quick stage"
+			],
+			[
+				"qui",
+				"git: quick stage"
+			],
+			[
+				"STAGE",
+				"git: quick stage"
+			],
+			[
+				"git stage",
+				"git: quick stage"
+			],
+			[
+				"pull",
+				"git: pull"
+			],
+			[
+				"GIT STAGE",
+				"git: quick stage"
+			],
+			[
+				"comit",
+				"git: commit"
+			],
+			[
+				"git pull",
+				"git: pull"
+			],
+			[
+				"status",
+				"git: status"
+			],
+			[
+				"pus",
+				"git: push"
+			],
+			[
+				"git status",
+				"git: status"
+			],
+			[
+				"git",
+				"git: rebase"
+			],
+			[
+				"git reset",
+				"git: reset"
+			],
+			[
+				"commit",
+				"git: quick commit"
+			],
+			[
+				"reset",
+				"git: reset"
+			],
+			[
+				"anaconda",
+				"Anaconda: Enable linting on this file"
+			],
+			[
+				"show all",
+				"SublimeLinter: Show All Errors"
+			],
+			[
+				"nex",
+				"Anaconda: Next lint error"
+			],
+			[
+				"next",
+				"SublimeLinter: Next Error"
+			],
+			[
+				"next error",
+				"SublimeLinter: Next Error"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"git ",
+				"git: remote remove"
+			],
+			[
+				"git igno",
+				"git: ignore current file"
+			],
+			[
+				"quick st",
+				"git: quick stage"
+			],
+			[
+				"ST",
+				"git: quick stage"
+			],
+			[
+				"pu",
+				"git: push"
+			],
+			[
+				"stage and",
+				"git: quick stage current file and commit"
+			],
+			[
+				"git:stage",
+				"git: quick stage"
+			],
+			[
+				"git:qui",
+				"git: quick commit"
+			],
+			[
+				"git:push",
+				"git: push"
+			],
+			[
+				"git: commit",
+				"git: quick commit"
+			],
+			[
+				"gitbut",
+				"github: create pull request"
+			],
+			[
+				"git:",
+				"git: commit"
+			],
+			[
+				"git: ",
+				"github: open repo"
+			],
+			[
+				"git: quick s",
+				"git: quick stage current file and commit"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"pac",
+				"Package Control: Remove Package"
+			],
+			[
+				"package control",
+				"Package Control: List Packages"
+			],
+			[
+				"build",
+				"Build: Custom Quick Build"
+			],
+			[
+				"package",
+				"Package Control: Install Package"
+			],
+			[
+				"Package control: inst",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 512.0
+	},
+	"console":
+	{
+		"height": 126.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/jdimas/GitHub/ABMNK"
+	],
+	"file_history":
+	[
+		"/Users/jdimas/GitHub/ABMNK/data/scenario5/ABMNK.2017-11-22T11h19m47s.Scenario(5).DEBUG.log",
+		"/Users/jdimas/GitHub/ABMNK/data/ABMNK.2017-11-22T10h53m19s.Scenario(5).INFO.log",
+		"/Users/jdimas/GitHub/ABMNK/data/ABMNK.2017-11-21T12h12m05s.Scenario(1).GranularData.csv",
+		"/Users/jdimas/GitHub/ABMNK/data/ABMNK.2017-11-21T12h12m05s.Scenario(1).AggregateStatistics.csv",
+		"/Users/jdimas/GitHub/ACEModel/model/description.py",
+		"/Users/jdimas/Downloads/nonstationary_simulations.prg",
+		"/Users/jdimas/Google Drive/test.txt",
+		"/Users/jdimas/Google Drive/Estudo/M2 Financial Economics/Cursos/IMF Macroeconomc Forecasting/Module 3/Module3_data/module3_data_Identifying_ARMA.csv",
+		"/Users/jdimas/GitHub/ABMNK/simulation.py",
+		"/Users/jdimas/Downloads/Utilitários/VM Windows 10/IEuser password.txt",
+		"/Users/jdimas/GitHub/ACEModel/model/parameters.py",
+		"/Users/jdimas/GitHub/ACEModel/simulation.py",
+		"/Users/jdimas/GitHub/ACEModel/model/timeseries_data.py",
+		"/Users/jdimas/GitHub/QMF/MODIFIED cointegration_trading_vansteenberghe.py",
+		"/Users/jdimas/GitHub/ACEModel/model/firm.py",
+		"/Users/jdimas/Movies/Battlestar Galactica/2ª TEMPORADA COMPLETA/Battlestar Galactica S02E11 Resurrection Ship (Part 1).srt",
+		"/Users/jdimas/Movies/Battlestar Galactica/2ª TEMPORADA COMPLETA/Battlestar_Galactica_-_S02E11 (DESSINCRONIZADA).srt",
+		"/Users/jdimas/Movies/Battlestar Galactica/2ª TEMPORADA COMPLETA/Battlestar_Galactica_-_S02E11.srt",
+		"/Users/jdimas/GitHub/ACEModel/model/industry.py",
+		"/Users/jdimas/Downloads/Apresentação sem título.txt",
+		"/Volumes/Stellar Phoenix Mac Data Recovery 6/serial.txt",
+		"/Users/jdimas/Documents/ACEModel/model/parameters.py",
+		"/Users/jdimas/Documents/ACEModel/simulation.py",
+		"/Users/jdimas/Documents/ACEModel/.gitignore",
+		"/Users/jdimas/GitHub/ACEModel/model/util/math.py",
+		"/Users/jdimas/GitHub/ACEModel/model/exogenous_effects.py",
+		"/Users/jdimas/GitHub/ACEModel/model/technology.py",
+		"/Users/jdimas/GitHub/LaTeX/MasterThesis/Sections/log_of_period_1000.tex",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-05-22T18h14m54s.TRACE.log",
+		"/Users/jdimas/GitHub/ACEModel/model/demand.py",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-05-14T18h59m05s.TRACE.log",
+		"/Users/jdimas/GitHub/ACEModel/UpdateRunCommit.sh",
+		"/Users/jdimas/GitHub/ACEModel/UpdateRunCommitShutdown.sh",
+		"/Users/jdimas/GitHub/ACEModel/model/util/export_to_csv.py",
+		"/Users/jdimas/GitHub/ACEModel/model/cycle_type.py",
+		"/Users/jdimas/GitHub/ACEModel/tests/test_firm.py",
+		"/Users/jdimas/GitHub/ACEModel/model/crosssectional_data.py",
+		"/Users/jdimas/GitHub/ACEModel/tests/test_industry.py",
+		"/Users/jdimas/GitHub/ACEModel/tests/test_demand.py",
+		"/Users/jdimas/GitHub/ACEModel/tests/test_technology.py",
+		"/Users/jdimas/GitHub/ACEModel/model/util/combinatorics.py",
+		"/Users/jdimas/GitHub/ACEModel/tests/test_random.py",
+		"/Users/jdimas/GitHub/ACEModel/model/util/random.py",
+		"/Users/jdimas/GitHub/ACEModel/model/util/logger.py",
+		"/Users/jdimas/GitHub/ACEModel/teste.py",
+		"/Users/jdimas/GitHub/ACEModel/model/shocks.py",
+		"/Users/jdimas/Library/Application Support/Alfred 3/Alfred.alfredpreferences/workflows/user.workflow.06A83327-DFCF-42E1-9293-437FF21C4979/info.plist",
+		"/Users/jdimas/Downloads/iCalendar.ics",
+		"/Users/jdimas/Documents/ProgramasRFB/IRPF2017/TryLock2017.txt",
+		"/Users/jdimas/GitHub/ACEModel/model/test.py",
+		"/Users/jdimas/GitHub/ACEModel/model/panel_data.py",
+		"/Users/jdimas/GitHub/ACEModel/model/business_cycles.py",
+		"/Users/jdimas/GitHub/ACEModel/data/MeanMktSize32/ACEModel.2017-04-19T13h49m07s.params.txt",
+		"/Users/jdimas/GitHub/ACEModel/UploadResults.sh",
+		"/Users/jdimas/GitHub/ACEModel/model/aggregate_data.py",
+		"/Users/jdimas/GitHub/ACEModel/model/util/__init__.py",
+		"/Users/jdimas/GitHub/ACEModel/model/__init__.py",
+		"/Users/jdimas/GitHub/ACEModel/tests/test_combinatorics.py",
+		"/Users/jdimas/GitHub/ACEModel/data/Chapter 4/500 replications/DIV.gph",
+		"/Users/jdimas/GitHub/ACEModel/WaitingSemaphore.py",
+		"/Users/jdimas/GitHub/ACEModel/Parameters.py",
+		"/Users/jdimas/GitHub/ACEModel/Logger.py",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-30T21h05m06s.INFO.log",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-30T20h22m51s.INFO.log",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-30T16h45m56s.INFO.log",
+		"/Users/jdimas/GitHub/ACEModel/ExportToCSV.py",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-30T15h29m59s.INFO.log",
+		"/Users/jdimas/GitHub/ACEModel/Description.py",
+		"/Users/jdimas/GitHub/ACEModel/Firm.py",
+		"/Users/jdimas/GitHub/ACEModel/BusinessCycles.py",
+		"/Users/jdimas/GitHub/ACEModel/Technology.py",
+		"/Users/jdimas/GitHub/ACEModel/Shocks.py",
+		"/Users/jdimas/GitHub/ACEModel/Industry.py",
+		"/Users/jdimas/GitHub/ACEModel/Simulation.py",
+		"/Users/jdimas/GitHub/ACEModel/.gitignore",
+		"/Users/jdimas/GitHub/ACEModel/data/Validating means of 5 simulations.xlsx",
+		"/Users/jdimas/GitHub/ACEModel/AggregateData.py",
+		"/Users/jdimas/GitHub/ACEModel/MultiAggregateData.py",
+		"/Users/jdimas/GitHub/ACEModel/Demand.py",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-24T15h01m22s.DETAILED.log",
+		"/Users/jdimas/GitHub/ACEModel/Atomic.py",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-24T14h56m14s.AGGREGATE.log",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-24T14h57m10s.AGGREGATE.log",
+		"/Users/jdimas/GitHub/ACEModel/AtomicSum.py",
+		"/Users/jdimas/GitHub/ACEModel/AtomicCounter.py",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-23T18h42m46s.AGGREGATE.log",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-23T18h37m42s.AGGREGATE.log",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-23T18h37m42s.DETAILED.log",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-23T18h30m07s.AGGREGATE.log",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-23T18h30m07s.DETAILED.log",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-22T16h29m05s.INFO.log",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-21T19h39m59s.INFO.log",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-21T17h05m07s.INFO.log",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-21T17h05m07s.AGGREGATE.log",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-21T17h05m07s.DETAILED.log",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-20T19h35m43s.DETAILED.log",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-21T16h10m48s.DETAILED.log",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-21T16h05m51s.DETAILED.log",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-20T17h36m04s.DETAILED.log",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-20T17h39m32s.DETAILED.log",
+		"/Users/jdimas/GitHub/ACEModel/untitled.py",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-19T18h36m32s.AGGREGATE.log",
+		"/Users/jdimas/GitHub/ACEModel/data/ACEModel.2017-03-19T18h36m32s.INFO.log",
+		"/Users/jdimas/GitHub/ACEModel/UpdateAndRun.sh",
+		"/Users/jdimas/GitHub/ACEModel/PerformanceTests.py",
+		"/Users/jdimas/Google Drive/PSME/Material/Thesis/ACEModel/Testes.py",
+		"/Users/jdimas/Google Drive/PSME/Material/Thesis/ACEModel/ExportToDTA.py",
+		"/Users/jdimas/Google Drive/PSME/Material/Thesis/ACEModel/Parameters.py",
+		"/Users/jdimas/Google Drive/PSME/Material/Thesis/ACEModel/Technology.py",
+		"/Users/jdimas/Google Drive/PSME/Material/Thesis/ACEModel/Logger.py",
+		"/Users/jdimas/Google Drive/PSME/Material/Thesis/ACEModel/AggregateData.py",
+		"/Users/jdimas/Google Drive/PSME/Material/Thesis/ACEModel/ExportToCSV.py",
+		"/Users/jdimas/Google Drive/PSME/Material/Thesis/ACEModel/Industry.py",
+		"/Users/jdimas/Google Drive/PSME/Material/Thesis/ACEModel/Shocks.py",
+		"/Users/jdimas/Google Drive/PSME/Material/Thesis/ACEModel/Firm.py",
+		"/Users/jdimas/Google Drive/PSME/Material/Thesis/ACEModel/Demand.py",
+		"/Users/jdimas/Google Drive/PSME/Material/Thesis/ACEModel/Testes",
+		"/Users/jdimas/Google Drive/PSME/Material/Thesis/ACEModel/DetailedData.py",
+		"/Users/jdimas/Library/Application Support/Sublime Text 3/Packages/Anaconda/Default (OSX).sublime-keymap",
+		"/Users/jdimas/Google Drive/PSME/Material/Thesis/ACEModel/data/ACEModel.2017-03-16T20h21m28s.log",
+		"/Users/jdimas/Library/Application Support/Sublime Text 3/Packages/Local History/settings/LocalHistory.sublime-settings",
+		"/Users/jdimas/Library/Application Support/Sublime Text 3/Packages/User/LocalHistory.sublime-settings",
+		"/Users/jdimas/Library/Application Support/Sublime Text 3/Packages/User/Automatic Backups.sublime-settings",
+		"/Users/jdimas/Library/Application Support/Sublime Text 3/Packages/Automatic Backups/Automatic Backups.sublime-settings",
+		"/Users/jdimas/Library/Application Support/Sublime Text 3/Packages/Automatic Backups/Default (OSX).sublime-keymap",
+		"/Users/jdimas/Library/Application Support/Sublime Text 3/Packages/Pretty JSON/Pretty JSON.sublime-settings",
+		"/Users/jdimas/Google Drive/PSME/Material/Thesis/ACEModel/data/ACEModel.2017-03-16T15h33m19s.log",
+		"/Users/jdimas/Google Drive/PSME/Material/Thesis/ACEModel/ACEModel.sublime-project"
+	],
+	"find":
+	{
+		"height": 27.0
+	},
+	"find_in_files":
+	{
+		"height": 101.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "labourmarket.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4718,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1751,
+								1751
+							]
+						],
+						"settings":
+						{
+							"auto_complete_triggers":
+							[
+								{
+									"characters": ".",
+									"selector": "source.python - string - comment - constant.numeric"
+								},
+								{
+									"characters": ".",
+									"selector": "source.python - string - constant.numeric"
+								}
+							],
+							"bs_sintax": "python",
+							"buffer_scroll_name": "f6e9bca2",
+							"git_savvy.repo_path": "/Users/jdimas/GitHub/ABMNK",
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 313.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 27.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.GitSavvy":
+	{
+		"height": 112.0
+	},
+	"output.exec":
+	{
+		"height": 221.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.show_commit_info":
+	{
+		"height": 112.0
+	},
+	"pinned_build_system": "Anaconda Python Builder",
+	"project": "ABMNK.sublime-project",
+	"replace":
+	{
+		"height": 50.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 288.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
