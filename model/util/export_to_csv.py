@@ -16,31 +16,29 @@ import csv, os
 class ExportToCSV:
 
     @classmethod
-    def exportAggregateStatistics(cls, data, scenario, timestamp):
+    def exportAggregateStatistics(cls, data, timestamp):
 
         if data is None:
             return
 
-        prefix = "Scenario({:d})".format(scenario)
         suffix = "AggregateStatistics"
 
-        cls.writeFile(data, prefix, suffix, timestamp)
+        cls.writeFile(data, suffix, timestamp)
 
 
     @classmethod
-    def exportGranularData(cls, data, scenario, timestamp):
+    def exportGranularData(cls, data, timestamp):
 
         if data is None:
             return
 
-        prefix = "Scenario({:d})".format(scenario)
         suffix = "GranularData"
 
-        cls.writeFile(data, prefix, suffix, timestamp)
+        cls.writeFile(data, suffix, timestamp)
 
     @classmethod
-    def writeFile(cls, flatData, prefix, suffix, timestamp):
+    def writeFile(cls, flatData, suffix, timestamp):
         THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
-        with open(os.path.join(THIS_FOLDER, "../../data/ABMNK.{}.{}.{}.csv".format(timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss"), prefix, suffix)), "w", newline='') as f:
+        with open(os.path.join(THIS_FOLDER, "../../data/ABMNK.{}.{}.csv".format(timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss"), suffix)), "w", newline='') as f:
             writer = csv.writer(f, dialect='excel')
             writer.writerows(flatData)

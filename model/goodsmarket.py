@@ -32,7 +32,14 @@ class GoodsMarket:
         # However, before we can calculate current inflation (rate of change in goods' price), we need the result of the whole process from the wage bargain until production. Since expected inflation is an input parameter in the wage bargain function, we can use only past values of inflation to form the trend.
         # Furthermore, we can't calculate inflation at t=1 because we need two periods to get the difference in prices. And we can't calculate at t=1 because we still don't have the current price level.
         summation = 0
-        for l in range(1, self.economy.currentPeriod-1):
+        
+
+        if self.economy.currentPeriod <= Parameters.InflationWindowOfObservation:
+            firstObservation = 1
+        else:
+            firstObservation = self.economy.currentPeriod - Parameters.InflationWindowOfObservation + 1
+        
+        for l in range(firstObservation, self.economy.currentPeriod-1):
             pastInflation = (self.pastPrices[l]-self.pastPrices[l-1])/self.pastPrices[l-1]
             summation = summation + Parameters.Ro ** (self.economy.currentPeriod - 2 - l) * pastInflation
 

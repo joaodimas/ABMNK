@@ -14,8 +14,6 @@ Technical information on README.md
 """
 
 from model.parameters import Parameters
-from model.util.logger import Logger
-from model.util.math import Math
 
 class Firm:
 
@@ -53,6 +51,9 @@ class Firm:
         if self.sellingPrice is None:
             self.sellingPrice = (1 + Parameters.Mu) * self.getTotalCost() / ((1 - Parameters.Alpha) * self.getProduction())
 
+        if self.sellingPrice > Parameters.MaximumPricePrecision:
+            raise ValueError("Price is above Python's mathematical precision. Aborting simulation.")
+
         return self.sellingPrice
 
     def getProfitRate(self):
@@ -67,7 +68,12 @@ class Firm:
 
     def getProfitTrend(self):
         summation = 0
-        for l in range(self.economy.currentPeriod-1):
+        if self.economy.currentPeriod <= Parameters.FirmWindowOfObservation:
+            firstObservation = 0
+        else:
+            firstObservation = self.economy.currentPeriod - Parameters.FirmWindowOfObservation
+            
+        for l in range(firstObservation, self.economy.currentPeriod-1):
             summation = summation + Parameters.Ro ** (self.economy.currentPeriod - 1 - l) * self.pastProfits[l] / self.economy.goodsMarket.pastPrices[l]
 
         summation = summation + self.getProfit() / self.economy.goodsMarket.currentPrice

@@ -25,7 +25,7 @@ class Parameters:
         """
 
         cls.Periods = 800 # 800
-        cls.NumberOfHouseholds = 500 # 500
+        cls.NumberOfHouseholds = 100 # 500
 
         cls.InnelasticLabourSupply = 1 # 1
         cls.TechnologyFactor = 1 # 1
@@ -37,13 +37,38 @@ class Parameters:
         cls.NaturalInterestRate = 0 # 0
         cls.NaturalUnemploymentRate = 0 # 0
         cls.InflationTarget = 0.02 # 0.02
+        
+        # Households individual behavior
+        Parameters.setLearningLevel(1)
+        Parameters.Ro = 0.45
+        Parameters.SubstitutionStrategySD = 0.30
+        Parameters.IndexationStrategySD = 0.30
+        
+        # Expectations
+        Parameters.AllHouseholdsSameExpectation = False # Coordination
+        Parameters.NoiseInflationTargetPerceptionSD = 1
+        Parameters.Chi = 0.2 # Credibility of the central bank
+        
+        # Monetary policy parameters
+        Parameters.Phi_inflation = 0.5
+        Parameters.Phi_unemployment = 5
+        
+        # Windows of observation
+        Parameters.FirmWindowOfObservation = 20
+        Parameters.HouseholdsUtilityWindowOfObservation = 20
+        Parameters.InflationWindowOfObservation = 20
 
-        # TODO: Initial values: The paper doesn't explicit these initial values, therefore we are assuming some values that make the model work.
+        # TODO: Initial values: The paper doesn't explicit these initial values, therefore we are assuming.
         cls.InitialPriceLevel = 1
-        cls.InitialLabourDemand = 400
-        cls.InitialMeanIndexationStrategy = 0.3
-        cls.InitialMeanSubstitutionStrategy = 0.3
-        cls.InitialReservationWageRange = [10, 20]
+        cls.InitialLabourDemand = 1
+        cls.InitialMeanIndexationStrategy = 1
+        cls.InitialMeanSubstitutionStrategy = 1
+        cls.InitialReservationWageRange = [1, 1]
+        cls.InitialSavingsBalance = 100
+        
+        cls.MaximumPricePrecision = 9999999999999999999999999999999999999
+        
+        
 
     @classmethod
     def setLearningLevel(cls, level):
@@ -59,3 +84,6 @@ class Parameters:
             # Learning level 2
             cls.ProbImitation = 0.15
             cls.ProbMutation = 0.1
+        elif level == None:
+            cls.ProbImitation = 0
+            cls.ProbMutation = 0

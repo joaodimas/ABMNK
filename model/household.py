@@ -36,13 +36,14 @@ class Household:
         self.reservationWage = None
         self.permanentIncome = None
         self.smoothedUtility = None
+        self.savingsBalance = None
 
         self.indexationStrategy = Parameters.InitialMeanIndexationStrategy
         self.substitutionStrategy = Parameters.InitialMeanSubstitutionStrategy
         self.prevIndexationStrategy = self.indexationStrategy
         self.prevSubstitutionStrategy = self.substitutionStrategy
         self.prevConsumptionShare = 0
-        self.prevSavingsBalance = 0
+        self.prevSavingsBalance = Parameters.InitialSavingsBalance
         self.prevWage = 0
 
     def getReservationWage(self):
@@ -78,14 +79,17 @@ class Household:
     def getConsumptionDemand(self):
         """ Equation (2) """
         if self.consumptionDemand is None:
-            self.consumptionDemand = self.getConsumptionShare() * self.getPermanentIncome()
+            self.consumptionDemand = self.getConsumptionShare() * self.getPermanentIncome()            
+            if self.consumptionDemand < 0:
+                Logger.trace("Household {:d} has a negative demand. Setting it to 0.\nCons. demand: {:.2f}\nSupplied labour: {:.2f}\nRes. wage: {:.2f}\nIndex strat: {:.2f}\nSubs strat: {:.2f}\nPerm. income: {:.2f}\nCurrent income: {:.2f}\nPrev savings balance: {:.2f}", (self.householdId, self.consumptionDemand, self.effectivelySuppliedLabour, self.reservationWage, self.indexationStrategy, self.substitutionStrategy, self.permanentIncome, self.currentIncome, self.prevSavingsBalance), economy=self.economy)
+                self.consumptionDemand = 0
 
         return self.consumptionDemand
 
     def getConsumptionShare(self):
         """ Equation (6) """
         if self.consumptionShare is None:
-            self.consumptionShare = self.prevConsumptionShare - self.substitutionStrategy * (self.economy.centralBank.nominalInterestRate - self.getExpectedInflation() - Parameters.NaturalInterestRate)
+            self.consumptionShare = self.prevConsumptionShare - self.substitutionStrategy * (self.economy.nominalInterestRate - self.getExpectedInflation() - Parameters.NaturalInterestRate)
             if self.consumptionShare > Parameters.MaxConsumptionShare:
                 self.consumptionShare = Parameters.MaxConsumptionShare
             elif self.consumptionShare < Parameters.MinConsumptionShare:
@@ -113,7 +117,7 @@ class Household:
         """ Current income in Nominal terms """
         if self.currentIncome is None:
             pastProfit = self.economy.firm.pastProfits[-1] if self.economy.currentPeriod > 1 else 0
-            self.currentIncome = self.getReservationWage() * self.effectivelySuppliedLabour + pastProfit/len(self.economy.households) + self.prevSavingsBalance * (1 + self.economy.centralBank.prevInterestRate)
+            self.currentIncome = self.getReservationWage() * self.effectivelySuppliedLabour + pastProfit/len(self.economy.households) + self.prevSavingsBalance * (1 + self.economy.prevInterestRate)
             Logger.trace("[Household {:03d}] Current nominal income: {:.2f}", (self.householdId, self.currentIncome), economy=self.economy)
 
         return self.currentIncome
@@ -122,13 +126,20 @@ class Household:
         return Parameters.InnelasticLabourSupply
 
     def getSavingsBalance(self):
-        return self.getCurrentNominalIncome() - self.effectivelyConsumedGoods * self.economy.goodsMarket.currentPrice
+        if self.savingsBalance is None:
+            self.savingsBalance = self.getCurrentNominalIncome() - self.effectivelyConsumedGoods * self.economy.goodsMarket.currentPrice
+            
+        return self.savingsBalance
 
     def getSmoothedUtility(self):
         """ Equation (7) """
         if self.smoothedUtility is None:
             summation = 0
-            for l in range(self.economy.currentPeriod-1):
+            if self.economy.currentPeriod <= Parameters.HouseholdsUtilityWindowOfObservation:
+                firstObservation = 0
+            else:
+                firstObservation = self.economy.currentPeriod - Parameters.HouseholdsUtilityWindowOfObservation
+            for l in range(firstObservation,self.economy.currentPeriod-1):
                 summation = summation + Parameters.Ro**(self.economy.currentPeriod-1-l)*self.pastUtilities[l]
             summation = summation + self.getUtility()
             self.smoothedUtility = (1-Parameters.Ro)*summation
@@ -235,6 +246,7 @@ class Household:
         self.reservationWage = None
         self.permanentIncome = None
         self.smoothedUtility = None
+        self.savingsBalance = None
 
 
         assert len(self.pastEffectivelySuppliedLabour) == self.economy.currentPeriod

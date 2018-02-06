@@ -17,15 +17,12 @@ from model.parameters import Parameters
 from model.resultsdata import ResultsData
 from model.util.export_to_csv import ExportToCSV
 from model.util.logger import Logger
-from model.scenarii.scenarii import Scenarii
-import datetime, os, time, multiprocessing, functools, operator
+import datetime, os, time, multiprocessing, operator
 
 class SystemConfig:
     LogLevel = {"Console": ["DEBUG"], "File":["DEBUG"]} # Set INFO, DEBUG or TRACE for Console and File.
 
-    Scenario = 5 # Corresponds to a module in scenarii folder
-    Experiments = [15] # Corresponds to methods in the chosen scenario.
-    RunsPerExperiment = 1 # Number of independent executions of each experiment.
+    NumberOfSimulations = 1 # Number of independent executions.
 
 def describeModelParameters():
     parameters = {}
@@ -40,71 +37,69 @@ def describeModelParameters():
 
     return desc
 
-def simulate(run, experiment):
+def simulate(simulationNumber):
     try:
-        run = run + 1
         granularResults = []
         runStartTime = time.time()
 
-        Logger.info("Starting run {:d}. Scenario {:d}. Experiment {:d}".format(run, SystemConfig.Scenario, experiment))
+        Logger.info("Starting run {:d}.".format(simulationNumber))
 
         # Create a virtual economy with heterogeneous agents
-        economy = Economy(SystemConfig.Scenario, experiment, run)
+        economy = Economy(simulationNumber)
         for t in range(1,Parameters.Periods+1):
             economy.runCurrentPeriod()
-            if t >= 100 and t % 50 == 0: # Ignore the first 100 executions and collect data every 50 periods afterwards.
+            if t % 10 == 0: # Ignore the first 99 executions and collect data every 10 periods afterwards.
                 granularResults.append(ResultsData.getCurrentPeriodData(economy))
             economy.describeCurrentPeriod()
             economy.nextPeriod()
 
-        Logger.info("Simulation completed in {:.2f} seconds. Scenario {:d}. Experiment {:d}. Run {:d}.", ((time.time() - runStartTime), SystemConfig.Scenario, experiment, run))
+        Logger.info("Simulation completed in {:.2f} seconds. Simulation number: {:d}.", ((time.time() - runStartTime), simulationNumber))
         return granularResults
     except Exception as e:
         Logger.logger.exception("Error")
         raise e
 
+# MAIN EXECUTION THREAD
 if __name__ == '__main__':
 
     try:
         generalTimestamp = datetime.datetime.now()
         granularResults = []
         aggregateStartTime = time.time()
-        Logger.initialize(generalTimestamp, SystemConfig.LogLevel, SystemConfig.Scenario)
+        Logger.initialize(generalTimestamp, SystemConfig.LogLevel)
 
-        # Run each experiment
-        for experiment in SystemConfig.Experiments:
-            Parameters.init()
-            Scenarii.setExperiment(SystemConfig.Scenario, experiment)
+        Parameters.init()
 
-            # Saving parameters to file.
-            parameters = describeModelParameters()
-            Logger.info(parameters)
-            THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
-            with open(os.path.join(THIS_FOLDER, ("./data/ABMNK.{}.Scenario({:d}).Experiment({:d}).params.txt").format(generalTimestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss"), SystemConfig.Scenario, experiment)), "w", newline='') as f:
-                print(parameters, file=f)
+        # Saving parameters to file.
+        parameters = describeModelParameters()
+        Logger.info(parameters)
+        THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(THIS_FOLDER, ("./data/ABMNK.{}.params.txt").format(generalTimestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss"))), "w", newline='') as f:
+            print(parameters, file=f)
 
-            processes = []
-            pool = multiprocessing.Pool(SystemConfig.RunsPerExperiment)
+        processes = []
+        # Start a parallel process to execute each run.
+        #pool = multiprocessing.Pool(SystemConfig.NumberOfSimulations)
+        # Run function simulate in parallel for each independent execution and aggregate results.
+        #listOfResults = pool.imap_unordered(simulate, range(1,SystemConfig.NumberOfSimulations+1)) 
+        listOfResults = []
+        listOfResults.append(simulate(1))
 
-            # Start a parallel process to execute each run.
-            partial_simulate = functools.partial(simulate, experiment=experiment) # Run simulations
-            listOfResults = pool.imap_unordered(partial_simulate, range(SystemConfig.RunsPerExperiment)) # Obtain results
-
-            # Append results
-            for result in listOfResults:
-                granularResults = granularResults + result
+        # Append results
+        for result in listOfResults:
+            granularResults = granularResults + result
 
         # Sort results by Experiment, Run, Period. Then, add header.
         granularResults = [ResultsData.getHeader()] + sorted(granularResults, key=operator.itemgetter(1,2,3))
 
         Logger.info("All simulations completed. Total time {:.2f} seconds.", time.time() - aggregateStartTime)
         Logger.info("Saving granular data...")
-        ExportToCSV.exportGranularData(granularResults, SystemConfig.Scenario, generalTimestamp)
+        ExportToCSV.exportGranularData(granularResults, generalTimestamp)
 
         if len(granularResults) > 2:
             Logger.info("Saving aggregate statistics...")
-            aggregateStatistics = ResultsData.getAggregateStatistics(granularResults, SystemConfig.Scenario)
-            ExportToCSV.exportAggregateStatistics(aggregateStatistics, SystemConfig.Scenario, generalTimestamp)
+            aggregateStatistics = ResultsData.getAggregateStatistics(granularResults)
+            ExportToCSV.exportAggregateStatistics(aggregateStatistics, generalTimestamp)
 
         Logger.info("ALL PROCESSES FINISHED!")
     except Exception as e:
