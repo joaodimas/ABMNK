@@ -26,7 +26,6 @@ class Economy:
     def __init__(self, simulationNumber):
         Logger.trace("Initializing Economy")
         self.simulationNumber = simulationNumber
-        self.nominalInterestRate = 0.5
         self.prevInterestRate = 0
 
         self.currentPeriod = 1
@@ -36,13 +35,16 @@ class Economy:
             household = Household(householdId, self)
             self.households.append(household)
         self.priceLevel = Parameters.InitialPriceLevel
-        # self.centralBank = CentralBank(self)
+        self.centralBank = CentralBank(self)
         self.labourMarket = LabourMarket(self)
         self.goodsMarket = GoodsMarket(self)
         self.firm = Firm(self)
 
         # We are assuming that initially all households choose random strategies based on initial mean values set in Parameters.
         Logger.trace("Households are mutating randomly to define their initial strategies")
+        if Parameters.ProbMutation > 0:
+            for hh in self.households:
+                hh.mutateRandomly()
 
         # Only used if Parameters.AllHouseholdsSameExpectation == True
         self.homogeneousNoiseInflationTarget = None
@@ -50,7 +52,7 @@ class Economy:
     def runCurrentPeriod(self):
         Logger.debug("", economy=self)
         Logger.info("SIMULATING CURRENT PERIOD", economy=self)
-#        self.centralBank.setNominalInterestRate()
+        self.centralBank.setNominalInterestRate()
         self.labourMarket.matchFirmAndWorkers()
         self.goodsMarket.matchFirmAndConsumers()
 
@@ -75,7 +77,6 @@ class Economy:
         self.currentPeriod = self.currentPeriod + 1
         self.homogeneousNoiseInflationTarget = None
         self.prevInterestRate = self.nominalInterestRate
-        #self.nominalInterestRate = None
 
     def getHomogeneousNoiseInflationTarget(self):
         if self.homogeneousNoiseInflationTarget is None:
@@ -84,38 +85,72 @@ class Economy:
         return self.homogeneousNoiseInflationTarget
 
     def describeCurrentPeriod(self):
-        Logger.debug("", economy=self)
-        Logger.debug("RESULTS OF CURRENT PERIOD", economy=self)
-        Logger.debug("----------------------------", economy=self)
-        Logger.debug("Hired workers: {:.2f}",self.labourMarket.aggregateHiredLabour, economy=self)
-        Logger.debug("Unemployed workers: {:.2f}",len(self.households)-self.labourMarket.aggregateHiredLabour, economy=self)
-        Logger.debug("Unemployment rate: {:.2%}",self.labourMarket.getUnemploymentRate(), economy=self)
-        Logger.debug("Production: {:.2f}",self.firm.getProduction(), economy=self)
-        Logger.debug("Goods sold: {:.2f}", self.goodsMarket.aggregateSoldGoods, economy=self)
-        Logger.debug("Excess supply: {:.2f}", self.firm.getProduction()-self.goodsMarket.aggregateSoldGoods, economy=self)        
-        Logger.debug("Price: {:.2f}",self.goodsMarket.currentPrice, economy=self)
-        Logger.debug("Inflation: {:.2%}",self.goodsMarket.getCurrentInflation(), economy=self)
-        Logger.debug("Mean expected inflation: {:.2%}",statistics.mean([hh.getExpectedInflation() for hh in self.households]), economy=self)
-#        Logger.debug("Std dev expected inflation: {:.2f}",statistics.stdev([hh.getExpectedInflation() for hh in self.households]), economy=self)
-        Logger.debug("Interest rate: {:.2%}",self.nominalInterestRate, economy=self)
-        Logger.debug("Total cost: {:.2f}",self.firm.getTotalCost(), economy=self)
-        Logger.debug("Total revenue: {:.2f}",self.goodsMarket.aggregateSoldGoods*self.goodsMarket.currentPrice, economy=self)
-        Logger.debug("Total profit (nominal): {:.2f}",self.firm.getProfit(), economy=self)
-        Logger.debug("Total profit (real): {:.2f}",self.firm.getProfit()/self.goodsMarket.currentPrice, economy=self)
-        Logger.debug("Wage rate (nominal): {:.2f}",self.labourMarket.getNominalWageRate(), economy=self)
-        Logger.debug("Wage rate (real): {:.2f}",self.labourMarket.getRealWageRate(), economy=self)
-        Logger.debug("Mean perm. income (real): {:.2f}", statistics.mean([hh.getPermanentIncome() for hh in self.households]), economy=self)        
-        Logger.debug("Mean current income (real): {:.2f}", statistics.mean([hh.getCurrentNominalIncome()/self.goodsMarket.currentPrice for hh in self.households]), economy=self)                
-        Logger.debug("Mean savings (real): {:.2f}", statistics.mean([hh.getSavingsBalance()/self.goodsMarket.currentPrice for hh in self.households]), economy=self)
-        Logger.debug("Mean index. strat: {:.2f}", statistics.mean([hh.indexationStrategy for hh in self.households]), economy=self)
-        Logger.debug("Mean subs. strat: {:.2f}", statistics.mean([hh.substitutionStrategy for hh in self.households]), economy=self)
-        Logger.debug("Mean cons. share: {:.2f}", statistics.mean([hh.getConsumptionShare() for hh in self.households]), economy=self) 
-        Logger.debug("Mean cons. demand: {:.2f}", statistics.mean([hh.getConsumptionDemand() for hh in self.households]), economy=self)         
-#        Logger.debug("Std dev perm. income (real): {:.2f}", statistics.stdev([hh.getPermanentIncome() for hh in self.households]), economy=self)        
-#        Logger.debug("Std dev current income (real): {:.2f}", statistics.stdev([hh.getCurrentNominalIncome()/self.goodsMarket.currentPrice for hh in self.households]), economy=self)                
-#        Logger.debug("Std dev savings (real): {:.2f}", statistics.stdev([hh.getSavingsBalance()/self.goodsMarket.currentPrice for hh in self.households]), economy=self)
-#        Logger.debug("Std dev index. strat: {:.2f}", statistics.stdev([hh.indexationStrategy for hh in self.households]), economy=self)        
-#        Logger.debug("Std dev subs. strat: {:.2f}", statistics.stdev([hh.substitutionStrategy for hh in self.households]), economy=self)        
-#        Logger.debug("Std dev cons. share: {:.2f}", statistics.stdev([hh.getConsumptionShare() for hh in self.households]), economy=self) 
-#        Logger.debug("Std dev cons. demand: {:.2f}", statistics.stdev([hh.getConsumptionDemand() for hh in self.households]), economy=self)         
-        Logger.debug("----------------------------", economy=self)
+        
+        Logger.debug(""" 
+            RESULTS OF CURRENT PERIOD
+            ----------------------------
+            Hired workers: {:.2f}
+            Unemployed workers: {:.2f}
+            Unemployment rate: {:.2%}
+            Production: {:.2f}
+            Goods sold: {:.2f}
+            Excess supply: {:.2f}
+            Price: {:.2f}
+            Inflation: {:.2%}
+            Mean expected inflation: {:.2%}
+            Std dev expected inflation: {:.2f}
+            Interest rate: {:.2%}
+            Total cost: {:.2f}
+            Total revenue: {:.2f}
+            Total profit (nominal): {:.2f}
+            Total profit (real): {:.2f}
+            Wage rate (nominal): {:.2f}
+            Wage rate (real): {:.2f}
+            Mean perm. income (real): {:.2f}
+            Mean current income (real): {:.2f}
+            Mean savings (real): {:.2f}
+            Mean index. strat: {:.2f}
+            Mean subs. strat: {:.2f}
+            Mean cons. share: {:.2f}
+            Mean cons. demand: {:.2f}
+            Std dev perm. income (real): {:.2f}
+            Std dev current income (real): {:.2f}
+            Std dev savings (real): {:.2f}
+            Std dev index. strat: {:.2f}
+            Std dev subs. strat: {:.2f}
+            Std dev cons. share: {:.2f}
+            Std dev cons. demand: {:.2f}
+            ----------------------------
+        """, (
+                self.labourMarket.aggregateHiredLabour,
+                len(self.households)-self.labourMarket.aggregateHiredLabour,
+                self.labourMarket.getUnemploymentRate(),
+                self.firm.getProduction(),
+                self.goodsMarket.aggregateSoldGoods,
+                self.firm.getProduction()-self.goodsMarket.aggregateSoldGoods,
+                self.goodsMarket.currentPrice,
+                self.goodsMarket.getCurrentInflation(),
+                statistics.mean([hh.getExpectedInflation() for hh in self.households]),
+                statistics.stdev([hh.getExpectedInflation() for hh in self.households]),
+                self.nominalInterestRate,
+                self.firm.getTotalCost(),
+                self.goodsMarket.aggregateSoldGoods*self.goodsMarket.currentPrice,
+                self.firm.getProfit(),
+                self.firm.getProfit()/self.goodsMarket.currentPrice,
+                self.labourMarket.getNominalWageRate(),
+                self.labourMarket.getRealWageRate(),
+                statistics.mean([hh.getPermanentIncome() for hh in self.households]),
+                statistics.mean([hh.getCurrentNominalIncome()/self.goodsMarket.currentPrice for hh in self.households]),
+                statistics.mean([hh.getSavingsBalance()/self.goodsMarket.currentPrice for hh in self.households]),
+                statistics.mean([hh.indexationStrategy for hh in self.households]),
+                statistics.mean([hh.substitutionStrategy for hh in self.households]),
+                statistics.mean([hh.getConsumptionShare() for hh in self.households]),
+                statistics.mean([hh.getConsumptionDemand() for hh in self.households]),
+                statistics.stdev([hh.getPermanentIncome() for hh in self.households]),
+                statistics.stdev([hh.getCurrentNominalIncome()/self.goodsMarket.currentPrice for hh in self.households]),
+                statistics.stdev([hh.getSavingsBalance()/self.goodsMarket.currentPrice for hh in self.households]),
+                statistics.stdev([hh.indexationStrategy for hh in self.households]),
+                statistics.stdev([hh.substitutionStrategy for hh in self.households]),
+                statistics.stdev([hh.getConsumptionShare() for hh in self.households]),
+                statistics.stdev([hh.getConsumptionDemand() for hh in self.households])
+            ), economy=self)
