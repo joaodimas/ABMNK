@@ -51,7 +51,7 @@ class Firm:
         if self.sellingPrice is None:
             self.sellingPrice = (1 + Parameters.Mu) * self.getTotalCost() / ((1 - Parameters.Alpha) * self.getProduction())
 
-        if self.sellingPrice > Parameters.MaximumPricePrecision:
+        if self.sellingPrice > Parameters.MaximumPrecision:
             raise ValueError("Price is above Python's mathematical precision. Aborting simulation.")
 
         return self.sellingPrice

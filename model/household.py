@@ -100,7 +100,7 @@ class Household:
     def getPermanentIncome(self):
         """ Permanent income in Real terms """
         if self.permanentIncome is None:
-            if self.economy.currentPeriod == 1: # TODO: This is not explicit in the paper. We are assuming.
+            if self.economy.currentPeriod == 1: # This is not explicit in the paper. We are assuming.
                 self.permanentIncome = self.getCurrentNominalIncome() / self.economy.goodsMarket.currentPrice
             else:
                 """ Equation (3) """
@@ -128,6 +128,8 @@ class Household:
     def getSavingsBalance(self):
         if self.savingsBalance is None:
             self.savingsBalance = self.getCurrentNominalIncome() - self.effectivelyConsumedGoods * self.economy.goodsMarket.currentPrice
+            if self.savingsBalance > Parameters.MaximumPrecision:
+                raise ValueError("Nominal savings balance is above Python's mathematical precision. Aborting simulation.")
             
         return self.savingsBalance
 

@@ -25,7 +25,7 @@ class Parameters:
         """
 
         cls.Periods = 800 # 800
-        cls.NumberOfHouseholds = 1 # 500
+        cls.NumberOfHouseholds = 100 # 500
 
         cls.InnelasticLabourSupply = 1 # 1
         cls.TechnologyFactor = 1 # 1
@@ -33,41 +33,41 @@ class Parameters:
         cls.Mu = 0.1 # 0.1
         cls.Epsilon = 0.01 # 0.01
         cls.MaxConsumptionShare = 1.5 # 1.5
-        cls.MinConsumptionShare = 0.1 # 0.5
+        cls.MinConsumptionShare = 0.5 # 0.5
         cls.NaturalInterestRate = 0 # 0
         cls.NaturalUnemploymentRate = 0 # 0
         cls.InflationTarget = 0.02 # 0.02
         
         # Households individual behavior
-        Parameters.setLearningLevel(None)
+        Parameters.setLearningLevel(1)
         Parameters.Ro = 0.45
         Parameters.SubstitutionStrategySD = 0.30
         Parameters.IndexationStrategySD = 0.30
         
         # Expectations
         Parameters.AllHouseholdsSameExpectation = False # Coordination
-        Parameters.NoiseInflationTargetPerceptionSD = 0.5 # Noise in the communication of inflation target by the CB
-        Parameters.Chi = 1 # Credibility of the central bank
+        Parameters.NoiseInflationTargetPerceptionSD = 0.2 # Noise in the communication of inflation target by the CB
+        Parameters.Chi = 0.7 # Credibility of the central bank
         
         # Monetary policy parameters
-        Parameters.Phi_inflation = 0.5
-        Parameters.Phi_unemployment = 5
+        Parameters.Phi_inflation = 1.2
+        Parameters.Phi_unemployment = 0.5
         
         # Windows of observation
         Parameters.FirmWindowOfObservation = 20
         Parameters.HouseholdsUtilityWindowOfObservation = 20
-        Parameters.InflationWindowOfObservation = 800
+        Parameters.InflationWindowOfObservation = 20
 
         # Initial values: The paper doesn't explicit these initial values, therefore we are assuming them.
         cls.InitialPriceLevel = 1
-        cls.InitialLabourDemand = 1
+        cls.InitialLabourDemand = 80
         cls.InitialMeanIndexationStrategy = 1
-        cls.InitialMeanSubstitutionStrategy = 5
+        cls.InitialMeanSubstitutionStrategy = 1
         cls.InitialReservationWageRange = [1, 1]
         cls.InitialSavingsBalance = 0
         
-        # Maximum price for which Python keeps the mathematical precision. After that, abort the simulation.
-        cls.MaximumPricePrecision = 1e40
+        # Maximum number for which Python keeps the mathematical precision. After that, abort the simulation.
+        cls.MaximumPrecision = 1e100
         
         
 

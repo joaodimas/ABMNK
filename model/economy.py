@@ -43,8 +43,6 @@ class Economy:
 
         # We are assuming that initially all households choose random strategies based on initial mean values set in Parameters.
         Logger.trace("Households are mutating randomly to define their initial strategies")
-        for hh in self.households:
-            hh.mutateRandomly()
 
         # Only used if Parameters.AllHouseholdsSameExpectation == True
         self.homogeneousNoiseInflationTarget = None
