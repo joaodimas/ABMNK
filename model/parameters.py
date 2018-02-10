@@ -46,7 +46,7 @@ class Parameters:
         
         # Expectations
         Parameters.AllHouseholdsSameExpectation = False # Coordination
-        Parameters.NoiseInflationTargetPerceptionSD = 1
+        Parameters.NoiseInflationTargetPerceptionSD = 1 # Noise in the communication of inflation target by the CB
         Parameters.Chi = 0.2 # Credibility of the central bank
         
         # Monetary policy parameters
@@ -58,7 +58,7 @@ class Parameters:
         Parameters.HouseholdsUtilityWindowOfObservation = 20
         Parameters.InflationWindowOfObservation = 20
 
-        # TODO: Initial values: The paper doesn't explicit these initial values, therefore we are assuming.
+        # TODO: Initial values: The paper doesn't explicit these initial values, therefore we are assuming them.
         cls.InitialPriceLevel = 1
         cls.InitialLabourDemand = 1
         cls.InitialMeanIndexationStrategy = 1
@@ -66,7 +66,8 @@ class Parameters:
         cls.InitialReservationWageRange = [1, 1]
         cls.InitialSavingsBalance = 100
         
-        cls.MaximumPricePrecision = 9999999999999999999999999999999999999
+        # Maximum price for which Python keeps the mathematical precision. After that, abort the simulation.
+        cls.MaximumPricePrecision = 1e10
         
         
 

@@ -22,7 +22,7 @@ import datetime, os, time, multiprocessing, operator
 class SystemConfig:
     LogLevel = {"Console": ["DEBUG"], "File":["DEBUG"]} # Set INFO, DEBUG or TRACE for Console and File.
 
-    NumberOfSimulations = 1 # Number of independent executions.
+    NumberOfSimulations = 10 # Number of independent executions.
 
 def describeModelParameters():
     parameters = {}
@@ -55,6 +55,9 @@ def simulate(simulationNumber):
 
         Logger.info("Simulation completed in {:.2f} seconds. Simulation number: {:d}.", ((time.time() - runStartTime), simulationNumber))
         return granularResults
+    except ValueError as e:
+        Logger.logger.exception(e)
+        return []
     except Exception as e:
         Logger.logger.exception("Error")
         raise e
@@ -79,18 +82,19 @@ if __name__ == '__main__':
 
         processes = []
         # Start a parallel process to execute each run.
-        #pool = multiprocessing.Pool(SystemConfig.NumberOfSimulations)
+        pool = multiprocessing.Pool(SystemConfig.NumberOfSimulations)
         # Run function simulate in parallel for each independent execution and aggregate results.
-        #listOfResults = pool.imap_unordered(simulate, range(1,SystemConfig.NumberOfSimulations+1)) 
-        listOfResults = []
-        listOfResults.append(simulate(1))
+        listOfResults = pool.imap_unordered(simulate, range(1,SystemConfig.NumberOfSimulations+1)) 
+#        listOfResults = []
+#        listOfResults.append(simulate(1))
 
         # Append results
         for result in listOfResults:
-            granularResults = granularResults + result
+            if len(result) > 0:
+                granularResults = granularResults + result
 
-        # Sort results by Experiment, Run, Period. Then, add header.
-        granularResults = [ResultsData.getHeader()] + sorted(granularResults, key=operator.itemgetter(1,2,3))
+        # Sort results by Run, Period. Then, add header.
+        granularResults = [ResultsData.getHeader()] + sorted(granularResults, key=operator.itemgetter(0,1))
 
         Logger.info("All simulations completed. Total time {:.2f} seconds.", time.time() - aggregateStartTime)
         Logger.info("Saving granular data...")
