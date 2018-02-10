@@ -49,7 +49,7 @@ class Household:
     def getReservationWage(self):
         if self.reservationWage is None:
             if self.economy.currentPeriod == 1:
-                # TODO: Not explicit in the model. We are assuming a random initial reservation wage.
+                # Not explicit in the model. We are assuming a random initial reservation wage.
                 self.reservationWage = random.randint(Parameters.InitialReservationWageRange[0], Parameters.InitialReservationWageRange[1])
             else:
                 """ Equation (1) """

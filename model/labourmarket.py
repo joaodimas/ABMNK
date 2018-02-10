@@ -47,7 +47,7 @@ class LabourMarket:
     def matchFirmAndWorkers(self):
         Logger.trace("[Labour market] Matching firms and workers", economy=self.economy)
 
-        # TODO: Assumption: hired labour can be a decimal number for any worker.
+        # Assumption: hired labour can be a decimal number for any worker.
 
         """ Equation (19) """
         demandedLabour = self.economy.firm.labourDemand

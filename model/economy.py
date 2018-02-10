@@ -26,7 +26,7 @@ class Economy:
     def __init__(self, simulationNumber):
         Logger.trace("Initializing Economy")
         self.simulationNumber = simulationNumber
-        self.nominalInterestRate = 0
+        self.nominalInterestRate = 0.3
         self.prevInterestRate = 0
 
         self.currentPeriod = 1
@@ -36,12 +36,12 @@ class Economy:
             household = Household(householdId, self)
             self.households.append(household)
         self.priceLevel = Parameters.InitialPriceLevel
-        self.centralBank = CentralBank(self)
+        # self.centralBank = CentralBank(self)
         self.labourMarket = LabourMarket(self)
         self.goodsMarket = GoodsMarket(self)
         self.firm = Firm(self)
 
-        # TODO: We are assuming that initially all households choose random strategies based on initial mean values set in Parameters.
+        # We are assuming that initially all households choose random strategies based on initial mean values set in Parameters.
         Logger.trace("Households are mutating randomly to define their initial strategies")
         for hh in self.households:
             hh.mutateRandomly()
@@ -52,7 +52,7 @@ class Economy:
     def runCurrentPeriod(self):
         Logger.debug("", economy=self)
         Logger.info("SIMULATING CURRENT PERIOD", economy=self)
-        self.centralBank.setNominalInterestRate()
+#        self.centralBank.setNominalInterestRate()
         self.labourMarket.matchFirmAndWorkers()
         self.goodsMarket.matchFirmAndConsumers()
 
@@ -77,7 +77,7 @@ class Economy:
         self.currentPeriod = self.currentPeriod + 1
         self.homogeneousNoiseInflationTarget = None
         self.prevInterestRate = self.nominalInterestRate
-        self.nominalInterestRate = None
+        #self.nominalInterestRate = None
 
     def getHomogeneousNoiseInflationTarget(self):
         if self.homogeneousNoiseInflationTarget is None:
@@ -97,6 +97,8 @@ class Economy:
         Logger.debug("Excess supply: {:.2f}", self.firm.getProduction()-self.goodsMarket.aggregateSoldGoods, economy=self)        
         Logger.debug("Price: {:.2f}",self.goodsMarket.currentPrice, economy=self)
         Logger.debug("Inflation: {:.2%}",self.goodsMarket.getCurrentInflation(), economy=self)
+        Logger.debug("Mean expected inflation: {:.2%}",statistics.mean([hh.getExpectedInflation() for hh in self.households]), economy=self)
+        Logger.debug("Std dev expected inflation: {:.2f}",statistics.stdev([hh.getExpectedInflation() for hh in self.households]), economy=self)
         Logger.debug("Interest rate: {:.2%}",self.nominalInterestRate, economy=self)
         Logger.debug("Total cost: {:.2f}",self.firm.getTotalCost(), economy=self)
         Logger.debug("Total revenue: {:.2f}",self.goodsMarket.aggregateSoldGoods*self.goodsMarket.currentPrice, economy=self)

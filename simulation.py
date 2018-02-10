@@ -22,7 +22,7 @@ import datetime, os, time, multiprocessing, operator
 class SystemConfig:
     LogLevel = {"Console": ["DEBUG"], "File":["DEBUG"]} # Set INFO, DEBUG or TRACE for Console and File.
 
-    NumberOfSimulations = 10 # Number of independent executions.
+    NumberOfSimulations = 1 # Number of independent executions.
 
 def describeModelParameters():
     parameters = {}
@@ -57,7 +57,7 @@ def simulate(simulationNumber):
         return granularResults
     except ValueError as e:
         Logger.logger.exception(e)
-        return []
+        raise e
     except Exception as e:
         Logger.logger.exception("Error")
         raise e

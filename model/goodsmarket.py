@@ -28,7 +28,7 @@ class GoodsMarket:
         return (self.pastPrices[-1]-self.pastPrices[-2])/self.pastPrices[-2] if self.economy.currentPeriod > 2 else 0
 
     def getPastInflationTrend(self):
-        # TODO: We believe there's a mistake in the paper, equation 17. According to the paper, for workers to form their expected inflation, they need the inflation trend at time t (using all PAST AND CURRENT inflation rates, analogous to the formulas for permanent income and smoothed utility).
+        # We believe there's a mistake in the paper, equation 17. According to the paper, for workers to form their expected inflation, they need the inflation trend at time t (using all PAST AND CURRENT inflation rates, analogous to the formulas for permanent income and smoothed utility).
         # However, before we can calculate current inflation (rate of change in goods' price), we need the result of the whole process from the wage bargain until production. Since expected inflation is an input parameter in the wage bargain function, we can use only past values of inflation to form the trend.
         # Furthermore, we can't calculate inflation at t=1 because we need two periods to get the difference in prices. And we can't calculate at t=1 because we still don't have the current price level.
         summation = 0
