@@ -26,7 +26,7 @@ class Economy:
     def __init__(self, simulationNumber):
         Logger.trace("Initializing Economy")
         self.simulationNumber = simulationNumber
-        self.nominalInterestRate = 0.3
+        self.nominalInterestRate = 0.5
         self.prevInterestRate = 0
 
         self.currentPeriod = 1
@@ -98,7 +98,7 @@ class Economy:
         Logger.debug("Price: {:.2f}",self.goodsMarket.currentPrice, economy=self)
         Logger.debug("Inflation: {:.2%}",self.goodsMarket.getCurrentInflation(), economy=self)
         Logger.debug("Mean expected inflation: {:.2%}",statistics.mean([hh.getExpectedInflation() for hh in self.households]), economy=self)
-        Logger.debug("Std dev expected inflation: {:.2f}",statistics.stdev([hh.getExpectedInflation() for hh in self.households]), economy=self)
+#        Logger.debug("Std dev expected inflation: {:.2f}",statistics.stdev([hh.getExpectedInflation() for hh in self.households]), economy=self)
         Logger.debug("Interest rate: {:.2%}",self.nominalInterestRate, economy=self)
         Logger.debug("Total cost: {:.2f}",self.firm.getTotalCost(), economy=self)
         Logger.debug("Total revenue: {:.2f}",self.goodsMarket.aggregateSoldGoods*self.goodsMarket.currentPrice, economy=self)
@@ -113,11 +113,11 @@ class Economy:
         Logger.debug("Mean subs. strat: {:.2f}", statistics.mean([hh.substitutionStrategy for hh in self.households]), economy=self)
         Logger.debug("Mean cons. share: {:.2f}", statistics.mean([hh.getConsumptionShare() for hh in self.households]), economy=self) 
         Logger.debug("Mean cons. demand: {:.2f}", statistics.mean([hh.getConsumptionDemand() for hh in self.households]), economy=self)         
-        Logger.debug("Std dev perm. income (real): {:.2f}", statistics.stdev([hh.getPermanentIncome() for hh in self.households]), economy=self)        
-        Logger.debug("Std dev current income (real): {:.2f}", statistics.stdev([hh.getCurrentNominalIncome()/self.goodsMarket.currentPrice for hh in self.households]), economy=self)                
-        Logger.debug("Std dev savings (real): {:.2f}", statistics.stdev([hh.getSavingsBalance()/self.goodsMarket.currentPrice for hh in self.households]), economy=self)
-        Logger.debug("Std dev index. strat: {:.2f}", statistics.stdev([hh.indexationStrategy for hh in self.households]), economy=self)        
-        Logger.debug("Std dev subs. strat: {:.2f}", statistics.stdev([hh.substitutionStrategy for hh in self.households]), economy=self)        
-        Logger.debug("Std dev cons. share: {:.2f}", statistics.stdev([hh.getConsumptionShare() for hh in self.households]), economy=self) 
-        Logger.debug("Std dev cons. demand: {:.2f}", statistics.stdev([hh.getConsumptionDemand() for hh in self.households]), economy=self)         
+#        Logger.debug("Std dev perm. income (real): {:.2f}", statistics.stdev([hh.getPermanentIncome() for hh in self.households]), economy=self)        
+#        Logger.debug("Std dev current income (real): {:.2f}", statistics.stdev([hh.getCurrentNominalIncome()/self.goodsMarket.currentPrice for hh in self.households]), economy=self)                
+#        Logger.debug("Std dev savings (real): {:.2f}", statistics.stdev([hh.getSavingsBalance()/self.goodsMarket.currentPrice for hh in self.households]), economy=self)
+#        Logger.debug("Std dev index. strat: {:.2f}", statistics.stdev([hh.indexationStrategy for hh in self.households]), economy=self)        
+#        Logger.debug("Std dev subs. strat: {:.2f}", statistics.stdev([hh.substitutionStrategy for hh in self.households]), economy=self)        
+#        Logger.debug("Std dev cons. share: {:.2f}", statistics.stdev([hh.getConsumptionShare() for hh in self.households]), economy=self) 
+#        Logger.debug("Std dev cons. demand: {:.2f}", statistics.stdev([hh.getConsumptionDemand() for hh in self.households]), economy=self)         
         Logger.debug("----------------------------", economy=self)

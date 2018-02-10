@@ -25,7 +25,7 @@ class Parameters:
         """
 
         cls.Periods = 800 # 800
-        cls.NumberOfHouseholds = 100 # 500
+        cls.NumberOfHouseholds = 1 # 500
 
         cls.InnelasticLabourSupply = 1 # 1
         cls.TechnologyFactor = 1 # 1
@@ -39,7 +39,7 @@ class Parameters:
         cls.InflationTarget = 0.02 # 0.02
         
         # Households individual behavior
-        Parameters.setLearningLevel(1)
+        Parameters.setLearningLevel(None)
         Parameters.Ro = 0.45
         Parameters.SubstitutionStrategySD = 0.30
         Parameters.IndexationStrategySD = 0.30
@@ -47,7 +47,7 @@ class Parameters:
         # Expectations
         Parameters.AllHouseholdsSameExpectation = False # Coordination
         Parameters.NoiseInflationTargetPerceptionSD = 0.5 # Noise in the communication of inflation target by the CB
-        Parameters.Chi = 0.2 # Credibility of the central bank
+        Parameters.Chi = 1 # Credibility of the central bank
         
         # Monetary policy parameters
         Parameters.Phi_inflation = 0.5
@@ -56,13 +56,13 @@ class Parameters:
         # Windows of observation
         Parameters.FirmWindowOfObservation = 20
         Parameters.HouseholdsUtilityWindowOfObservation = 20
-        Parameters.InflationWindowOfObservation = 20
+        Parameters.InflationWindowOfObservation = 800
 
         # Initial values: The paper doesn't explicit these initial values, therefore we are assuming them.
         cls.InitialPriceLevel = 1
         cls.InitialLabourDemand = 1
         cls.InitialMeanIndexationStrategy = 1
-        cls.InitialMeanSubstitutionStrategy = 1
+        cls.InitialMeanSubstitutionStrategy = 5
         cls.InitialReservationWageRange = [1, 1]
         cls.InitialSavingsBalance = 0
         

@@ -48,8 +48,8 @@ def simulate(simulationNumber):
         economy = Economy(simulationNumber)
         for t in range(1,Parameters.Periods+1):
             economy.runCurrentPeriod()
-            if t % 10 == 0: # Ignore the first 99 executions and collect data every 10 periods afterwards.
-                granularResults.append(ResultsData.getCurrentPeriodData(economy))
+#            if t % 10 == 0: # Ignore the first 99 executions and collect data every 10 periods afterwards.
+#                granularResults.append(ResultsData.getCurrentPeriodData(economy))
             economy.describeCurrentPeriod()
             economy.nextPeriod()
 
@@ -98,7 +98,7 @@ if __name__ == '__main__':
 
         Logger.info("All simulations completed. Total time {:.2f} seconds.", time.time() - aggregateStartTime)
         Logger.info("Saving granular data...")
-        ExportToCSV.exportGranularData(granularResults, generalTimestamp)
+#        ExportToCSV.exportGranularData(granularResults, generalTimestamp)
 
         if len(granularResults) > 2:
             Logger.info("Saving aggregate statistics...")
