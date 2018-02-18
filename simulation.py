@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Project for course Quantitative Methods in Finance, Prof. Eric Vansteenberghe.
-Université Paris 1 Panthéon-Sorbonne
-Program: Master 2 Financial Economics, 2017.
-Authors: João Dimas (joaohenriqueavila@gmail.com) and Umberto Collodel (umberto.collodel@gmail.com)
 
-Replication of an agent-based model described in:
-Salle, I., Yıldızoğlu, M., & Sénégas, M.-A. (2013). Inflation targeting in a learning economy: An ABM perspective. Economic Modelling, 34, 114–128.
+Code for my master thesis.
 
-Technical information on README.md
+Still under development.
+
+@author: João Dimas (joaohenriqueavila@gmail.com)
 
 """
 from model.economy import Economy
@@ -20,9 +17,10 @@ from model.util.logger import Logger
 import datetime, os, time, multiprocessing, operator
 
 class SystemConfig:
-    LogLevel = {"Console": ["DEBUG"], "File":["DEBUG"]} # Set INFO, DEBUG or TRACE for Console and File.
+    LogLevel = {"Console": [""], "File":["DEBUG"]} # Set INFO, DEBUG or TRACE for Console and File.
 
-    NumberOfSimulations = 5 # Number of independent executions.
+    NumberOfSimulations = 1 # Number of independent executions.
+    PauseInterval = None
 
 def describeModelParameters():
     parameters = {}
@@ -37,6 +35,30 @@ def describeModelParameters():
 
     return desc
 
+def checkPause(economy, t):
+    if SystemConfig.PauseInterval is not None and t % SystemConfig.PauseInterval == 0:
+        command = None
+        while command != "":
+            try:
+                command = input("God mode: ")
+                if command != "":
+                    if command.isdigit():
+                        SystemConfig.PauseInterval = int(command)
+                        print("New pause interval: {:d}".format(SystemConfig.PauseInterval))
+                    elif "=" in command or "(" in command: 
+                        if hasattr(economy, command.split(" =")[0]) or hasattr(economy, command.split("=")[0]) or hasattr(economy, command.split("(")[0]) or hasattr(economy, command.split(".")[0]):
+                            exec("economy." + command)
+                        else:
+                            exec(command)
+                    elif hasattr(Parameters, command):
+                        print(eval("Parameters." + command))
+                    elif hasattr(economy, command) or hasattr(economy, command.split(".")[0]):
+                        print(eval("economy."+ command))
+                    else:
+                        print(eval(command))
+            except Exception as ex:
+                print(ex)
+
 def simulate(simulationNumber):
     try:
         granularResults = []
@@ -47,9 +69,11 @@ def simulate(simulationNumber):
         # Create a virtual economy with heterogeneous agents
         economy = Economy(simulationNumber)
         for t in range(1,Parameters.Periods+1):
+            
+            checkPause(economy, t)
+                        
             economy.runCurrentPeriod()
-            if t % 10 == 0: # Ignore the first 99 executions and collect data every 10 periods afterwards.
-                granularResults.append(ResultsData.getCurrentPeriodData(economy))
+            granularResults.append(ResultsData.getCurrentPeriodData(economy))
             economy.describeCurrentPeriod()
             economy.nextPeriod()
 
@@ -81,15 +105,18 @@ if __name__ == '__main__':
             print(parameters, file=f)
 
         processes = []
-        # Start a parallel process to execute each run.
-        pool = multiprocessing.Pool(SystemConfig.NumberOfSimulations)
-        # Run function simulate in parallel for each independent execution and aggregate results.
-        listOfResults = pool.imap_unordered(simulate, range(1,SystemConfig.NumberOfSimulations+1)) 
-
-        # Append results
-        for result in listOfResults:
-            if len(result) > 0:
-                granularResults = granularResults + result
+        
+        if SystemConfig.NumberOfSimulations > 1:
+            # Start a parallel process to execute each run.
+            pool = multiprocessing.Pool(SystemConfig.NumberOfSimulations)
+            # Run function simulate in parallel for each independent execution and aggregate results.
+            listOfResults = pool.imap_unordered(simulate, range(1,SystemConfig.NumberOfSimulations+1)) 
+            # Append results
+            for result in listOfResults:
+                if len(result) > 0:
+                    granularResults = granularResults + result
+        else:
+            granularResults = simulate(1)
 
         # Sort results by Run, Period. Then, add header.
         granularResults = [ResultsData.getHeader()] + sorted(granularResults, key=operator.itemgetter(0,1))

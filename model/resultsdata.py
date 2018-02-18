@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Project for course Quantitative Methods in Finance, Prof. Eric Vansteenberghe.
-Université Paris 1 Panthéon-Sorbonne
-Program: Master 2 Financial Economics, 2017.
-Authors: João Dimas (joaohenriqueavila@gmail.com) and Umberto Collodel (umberto.collodel@gmail.com)
 
-Replication of an agent-based model described in:
-Salle, I., Yıldızoğlu, M., & Sénégas, M.-A. (2013). Inflation targeting in a learning economy: An ABM perspective. Economic Modelling, 34, 114–128.
+Code for my master thesis.
 
-Technical information on README.md
+Still under development.
+
+@author: João Dimas (joaohenriqueavila@gmail.com)
 
 """
 
@@ -19,56 +16,65 @@ class ResultsData:
 
     @classmethod
     def getCurrentPeriodData(cls, economy):
+        
         return [
                 economy.simulationNumber,
                 economy.currentPeriod,
                 economy.goodsMarket.getCurrentInflation(),
                 Parameters.InflationTarget,
                 economy.nominalInterestRate,
+                economy.getMeanExpectedInflation(),
+                economy.nominalInterestRate - economy.getMeanExpectedInflation(),
                 economy.labourMarket.getUnemploymentRate(),
-                statistics.mean([hh.getSavingsBalance()/economy.goodsMarket.currentPrice for hh in economy.households]),
-                statistics.mean([hh.indexationStrategy for hh in economy.households]),
-                statistics.mean([hh.substitutionStrategy for hh in economy.households]),
-                statistics.variance([hh.getSavingsBalance()/economy.goodsMarket.currentPrice for hh in economy.households]),
-                statistics.variance([hh.indexationStrategy for hh in economy.households]),
-                statistics.variance([hh.substitutionStrategy for hh in economy.households])
+                economy.getOutputGap(),
+                economy.goodsMarket.aggregateConsumption,
+                economy.labourMarket.getRealWageRate(),
+                economy.getMeanRealSavingsBalance(),
+                economy.getMeanIndexationStrategy(),
+                economy.getMeanSubstitutionStrategy(),
+                economy.getStDevRealSavingsBalance(),
+                economy.getStDevIndexationStrategy(),
+                economy.getStDevSubstitutionStrategy(),
                 ]
 
     @classmethod
     def getHeader(cls):
-        return ["simulationNumber", "period", "inflation", "inflation_target", "nominal_interest_rate", "unemployment_rate", "mean_real_savings_balance", "mean_indexation_strategy", "mean_substitution_strategy", "var_real_savings_balance", "var_indexation_strategy", "var_substitution_strategy"]
+        return ["simulation_number", "period", "inflation", "inflation_target", "nominal_interest_rate", "mean_exp_inflation", "real_interest_rate", "unemployment_rate", "output_gap", "consumption", "real_wage_rate", "mean_real_savings_balance", "mean_indexation_strategy", "mean_substitution_strategy", "stdev_real_savings_balance", "stdev_indexation_strategy", "stdev_substitution_strategy"]
 
     @classmethod
     def getAggregateStatistics(cls, resultsdata):
-        result = [["statistic", "inflation_gap", "unemployment", "mean_savings_balance", "mean_indexation_strategy", "mean_substitution_strategy", "var_savings_balance", "var_indexation_strategy", "var_substitution_strategy"]]
+        header_aggregate = ["statistic", "inflation_gap", "unemployment", "mean_savings_balance", "mean_indexation_strategy", "mean_substitution_strategy", "stdev_savings_balance", "stdev_indexation_strategy", "stdev_substitution_strategy"]
 
-        resultsdata = resultsdata[1:]
+        header_granular = resultsdata[0:1][0]
+        granular_data = resultsdata[1:]
+        
+        result = [header_aggregate]
         # Mean
         result.append([
                     "mean",
-                    statistics.mean([d[2] - d[3] for d in resultsdata]), # inflation gap
-                    statistics.mean([d[4] for d in resultsdata]), # interest rate
-                    statistics.mean([d[5] for d in resultsdata]), # unemployment
-                    statistics.mean([d[6] for d in resultsdata]), # mean_savings_balance
-                    statistics.mean([d[7] for d in resultsdata]), # mean_indexation_strategy
-                    statistics.mean([d[8] for d in resultsdata]), # mean_substitution_strategy
-                    statistics.mean([d[9] for d in resultsdata]), # var_savings_balance
-                    statistics.mean([d[10] for d in resultsdata]), # var_indexation_strategy
-                    statistics.mean([d[11] for d in resultsdata]) # var_substitution_strategy
+                    statistics.mean([d[header_granular.index("inflation")] - d[header_granular.index("inflation_target")] for d in granular_data]), # inflation gap
+                    statistics.mean([d[header_granular.index("nominal_interest_rate")] for d in granular_data]), # interest rate
+                    statistics.mean([d[header_granular.index("unemployment_rate")] for d in granular_data]), # unemployment
+                    statistics.mean([d[header_granular.index("mean_real_savings_balance")] for d in granular_data]), # mean_real_savings_balance
+                    statistics.mean([d[header_granular.index("mean_indexation_strategy")] for d in granular_data]), # mean_indexation_strategy
+                    statistics.mean([d[header_granular.index("mean_substitution_strategy")] for d in granular_data]), # mean_substitution_strategy
+                    statistics.mean([d[header_granular.index("stdev_real_savings_balance")] for d in granular_data]), # stdev_savings_balance
+                    statistics.mean([d[header_granular.index("stdev_indexation_strategy")] for d in granular_data]), # stdev_indexation_strategy
+                    statistics.mean([d[header_granular.index("stdev_substitution_strategy")] for d in granular_data]) # stdev_substitution_strategy
                 ])
 
         # Std. Deviation
         result.append([
-                    "stddev",
-                    statistics.stdev([d[2] - d[3] for d in resultsdata]), # inflation gap
-                    statistics.stdev([d[4] for d in resultsdata]), # interest rate
-                    statistics.stdev([d[5] for d in resultsdata]), # unemployment
-                    statistics.stdev([d[6] for d in resultsdata]), # mean_savings_balance
-                    statistics.stdev([d[7] for d in resultsdata]), # mean_indexation_strategy
-                    statistics.stdev([d[8] for d in resultsdata]), # mean_substitution_strategy
-                    statistics.stdev([d[9] for d in resultsdata]), # var_savings_balance
-                    statistics.stdev([d[10] for d in resultsdata]), # var_indexation_strategy
-                    statistics.stdev([d[11] for d in resultsdata]) # var_substitution_strategy
+                    "stdev",
+                    statistics.stdev([d[header_granular.index("inflation")] - d[header_granular.index("inflation_target")] for d in granular_data]), # inflation gap
+                    statistics.stdev([d[header_granular.index("nominal_interest_rate")] for d in granular_data]), # interest rate
+                    statistics.stdev([d[header_granular.index("unemployment_rate")] for d in granular_data]), # unemployment
+                    statistics.stdev([d[header_granular.index("mean_real_savings_balance")] for d in granular_data]), # stdev_real_savings_balance
+                    statistics.stdev([d[header_granular.index("mean_indexation_strategy")] for d in granular_data]), # stdev_indexation_strategy
+                    statistics.stdev([d[header_granular.index("mean_substitution_strategy")] for d in granular_data]), # stdev_substitution_strategy
+                    statistics.stdev([d[header_granular.index("stdev_real_savings_balance")] for d in granular_data]), # stdev_savings_balance
+                    statistics.stdev([d[header_granular.index("stdev_indexation_strategy")] for d in granular_data]), # stdev_indexation_strategy
+                    statistics.stdev([d[header_granular.index("stdev_substitution_strategy")] for d in granular_data]) # stdev_substitution_strategy
                 ])
 
         return result

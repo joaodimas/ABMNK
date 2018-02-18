@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Project for course Quantitative Methods in Finance, Prof. Eric Vansteenberghe.
-Université Paris 1 Panthéon-Sorbonne
-Program: Master 2 Financial Economics, 2017.
-Authors: João Dimas (joaohenriqueavila@gmail.com) and Umberto Collodel (umberto.collodel@gmail.com)
 
-Replication of an agent-based model described in:
-Salle, I., Yıldızoğlu, M., & Sénégas, M.-A. (2013). Inflation targeting in a learning economy: An ABM perspective. Economic Modelling, 34, 114–128.
+Code for my master thesis.
 
-Technical information on README.md
+Still under development.
+
+@author: João Dimas (joaohenriqueavila@gmail.com)
 
 """
 
@@ -20,13 +17,22 @@ from model.firm import Firm
 from model.household import Household
 from model.parameters import Parameters
 from model.util.logger import Logger
-import random, statistics
+import random, statistics, sys
 
 class Economy:
     def __init__(self, simulationNumber):
-        Logger.trace("Initializing Economy")
+        #Logger.trace("Initializing Economy")
         self.simulationNumber = simulationNumber
         self.prevInterestRate = 0
+        self.outputGap = None
+        self.meanExpectedInflation = None
+        self.meanRealSavingsBalance = None
+        self.meanIndexationStrategy = None 
+        self.meanSubstitutionStrategy = None
+        self.stdevExpectedInflation = None
+        self.stdevRealSavingsBalance = None
+        self.stdevIndexationStrategy = None
+        self.stdevSubstitutionStrategy = None
 
         self.currentPeriod = 1
         self.households = []
@@ -41,7 +47,7 @@ class Economy:
         self.firm = Firm(self)
 
         # We are assuming that initially all households choose random strategies based on initial mean values set in Parameters.
-        Logger.trace("Households are mutating randomly to define their initial strategies")
+        #Logger.trace("Households are mutating randomly to define their initial strategies")
         if Parameters.ProbMutation > 0:
             for hh in self.households:
                 hh.mutateRandomly()
@@ -50,8 +56,6 @@ class Economy:
         self.homogeneousNoiseInflationTarget = None
 
     def runCurrentPeriod(self):
-        Logger.debug("", economy=self)
-        Logger.info("SIMULATING CURRENT PERIOD", economy=self)
         self.centralBank.setNominalInterestRate()
         self.labourMarket.matchFirmAndWorkers()
         self.goodsMarket.matchFirmAndConsumers()
@@ -61,13 +65,21 @@ class Economy:
             hh.prevIndexationStrategy = hh.indexationStrategy
             hh.prevSubstitutionStrategy = hh.substitutionStrategy
 
-        Logger.trace("[Learning] Households are learning.", economy=self)
-        for hh in self.households:
-            hh.learn() # Mutate or imitate
+        #Logger.trace("[Learning] Households are learning.", economy=self)
+        if Parameters.LearningLevel is not None:
+            for hh in self.households:
+                hh.learn() # Mutate or imitate
+
+    def getOutputGap(self):
+        if self.outputGap is None:
+            potentialOutput = self.firm.productionFunction(self.labourMarket.getTotalLabourSupply())
+            currentOutput = self.firm.getProduction()
+            self.outputGap = currentOutput / potentialOutput - 1
+            
+        return self.outputGap
 
     def nextPeriod(self):
         """ Prepare the object for a clean next period """
-        Logger.debug("Preparing next period.", economy=self)
         for hh in self.households:
             hh.nextPeriod()
 
@@ -78,79 +90,137 @@ class Economy:
         self.homogeneousNoiseInflationTarget = None
         self.prevInterestRate = self.nominalInterestRate
 
+        self.outputGap = None
+        self.meanExpectedInflation = None
+        self.meanRealSavingsBalance = None
+        self.meanIndexationStrategy = None 
+        self.meanSubstitutionStrategy = None
+        self.stdevExpectedInflation = None
+        self.stdevRealSavingsBalance = None
+        self.stdevIndexationStrategy = None
+        self.stdevSubstitutionStrategy = None
+        
     def getHomogeneousNoiseInflationTarget(self):
         if self.homogeneousNoiseInflationTarget is None:
             self.homogeneousNoiseInflationTarget = random.gauss(0,Parameters.NoiseInflationTargetPerceptionSD)
 
         return self.homogeneousNoiseInflationTarget
+    
+    def getMeanExpectedInflation(self):
+        if self.meanExpectedInflation is None:
+            self.meanExpectedInflation = statistics.mean([hh.getExpectedInflation() for hh in self.households])
+            
+        return self.meanExpectedInflation
+    
+    def getMeanRealSavingsBalance(self):
+        if self.meanRealSavingsBalance is None:
+            self.meanRealSavingsBalance = statistics.mean([hh.getSavingsBalance()/self.goodsMarket.currentPrice for hh in self.households])
+            
+        return self.meanRealSavingsBalance
+    
+    def getMeanIndexationStrategy(self):
+        if self.meanIndexationStrategy is None:
+            self.meanIndexationStrategy = statistics.mean([hh.indexationStrategy for hh in self.households])
+            
+        return self.meanIndexationStrategy
+    
+    def getMeanSubstitutionStrategy(self):
+        if self.meanSubstitutionStrategy is None:
+            self.meanSubstitutionStrategy = statistics.mean([hh.substitutionStrategy for hh in self.households])
+            
+        return self.meanSubstitutionStrategy
+    
+    def getStDevExpectedInflation(self):
+        if self.stdevExpectedInflation is None:
+            self.stdevExpectedInflation = statistics.stdev([hh.getExpectedInflation() for hh in self.households])
+            
+        return self.stdevExpectedInflation
 
+    def getStDevRealSavingsBalance(self):
+        if self.stdevRealSavingsBalance is None:
+            self.stdevRealSavingsBalance = statistics.stdev([hh.getSavingsBalance()/self.goodsMarket.currentPrice for hh in self.households])
+            
+        return self.stdevRealSavingsBalance
+
+    def getStDevIndexationStrategy(self):
+        if self.stdevIndexationStrategy is None:
+            self.stdevIndexationStrategy = statistics.stdev([hh.indexationStrategy for hh in self.households])
+            
+        return self.stdevIndexationStrategy
+    
+    def getStDevSubstitutionStrategy(self):
+        if self.stdevSubstitutionStrategy is None:
+            self.stdevSubstitutionStrategy = statistics.stdev([hh.substitutionStrategy for hh in self.households])
+            
+        return self.stdevSubstitutionStrategy
+    
     def describeCurrentPeriod(self):
-        
-        Logger.debug(""" 
-            RESULTS OF CURRENT PERIOD
-            ----------------------------
-            Hired workers: {:.2f}
-            Unemployed workers: {:.2f}
-            Unemployment rate: {:.2%}
-            Production: {:.2f}
-            Goods sold: {:.2f}
-            Excess supply: {:.2f}
-            Price: {:.2f}
-            Inflation: {:.2%}
-            Mean expected inflation: {:.2%}
-            Std dev expected inflation: {:.2f}
-            Interest rate: {:.2%}
-            Total cost: {:.2f}
-            Total revenue: {:.2f}
-            Total profit (nominal): {:.2f}
-            Total profit (real): {:.2f}
-            Wage rate (nominal): {:.2f}
-            Wage rate (real): {:.2f}
-            Mean perm. income (real): {:.2f}
-            Mean current income (real): {:.2f}
-            Mean savings (real): {:.2f}
-            Mean index. strat: {:.2f}
-            Mean subs. strat: {:.2f}
-            Mean cons. share: {:.2f}
-            Mean cons. demand: {:.2f}
-            Std dev perm. income (real): {:.2f}
-            Std dev current income (real): {:.2f}
-            Std dev savings (real): {:.2f}
-            Std dev index. strat: {:.2f}
-            Std dev subs. strat: {:.2f}
-            Std dev cons. share: {:.2f}
-            Std dev cons. demand: {:.2f}
-            ----------------------------
-        """, (
-                self.labourMarket.aggregateHiredLabour,
-                len(self.households)-self.labourMarket.aggregateHiredLabour,
-                self.labourMarket.getUnemploymentRate(),
-                self.firm.getProduction(),
-                self.goodsMarket.aggregateSoldGoods,
-                self.firm.getProduction()-self.goodsMarket.aggregateSoldGoods,
-                self.goodsMarket.currentPrice,
-                self.goodsMarket.getCurrentInflation(),
-                statistics.mean([hh.getExpectedInflation() for hh in self.households]),
-                statistics.stdev([hh.getExpectedInflation() for hh in self.households]),
-                self.nominalInterestRate,
-                self.firm.getTotalCost(),
-                self.goodsMarket.aggregateSoldGoods*self.goodsMarket.currentPrice,
-                self.firm.getProfit(),
-                self.firm.getProfit()/self.goodsMarket.currentPrice,
-                self.labourMarket.getNominalWageRate(),
-                self.labourMarket.getRealWageRate(),
-                statistics.mean([hh.getPermanentIncome() for hh in self.households]),
-                statistics.mean([hh.getCurrentNominalIncome()/self.goodsMarket.currentPrice for hh in self.households]),
-                statistics.mean([hh.getSavingsBalance()/self.goodsMarket.currentPrice for hh in self.households]),
-                statistics.mean([hh.indexationStrategy for hh in self.households]),
-                statistics.mean([hh.substitutionStrategy for hh in self.households]),
-                statistics.mean([hh.getConsumptionShare() for hh in self.households]),
-                statistics.mean([hh.getConsumptionDemand() for hh in self.households]),
-                statistics.stdev([hh.getPermanentIncome() for hh in self.households]),
-                statistics.stdev([hh.getCurrentNominalIncome()/self.goodsMarket.currentPrice for hh in self.households]),
-                statistics.stdev([hh.getSavingsBalance()/self.goodsMarket.currentPrice for hh in self.households]),
-                statistics.stdev([hh.indexationStrategy for hh in self.households]),
-                statistics.stdev([hh.substitutionStrategy for hh in self.households]),
-                statistics.stdev([hh.getConsumptionShare() for hh in self.households]),
-                statistics.stdev([hh.getConsumptionDemand() for hh in self.households])
-            ), economy=self)
+        if self.currentPeriod % 10 == 0:
+            message = """ 
+                PERIOD {:d}
+                ----------------------------
+                Unemployment rate: {:.2%}
+                Inflation: {:.2%}
+                Interest rate (nominal): {:.2%}
+                
+                Production: {:.2f}
+                Goods sold: {:.2f}
+                Excess supply: {:.2f}
+                Price: {:.2f}
+                
+                Mean expected inflation: {:.2%}
+                Real interest rate: {:.2%}
+                Output gap: {:.2%}
+                
+                Total profit (real): {:.2f}
+                Profit trend (real): {:.2f}
+                Wage rate (real): {:.2f}
+                
+                Mean perm. income (real): {:.2f}
+                Mean current income (real): {:.2f}
+                Mean savings (real): {:.2f}
+                Mean index. strat: {:.2f}
+                Mean subs. strat: {:.2f}
+                Mean cons. share: {:.2f}
+                Mean cons. demand: {:.2f}
+    
+                Std dev expected inflation: {:.2f}
+                Std dev index. strat: {:.2f}
+                Std dev subs. strat: {:.2f}
+                ----------------------------
+            """.format(
+                    self.currentPeriod,
+                    
+                    self.labourMarket.getUnemploymentRate(),
+                    self.goodsMarket.getCurrentInflation(),
+                    self.nominalInterestRate,
+                    
+                    self.firm.getProduction(),
+                    self.goodsMarket.aggregateConsumption,
+                    self.firm.getProduction()-self.goodsMarket.aggregateConsumption,
+                    self.goodsMarket.currentPrice,
+                    
+                    self.getMeanExpectedInflation(),
+                    self.nominalInterestRate - self.getMeanExpectedInflation(),
+                    self.getOutputGap(),
+                    
+                    self.firm.getCurrentRealProfit(),
+                    self.firm.getProfitTrend(),
+                    self.labourMarket.getRealWageRate(),
+                    
+                    statistics.mean([hh.getPermanentIncome() for hh in self.households]),
+                    statistics.mean([hh.getCurrentNominalIncome()/self.goodsMarket.currentPrice for hh in self.households]),
+                    self.getMeanRealSavingsBalance(),
+                    self.getMeanIndexationStrategy(),
+                    self.getMeanSubstitutionStrategy(),
+                    statistics.mean([hh.getConsumptionShare() for hh in self.households]),
+                    statistics.mean([hh.getConsumptionDemand() for hh in self.households]),
+                    
+                    self.getStDevExpectedInflation(),
+                    self.getStDevIndexationStrategy(),
+                    self.getStDevSubstitutionStrategy()
+                )
+            
+            Logger.debug(message)
+            sys.stdout.write(message)
+            sys.stdout.flush()
