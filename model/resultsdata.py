@@ -42,6 +42,29 @@ class ResultsData:
         return ["simulation_number", "period", "inflation", "inflation_target", "nominal_interest_rate", "mean_exp_inflation", "real_interest_rate", "unemployment_rate", "output_gap", "consumption", "real_wage_rate", "mean_real_savings_balance", "mean_indexation_strategy", "mean_substitution_strategy", "stdev_real_savings_balance", "stdev_indexation_strategy", "stdev_substitution_strategy"]
 
     @classmethod
+    def getAverageGranularData(cls, resultsdata):
+        header = []
+        for h in cls.getHeader():
+            if h != "simulation_number":
+                header.append(h)
+                
+        averageGranularData = [header]
+        variables = len(header)-1
+        periods = len(resultsdata[0])
+        simulations = len(resultsdata)
+        
+        for t in range(periods):
+            periodAverages = [t+1]
+            for v in range(variables):
+                varSum = 0
+                for s in range(simulations):
+                    varSum = varSum + resultsdata[s][t][v+2]
+                periodAverages.append(varSum/simulations)
+            averageGranularData.append(periodAverages)
+            
+        return averageGranularData
+
+    @classmethod
     def getAggregateStatistics(cls, resultsdata):
         header_aggregate = ["statistic", "inflation_gap", "unemployment", "mean_savings_balance", "mean_indexation_strategy", "mean_substitution_strategy", "stdev_savings_balance", "stdev_indexation_strategy", "stdev_substitution_strategy"]
 

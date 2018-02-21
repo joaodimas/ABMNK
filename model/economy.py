@@ -222,5 +222,3 @@ class Economy:
                 )
             
             Logger.debug(message)
-            sys.stdout.write(message)
-            sys.stdout.flush()

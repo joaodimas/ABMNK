@@ -21,7 +21,7 @@ class Parameters:
 
         """
 
-        Parameters.Periods = 300 # 800
+        Parameters.Periods = 800 # 800
         Parameters.NumberOfHouseholds = 500 # 500
 
         Parameters.InnelasticLabourSupply = 1 # 1

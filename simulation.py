@@ -17,9 +17,10 @@ from model.util.logger import Logger
 import datetime, os, time, multiprocessing, operator
 
 class SystemConfig:
-    LogLevel = {"Console": [""], "File":["DEBUG"]} # Set INFO, DEBUG or TRACE for Console and File.
+    LogLevel = {"Console": ["INFO"], "File":[""]} # Set INFO, DEBUG or TRACE for Console and File.
 
-    NumberOfSimulations = 1 # Number of independent executions.
+    NumberOfSimulations = 500 # Number of independent executions.
+    NumberOfParallelProcesses = 60 # Number of parallel processes.
     PauseInterval = None
 
 def describeModelParameters():
@@ -71,7 +72,7 @@ def simulate(simulationNumber):
         for t in range(1,Parameters.Periods+1):
             
             checkPause(economy, t)
-                        
+            Logger.info("[SIMULATION {:03d}][PERIOD {:03d}] Simulating...".format(simulationNumber, t))            
             economy.runCurrentPeriod()
             granularResults.append(ResultsData.getCurrentPeriodData(economy))
             economy.describeCurrentPeriod()
@@ -108,7 +109,7 @@ if __name__ == '__main__':
         
         if SystemConfig.NumberOfSimulations > 1:
             # Start a parallel process to execute each run.
-            pool = multiprocessing.Pool(SystemConfig.NumberOfSimulations)
+            pool = multiprocessing.Pool(SystemConfig.NumberOfParallelProcesses)
             # Run function simulate in parallel for each independent execution and aggregate results.
             listOfResults = pool.imap_unordered(simulate, range(1,SystemConfig.NumberOfSimulations+1)) 
             # Append results
