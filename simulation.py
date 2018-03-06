@@ -14,13 +14,12 @@ from model.parameters import Parameters
 from model.resultsdata import ResultsData
 from model.util.export_to_csv import ExportToCSV
 from model.util.logger import Logger
-import datetime, os, time, multiprocessing, operator
+import datetime, os, time, multiprocessing, operator, zipfile
 
 class SystemConfig:
     LogLevel = {"Console": ["INFO"], "File":[""]} # Set INFO, DEBUG or TRACE for Console and File.
 
     NumberOfSimulations = 500 # Number of independent executions.
-    NumberOfParallelProcesses = 60 # Number of parallel processes.
     PauseInterval = None
 
 def describeModelParameters():
@@ -109,7 +108,7 @@ if __name__ == '__main__':
         
         if SystemConfig.NumberOfSimulations > 1:
             # Start a parallel process to execute each run.
-            pool = multiprocessing.Pool(SystemConfig.NumberOfParallelProcesses)
+            pool = multiprocessing.Pool(multiprocessing.cpu_count())
             # Run function simulate in parallel for each independent execution and aggregate results.
             listOfResults = pool.imap_unordered(simulate, range(1,SystemConfig.NumberOfSimulations+1)) 
             # Append results
