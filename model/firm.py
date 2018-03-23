@@ -10,8 +10,6 @@ Still under development.
 
 """
 
-from model.parameters import Parameters
-
 class Firm:
 
     def __init__(self, economy):
@@ -23,7 +21,7 @@ class Firm:
         self.totalCost = None
         self.profit = None
         self.production = None
-        self.labourDemand = Parameters.InitialLabourDemand
+        self.labourDemand = self.economy.parameters.InitialLabourDemand
         self.profitTrend = None
 
     def getProduction(self):
@@ -34,7 +32,7 @@ class Firm:
         return self.production
     
     def productionFunction(self, labour):
-        return Parameters.TechnologyFactor * labour ** (1 - Parameters.Alpha)
+        return self.economy.parameters.TechnologyFactor * labour ** (1 - self.economy.parameters.Alpha)
 
     def getTotalCost(self):
         """ Equation (10), wage bill """
@@ -45,14 +43,14 @@ class Firm:
 
     def getMarginalCost(self):
         """ Equation (11) """
-        return self.getTotalCost()/((1-Parameters.Alpha)*self.getProduction())
+        return self.getTotalCost()/((1-self.economy.parameters.Alpha)*self.getProduction())
 
     def getSellingPrice(self):
         """ Equation (12) """
         if self.sellingPrice is None:
-            self.sellingPrice = (1 + Parameters.Mu) * self.getTotalCost() / ((1 - Parameters.Alpha) * self.getProduction())
+            self.sellingPrice = (1 + self.economy.parameters.Mu) * self.getTotalCost() / ((1 - self.economy.parameters.Alpha) * self.getProduction())
 
-        if self.sellingPrice > Parameters.MaximumPrecision:
+        if self.sellingPrice > self.economy.parameters.MaximumPrecision:
             raise ValueError("Price is above Python's mathematical precision. Aborting simulation.")
 
         return self.sellingPrice
@@ -68,16 +66,16 @@ class Firm:
         if self.profitTrend is None:
             summation = self.getCurrentRealProfit()
             for l in range(1, len(self.pastRealProfits)+1): # l = [1,20]
-                summation = summation + Parameters.Ro ** l * self.pastRealProfits[-l]
+                summation = summation + self.economy.parameters.Ro ** l * self.pastRealProfits[-l]
                 assert l != 20 or self.pastRealProfits[-l] == self.pastRealProfits[0]
-            self.profitTrend = (1-Parameters.Ro)*summation
+            self.profitTrend = (1-self.economy.parameters.Ro)*summation
         return self.profitTrend
 
     def chooseNextPeriodLabourDemand(self):
         if self.getCurrentRealProfit() >= self.getProfitTrend():
-            self.labourDemand = self.labourDemand * (1 + Parameters.Epsilon)
+            self.labourDemand = self.labourDemand * (1 + self.economy.parameters.Epsilon)
         else:
-            self.labourDemand = self.labourDemand * (1 - Parameters.Epsilon)
+            self.labourDemand = self.labourDemand * (1 - self.economy.parameters.Epsilon)
 
     def getCurrentRealProfit(self):
         return self.getCurrentProfit() / self.getSellingPrice()
@@ -89,8 +87,8 @@ class Firm:
         """ Prepare the object for a clean next period """
         self.prevProfit = self.getCurrentProfit()
         self.pastRealProfits.append(self.getCurrentRealProfit())
-        self.pastRealProfits = self.pastRealProfits[-Parameters.ProfitWindowOfObservation:]
-        assert self.economy.currentPeriod <= Parameters.ProfitWindowOfObservation or len(self.pastRealProfits) == Parameters.ProfitWindowOfObservation
+        self.pastRealProfits = self.pastRealProfits[-self.economy.parameters.ProfitWindowOfObservation:]
+        assert self.economy.currentPeriod <= self.economy.parameters.ProfitWindowOfObservation or len(self.pastRealProfits) == self.economy.parameters.ProfitWindowOfObservation
         
         self.pastHiredLabour.append(self.economy.labourMarket.aggregateHiredLabour)
         self.pastSoldGoods.append(self.economy.goodsMarket.aggregateConsumption)

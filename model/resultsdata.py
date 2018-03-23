@@ -9,7 +9,6 @@ Still under development.
 
 """
 
-from model.parameters import Parameters
 import statistics
 
 class ResultsData:
@@ -21,7 +20,7 @@ class ResultsData:
                 economy.simulationNumber,
                 economy.currentPeriod,
                 economy.goodsMarket.getCurrentInflation(),
-                Parameters.InflationTarget,
+                economy.parameters.InflationTarget,
                 economy.nominalInterestRate,
                 economy.getMeanExpectedInflation(),
                 economy.nominalInterestRate - economy.getMeanExpectedInflation(),

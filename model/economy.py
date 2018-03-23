@@ -15,13 +15,13 @@ from model.goodsmarket import GoodsMarket
 from model.centralbank import CentralBank
 from model.firm import Firm
 from model.household import Household
-from model.parameters import Parameters
-from model.util.logger import Logger
-import random, statistics, sys
+import random, statistics
 
 class Economy:
-    def __init__(self, simulationNumber):
-        #Logger.trace("Initializing Economy")
+    def __init__(self, logger, parameters, simulationNumber):
+        #self.logger.trace("Initializing Economy")
+        self.logger = logger
+        self.parameters = parameters
         self.simulationNumber = simulationNumber
         self.prevInterestRate = 0
         self.outputGap = None
@@ -36,23 +36,23 @@ class Economy:
 
         self.currentPeriod = 1
         self.households = []
-        for i in range(Parameters.NumberOfHouseholds):
+        for i in range(self.parameters.NumberOfHouseholds):
             householdId = i+1
             household = Household(householdId, self)
             self.households.append(household)
-        self.priceLevel = Parameters.InitialPriceLevel
+        self.priceLevel = self.parameters.InitialPriceLevel
         self.centralBank = CentralBank(self)
         self.labourMarket = LabourMarket(self)
         self.goodsMarket = GoodsMarket(self)
         self.firm = Firm(self)
 
-        # We are assuming that initially all households choose random strategies based on initial mean values set in Parameters.
-        #Logger.trace("Households are mutating randomly to define their initial strategies")
-        if Parameters.ProbMutation > 0:
+        # We are assuming that initially all households choose random strategies based on initial mean values set in self.parameters.
+        #self.logger.trace("Households are mutating randomly to define their initial strategies")
+        if self.parameters.ProbMutation > 0:
             for hh in self.households:
                 hh.mutateRandomly()
 
-        # Only used if Parameters.AllHouseholdsSameExpectation == True
+        # Only used if self.parameters.HouseholdCoordination == True
         self.homogeneousNoiseInflationTarget = None
 
     def runCurrentPeriod(self):
@@ -65,8 +65,8 @@ class Economy:
             hh.prevIndexationStrategy = hh.indexationStrategy
             hh.prevSubstitutionStrategy = hh.substitutionStrategy
 
-        #Logger.trace("[Learning] Households are learning.", economy=self)
-        if Parameters.LearningLevel is not None:
+        #self.logger.trace("[Learning] Households are learning.", economy=self)
+        if self.parameters.LearningLevel is not None:
             for hh in self.households:
                 hh.learn() # Mutate or imitate
 
@@ -87,7 +87,6 @@ class Economy:
         self.goodsMarket.nextPeriod()
         self.labourMarket.nextPeriod()
         self.currentPeriod = self.currentPeriod + 1
-        self.homogeneousNoiseInflationTarget = None
         self.prevInterestRate = self.nominalInterestRate
 
         self.outputGap = None
@@ -102,7 +101,7 @@ class Economy:
         
     def getHomogeneousNoiseInflationTarget(self):
         if self.homogeneousNoiseInflationTarget is None:
-            self.homogeneousNoiseInflationTarget = random.gauss(0,Parameters.NoiseInflationTargetPerceptionSD)
+            self.homogeneousNoiseInflationTarget = random.gauss(0,self.parameters.Sigma_xi)
 
         return self.homogeneousNoiseInflationTarget
     
@@ -221,4 +220,4 @@ class Economy:
                     self.getStDevSubstitutionStrategy()
                 )
             
-            Logger.debug(message)
+            self.logger.debug(message)

@@ -9,8 +9,6 @@ Still under development.
 @author: João Dimas (joaohenriqueavila@gmail.com)
 
 """
-from model.parameters import Parameters
-from model.util.logger import Logger
 
 class GoodsMarket:
 
@@ -20,7 +18,12 @@ class GoodsMarket:
         self.prevPrice = None
 
     def getCurrentInflation(self):
-        return (self.currentPrice-self.prevPrice)/self.prevPrice if self.economy.currentPeriod > 1 else 0
+        if self.economy.currentPeriod > 1:
+            currentPrice_adj = self.currentPrice / 1e300
+            prevPrice_adj = self.prevPrice / 1e300
+            return (currentPrice_adj-prevPrice_adj)/prevPrice_adj 
+        else:
+            return 0
 
     def getPrevInflation(self):
         return self.pastInflation[-1] if self.economy.currentPeriod > 1 else 0
@@ -34,10 +37,10 @@ class GoodsMarket:
         # Furthermore, we can't calculate inflation at t=1 because we need two periods to get the difference in prices. And we can't calculate at t=1 because we still don't have the current price level.
         summation = 0
         for l in range(len(self.pastInflation)): # l = [0,20]
-            summation = summation + Parameters.Ro ** (l) * self.pastInflation[-l-1]
+            summation = summation + self.economy.parameters.Ro ** (l) * self.pastInflation[-l-1]
             assert l != 19 or self.pastInflation[-l-1] == self.pastInflation[0]
 
-        return (1-Parameters.Ro)*summation
+        return (1-self.economy.parameters.Ro)*summation
 
     def matchFirmAndConsumers(self):
         self.currentPrice = self.economy.firm.getSellingPrice()
@@ -75,9 +78,9 @@ class GoodsMarket:
         """ Prepare the object for a clean next period """
 
         self.pastInflation.append(self.getCurrentInflation())
-        self.pastInflation = self.pastInflation[-Parameters.InflationWindowOfObservation:]
-        if self.economy.currentPeriod > Parameters.InflationWindowOfObservation:
-            assert len(self.pastInflation) == Parameters.InflationWindowOfObservation, "len(self.pastPrices) = {:d}".format(len(self.pastPrices))
+        self.pastInflation = self.pastInflation[-self.economy.parameters.InflationWindowOfObservation:]
+        if self.economy.currentPeriod > self.economy.parameters.InflationWindowOfObservation:
+            assert len(self.pastInflation) == self.economy.parameters.InflationWindowOfObservation, "len(self.pastPrices) = {:d}".format(len(self.pastPrices))
         else:
             len(self.pastInflation) == self.economy.currentPeriod
             
