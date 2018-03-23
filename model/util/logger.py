@@ -51,7 +51,7 @@ class Logger:
 
         return message
 
-    def __init__(self, timestamp, scenario, experiment, loglevel):
+    def __init__(self, timestamp, loglevel, scenario, experiment):
         self.scenario = scenario
         self.experiment = experiment
         #Add custom level TRACE
@@ -64,7 +64,7 @@ class Logger:
 
 
         self.logger = logging.getLogger("ABMNK_[Sce:{:d}][Exp:{:d}]".format(scenario, experiment))
-        self.logger.handlers.clear()
+#        self.logger.handlers.clear()
         if ("Console" in loglevel and "TRACE" in loglevel["Console"]) or ("File" in loglevel and "TRACE" in loglevel["File"]):
             self.logger.setLevel(logging.TRACE)
         elif ("Console" in loglevel and "DEBUG" in loglevel["Console"]) or ("File" in loglevel and "DEBUG" in loglevel["File"]):

@@ -20,13 +20,13 @@ class SystemConfig:
     def __init__(self):
         self.LogLevel = {"Console": ["DEBUG"], "File":["DEBUG"]} # Set INFO, DEBUG or TRACE for Console and File.
     
-        self.NumberOfSimulations = 1 # Number of independent executions.
-        self.PauseInterval = None
-        self.Scenarii = [4,5]
+        self.SimulationsPerExperiment = 10 # Number of independent executions.
+        self.Scenarii = [1,3]
         self.Experiments = range(1,18)
     
+        self.PauseInterval = None
     
-def saveModelParameters(timestamp, parameters):
+def saveModelParameters(timestamp, logger, parameters):
     parametersList = {}
     members = [attr for attr in dir(parameters) if not callable(getattr(parameters, attr)) and not attr.startswith("__")]
     for member in members:
@@ -38,7 +38,7 @@ def saveModelParameters(timestamp, parameters):
 
     logger.info(parametersList)
     THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
-    with open(os.path.join(THIS_FOLDER, ("./data/ABMNK.{}[Sce_{:d}][Exp_{:d}].parameters.txt").format(timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss"), scenario, experiment)), "w", newline='') as f:
+    with open(os.path.join(THIS_FOLDER, ("./data/ABMNK.{}[Sce_{:d}][Exp_{:d}].parameters.txt").format(timestamp.strftime("%Y-%m-%dT%Hh%Mm%Ss"), parameters.Scenario, parameters.Experiment)), "w", newline='') as f:
         print(parametersList, file=f)
 
 def checkPause(systemConfig, economy, t):
@@ -65,25 +65,37 @@ def checkPause(systemConfig, economy, t):
             except Exception as ex:
                 print(ex)
 
-def simulate(simulationNumber, logger, systemConfig, parameters):
+def simulate(item, systemConfig, scenario):
     try:
         granularResults = []
+        experiment = int((item-1)/systemConfig.SimulationsPerExperiment)+1
+        simulationNumber = item % systemConfig.SimulationsPerExperiment
+        if simulationNumber == 0:
+            simulationNumber = systemConfig.SimulationsPerExperiment
+            
+        logger = Logger(timestamp, systemConfig.LogLevel, scenario, experiment)
+        parameters = Parameters(scenario, experiment)
+    
+        # Saving parameters to file.
+        saveModelParameters(timestamp, logger, parameters)
+    
         runStartTime = time.time()
-
-        logger.info("Starting run {:d}.".format(simulationNumber))
-
+    
+        logger.info("Starting scenario {:d}, experiment {:d}, simulation {:d}.".format(scenario, experiment, simulationNumber))
+    
         # Create a virtual economy with heterogeneous agents
         economy = Economy(logger, parameters, simulationNumber)
         for t in range(1,parameters.Periods+1):
-            
             checkPause(systemConfig, economy, t)
-            logger.info("[SCE {:02d}][EXP {:02d}][RUN {:03d}][PERIOD {:03d}] Simulating...".format(parameters.Scenario, parameters.Experiment, simulationNumber, t))            
             economy.runCurrentPeriod()
             granularResults.append(ResultsData.getCurrentPeriodData(economy))
             economy.describeCurrentPeriod()
             economy.nextPeriod()
-
-        logger.info("Simulation completed in {:.2f} seconds. Simulation number: {:d}.", ((time.time() - runStartTime), simulationNumber))
+    
+        logger.info("Simulation completed in {:.2f} seconds.", ((time.time() - runStartTime), scenario), economy=economy)
+        
+        ExportToCSV.exportGranularData(granularResults, timestamp, scenario, experiment, simulationNumber)
+        
         return granularResults
     except ValueError as e:
         logger.exception(e)
@@ -100,43 +112,31 @@ if __name__ == '__main__':
         aggregateStartTime = time.time()
         systemConfig = SystemConfig()
         for scenario in systemConfig.Scenarii:
-            for experiment in systemConfig.Experiments:
-                granularResults = []
-                logger = Logger(timestamp, scenario, experiment, systemConfig.LogLevel)
-                parameters = Parameters(scenario, experiment)
-        
-                # Saving parameters to file.
-                saveModelParameters(timestamp, parameters)
-        
-                processes = []
+            granularResults = []
+    
+            processes = []
+            
+            if systemConfig.SimulationsPerExperiment > 1 or len(systemConfig.Experiments)>1:
+                # Start a parallel process for each CPU
+                pool = multiprocessing.Pool(multiprocessing.cpu_count())
                 
-                if systemConfig.NumberOfSimulations > 1:
-                    # Start a parallel process for each CPU
-                    pool = multiprocessing.Pool(multiprocessing.cpu_count())
-                    
-                    partial_simulate = functools.partial(simulate, logger=logger, systemConfig=systemConfig, parameters=parameters)
-                    # Run function simulate in parallel for each independent execution and aggregate results.
-                    listOfResults = pool.imap_unordered(partial_simulate, range(1,systemConfig.NumberOfSimulations+1)) 
-                    # Append results
-                    for result in listOfResults:
-                        if len(result) > 0:
-                            granularResults = granularResults + result
-                else:
-                    granularResults = simulate(1, logger, systemConfig, parameters)
-        
-                # Sort results by Run, Period. Then, add header.
-                granularResults = [ResultsData.getHeader()] + sorted(granularResults, key=operator.itemgetter(0,1))
-        
-                logger.info("All replications completed. Total time {:.2f} seconds.", time.time() - aggregateStartTime)
-                logger.info("Saving granular data...")
-                ExportToCSV.exportGranularData(granularResults, timestamp, scenario, experiment)
-        
-                if len(granularResults) > 2:
-                    logger.info("Saving aggregate statistics...")
-                    aggregateStatistics = ResultsData.getAggregateStatistics(granularResults)
-                    ExportToCSV.exportAggregateStatistics(aggregateStatistics, timestamp, scenario, experiment)
+                partial_simulate = functools.partial(simulate, systemConfig=systemConfig, scenario=scenario)
+                # Run function simulate in parallel for each independent execution and aggregate results.
+                listOfResults = pool.imap_unordered(partial_simulate, range(1,len(systemConfig.Experiments)*systemConfig.SimulationsPerExperiment+1)) 
+                # Append results
+                for result in listOfResults:
+                    if len(result) > 0:
+                        granularResults = granularResults + result
+            else:
+                granularResults = simulate(1, systemConfig, scenario)
+    
+            # Sort results by Run, Period. Then, add header.
+            granularResults = [ResultsData.getHeader()] + sorted(granularResults, key=operator.itemgetter(0,1))
+    
+            if len(granularResults) > 2:
+                aggregateStatistics = ResultsData.getAggregateStatistics(granularResults)
+                ExportToCSV.exportAggregateStatistics(aggregateStatistics, timestamp, scenario)
 
-        logger.info("ALL PROCESSES FINISHED!")
     except Exception as e:
-        logger.exception("Error")
+        print(e)
         raise e

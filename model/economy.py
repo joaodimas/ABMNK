@@ -19,7 +19,6 @@ import random, statistics
 
 class Economy:
     def __init__(self, logger, parameters, simulationNumber):
-        #self.logger.trace("Initializing Economy")
         self.logger = logger
         self.parameters = parameters
         self.simulationNumber = simulationNumber
@@ -47,7 +46,6 @@ class Economy:
         self.firm = Firm(self)
 
         # We are assuming that initially all households choose random strategies based on initial mean values set in self.parameters.
-        #self.logger.trace("Households are mutating randomly to define their initial strategies")
         if self.parameters.ProbMutation > 0:
             for hh in self.households:
                 hh.mutateRandomly()
@@ -56,6 +54,7 @@ class Economy:
         self.homogeneousNoiseInflationTarget = None
 
     def runCurrentPeriod(self):
+        self.logger.info("Simulating current period.", economy=self)
         self.centralBank.setNominalInterestRate()
         self.labourMarket.matchFirmAndWorkers()
         self.goodsMarket.matchFirmAndConsumers()
@@ -65,7 +64,6 @@ class Economy:
             hh.prevIndexationStrategy = hh.indexationStrategy
             hh.prevSubstitutionStrategy = hh.substitutionStrategy
 
-        #self.logger.trace("[Learning] Households are learning.", economy=self)
         if self.parameters.LearningLevel is not None:
             for hh in self.households:
                 hh.learn() # Mutate or imitate
