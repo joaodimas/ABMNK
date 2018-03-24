@@ -38,7 +38,7 @@ class GoodsMarket:
         summation = 0
         for l in range(len(self.pastInflation)): # l = [0,20]
             summation = summation + self.economy.parameters.Ro ** (l) * self.pastInflation[-l-1]
-            assert l != 19 or self.pastInflation[-l-1] == self.pastInflation[0]
+#            assert l != 19 or self.pastInflation[-l-1] == self.pastInflation[0]
 
         return (1-self.economy.parameters.Ro)*summation
 
@@ -79,10 +79,10 @@ class GoodsMarket:
 
         self.pastInflation.append(self.getCurrentInflation())
         self.pastInflation = self.pastInflation[-self.economy.parameters.InflationWindowOfObservation:]
-        if self.economy.currentPeriod > self.economy.parameters.InflationWindowOfObservation:
-            assert len(self.pastInflation) == self.economy.parameters.InflationWindowOfObservation, "len(self.pastPrices) = {:d}".format(len(self.pastPrices))
-        else:
-            len(self.pastInflation) == self.economy.currentPeriod
+#        if self.economy.currentPeriod > self.economy.parameters.InflationWindowOfObservation:
+##            assert len(self.pastInflation) == self.economy.parameters.InflationWindowOfObservation, "len(self.pastPrices) = {:d}".format(len(self.pastPrices))
+#        else:
+#            len(self.pastInflation) == self.economy.currentPeriod
             
         self.prevPrice = self.currentPrice
         self.currentPrice = None

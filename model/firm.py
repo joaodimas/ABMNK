@@ -67,7 +67,7 @@ class Firm:
             summation = self.getCurrentRealProfit()
             for l in range(1, len(self.pastRealProfits)+1): # l = [1,20]
                 summation = summation + self.economy.parameters.Ro ** l * self.pastRealProfits[-l]
-                assert l != 20 or self.pastRealProfits[-l] == self.pastRealProfits[0]
+#                assert l != 20 or self.pastRealProfits[-l] == self.pastRealProfits[0]
             self.profitTrend = (1-self.economy.parameters.Ro)*summation
         return self.profitTrend
 
@@ -88,7 +88,7 @@ class Firm:
         self.prevProfit = self.getCurrentProfit()
         self.pastRealProfits.append(self.getCurrentRealProfit())
         self.pastRealProfits = self.pastRealProfits[-self.economy.parameters.ProfitWindowOfObservation:]
-        assert self.economy.currentPeriod <= self.economy.parameters.ProfitWindowOfObservation or len(self.pastRealProfits) == self.economy.parameters.ProfitWindowOfObservation
+#        assert self.economy.currentPeriod <= self.economy.parameters.ProfitWindowOfObservation or len(self.pastRealProfits) == self.economy.parameters.ProfitWindowOfObservation
         
         self.pastHiredLabour.append(self.economy.labourMarket.aggregateHiredLabour)
         self.pastSoldGoods.append(self.economy.goodsMarket.aggregateConsumption)

@@ -20,9 +20,9 @@ class SystemConfig:
     def __init__(self):
         self.LogLevel = {"Console": ["INFO"], "File":["INFO"]} # Set INFO, DEBUG or TRACE for Console and File.
     
-        self.SimulationsPerExperiment = 20 # Number of independent executions.
+        self.SimulationsPerExperiment = 20 # 20
         self.Scenarii = [1,2,3,4,5]
-        self.Experiments = range(1,18)
+        self.Experiments = range(1,18) # (1,18)
     
         self.PauseInterval = None
     
@@ -99,10 +99,10 @@ def simulate(item, systemConfig, scenario):
         return granularResults
     except ValueError as e:
         logger.exception(e)
-        raise e
+        return []
     except Exception as e:
         logger.exception("Error")
-        raise e
+        return []
 
 # MAIN EXECUTION THREAD
 if __name__ == '__main__':

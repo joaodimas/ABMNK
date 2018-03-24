@@ -91,7 +91,7 @@ class Household:
             summation = self.getCurrentRealIncome()
             for l in range(1, len(self.pastRealIncomes)+1): # l = [1,20]
                 summation = summation + self.economy.parameters.Ro ** l * self.pastRealIncomes[-l]
-                assert l != 20 or self.pastRealIncomes[-l] == self.pastRealIncomes[0]
+#                assert l != 20 or self.pastRealIncomes[-l] == self.pastRealIncomes[0]
             self.permanentIncome = (1-self.economy.parameters.Ro)*summation
         return self.permanentIncome
 
@@ -120,7 +120,7 @@ class Household:
             summation = self.getUtility()
             for l in range(1, len(self.pastUtilities)+1): # l = [1,20]
                 summation = summation + self.economy.parameters.Ro ** l * self.pastUtilities[-l]
-                assert l != 20 or self.pastUtilities[-l] == self.pastUtilities[0]
+#                assert l != 20 or self.pastUtilities[-l] == self.pastUtilities[0]
             self.smoothedUtility = (1-self.economy.parameters.Ro)*summation
         return self.smoothedUtility
 
@@ -164,7 +164,7 @@ class Household:
             if sumOfProbabilities > pointInCDF:
                 return hh['household']
 
-        assert False, "No household selected to imitate. Why?!"
+#        assert False, "No household selected to imitate. Why?!"
 
     def learn(self):        
         pointInCDF = random.random()
@@ -182,11 +182,11 @@ class Household:
         
         self.pastRealIncomes.append(self.getCurrentRealIncome())
         self.pastRealIncomes = self.pastRealIncomes[-self.economy.parameters.IncomeWindowOfObservation:]
-        assert self.economy.currentPeriod <= self.economy.parameters.IncomeWindowOfObservation or len(self.pastRealIncomes) == self.economy.parameters.IncomeWindowOfObservation
+#        assert self.economy.currentPeriod <= self.economy.parameters.IncomeWindowOfObservation or len(self.pastRealIncomes) == self.economy.parameters.IncomeWindowOfObservation
 
         self.pastUtilities.append(self.getUtility())
         self.pastUtilities = self.pastUtilities[-self.economy.parameters.UtilityWindowOfObservation:]
-        assert self.economy.currentPeriod <= self.economy.parameters.UtilityWindowOfObservation or len(self.pastUtilities) == self.economy.parameters.UtilityWindowOfObservation
+#        assert self.economy.currentPeriod <= self.economy.parameters.UtilityWindowOfObservation or len(self.pastUtilities) == self.economy.parameters.UtilityWindowOfObservation
             
         self.prevConsumptionShare = self.getConsumptionShare()
         self.prevSavingsBalance = self.getSavingsBalance()

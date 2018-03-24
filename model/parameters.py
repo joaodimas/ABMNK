@@ -34,7 +34,7 @@ class Parameters:
         self.NaturalInterestRate = 0 # 0
         self.NaturalUnemploymentRate = 0 # 0
         self.InflationTarget = 0.02 # 0.02
-        self.InterestLowerBound = -10000
+        self.InterestLowerBound = -0.005
         
         # Households individual behavior
 #        self.setLearningLevel(1)
@@ -51,6 +51,9 @@ class Parameters:
 #        self.Phi_inflation = 1.2
 #        self.Phi_unemployment = 0.2
         
+        getattr(self, "setExperiment{:d}".format(experiment))()
+        getattr(self, "setScenario{:d}".format(scenario))()
+        
         # Windows of observation
         self.ProfitWindowOfObservation = (int) (-3 * math.log(10) / math.log(self.Ro))
         self.UtilityWindowOfObservation = (int) (-3 * math.log(10) / math.log(self.Ro))
@@ -58,7 +61,7 @@ class Parameters:
         self.IncomeWindowOfObservation = (int) (-3 * math.log(10) / math.log(self.Ro))
 
         # Initial values: The paper doesn't explicit these initial values, therefore we are assuming them.
-        self.InitialPriceLevel = 1e-300
+        self.InitialPriceLevel = 1e-10
         self.InitialLabourDemand = 0.9 * self.NumberOfHouseholds
         self.InitialMeanIndexationStrategy = 1
         self.InitialMeanSubstitutionStrategy = 1
@@ -68,8 +71,6 @@ class Parameters:
         # Maximum number for which Python keeps the mathematical precision. After that, abort the simulation.
         self.MaximumPrecision = 1e1000
         
-        getattr(self, "setExperiment{:d}".format(experiment))()
-        getattr(self, "setScenario{:d}".format(scenario))()
         
     def setLearningLevel(self, level):
         self.LearningLevel = level
