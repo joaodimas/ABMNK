@@ -21,8 +21,8 @@ class Parameters:
         Parameters common to all scenarios and experiments.
 
         """
-        self.Periods = 300 # 800
-        self.NumberOfHouseholds = 10 # 500
+        self.Periods = 800 # 800
+        self.NumberOfHouseholds = 500 # 500
 
         self.InnelasticLabourSupply = 1 # 1
         self.TechnologyFactor = 1 # 1
