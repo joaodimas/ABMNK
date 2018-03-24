@@ -17,6 +17,7 @@ class ResultsData:
     def getCurrentPeriodData(cls, economy):
         
         return [
+                economy.parameters.Experiment,
                 economy.simulationNumber,
                 economy.currentPeriod,
                 economy.goodsMarket.getCurrentInflation(),
@@ -38,7 +39,7 @@ class ResultsData:
 
     @classmethod
     def getHeader(cls):
-        return ["simulation_number", "period", "inflation", "inflation_target", "nominal_interest_rate", "mean_exp_inflation", "real_interest_rate", "unemployment_rate", "output_gap", "consumption", "real_wage_rate", "mean_real_savings_balance", "mean_indexation_strategy", "mean_substitution_strategy", "stdev_real_savings_balance", "stdev_indexation_strategy", "stdev_substitution_strategy"]
+        return ["experiment", "simulation_number", "period", "inflation", "inflation_target", "nominal_interest_rate", "mean_exp_inflation", "real_interest_rate", "unemployment_rate", "output_gap", "consumption", "real_wage_rate", "mean_real_savings_balance", "mean_indexation_strategy", "mean_substitution_strategy", "stdev_real_savings_balance", "stdev_indexation_strategy", "stdev_substitution_strategy"]
 
     @classmethod
     def getAverageGranularData(cls, resultsdata):
@@ -64,11 +65,10 @@ class ResultsData:
         return averageGranularData
 
     @classmethod
-    def getAggregateStatistics(cls, resultsdata):
-        header_aggregate = ["statistic", "inflation_gap", "unemployment", "mean_savings_balance", "mean_indexation_strategy", "mean_substitution_strategy", "stdev_savings_balance", "stdev_indexation_strategy", "stdev_substitution_strategy"]
+    def getAggregateStatistics(cls, granular_data):
+        header_aggregate = ["statistic", "inflation_gap", "nominal_interest_rate", "unemployment_rate", "mean_real_savings_balance", "mean_indexation_strategy", "mean_substitution_strategy", "stdev_real_savings_balance", "stdev_indexation_strategy", "stdev_substitution_strategy"]
 
-        header_granular = resultsdata[0:1][0]
-        granular_data = resultsdata[1:]
+        header_granular = cls.getHeader()
         
         result = [header_aggregate]
         # Mean

@@ -68,7 +68,7 @@ class LabourMarket:
         self.aggregateHiredLabour = hiredLabour
 
     def nextPeriod(self):
-        self.prevUnemploymentRate = self.unemploymentRate
+        self.prevUnemploymentRate = self.getUnemploymentRate()
         self.unemploymentRate = None
         self.nominalWageRate = None
         self.totalLabourSupply = None

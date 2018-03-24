@@ -14,15 +14,15 @@ from model.parameters import Parameters
 from model.resultsdata import ResultsData
 from model.util.export_to_csv import ExportToCSV
 from model.util.logger import Logger
-import datetime, os, time, multiprocessing, operator, functools
+import datetime, os, time, multiprocessing, functools
 
 class SystemConfig:
     def __init__(self):
         self.LogLevel = {"Console": ["INFO"], "File":["INFO"]} # Set INFO, DEBUG or TRACE for Console and File.
     
         self.SimulationsPerExperiment = 20 # 20
-        self.Scenarii = [1,2,3,4,5]
-        self.Experiments = range(1,18) # (1,18)
+        self.Scenarii = range(1,6) # range(1,6)
+        self.Experiments = range(1,18) # range(1,18)
     
         self.PauseInterval = None
     
@@ -68,7 +68,7 @@ def checkPause(systemConfig, economy, t):
 def simulate(item, systemConfig, scenario):
     try:
         granularResults = []
-        experiment = int((item-1)/systemConfig.SimulationsPerExperiment)+1
+        experiment = systemConfig.Experiments[int((item-1)/systemConfig.SimulationsPerExperiment)]
         simulationNumber = item % systemConfig.SimulationsPerExperiment
         if simulationNumber == 0:
             simulationNumber = systemConfig.SimulationsPerExperiment
@@ -85,16 +85,20 @@ def simulate(item, systemConfig, scenario):
     
         # Create a virtual economy with heterogeneous agents
         economy = Economy(logger, parameters, simulationNumber)
+        
+        # Simulate all periods
         for t in range(1,parameters.Periods+1):
             checkPause(systemConfig, economy, t)
             economy.runCurrentPeriod()
-            granularResults.append(ResultsData.getCurrentPeriodData(economy))
+            if t % 50 == 0 and t >= 100:
+                granularResults.append(ResultsData.getCurrentPeriodData(economy))
             economy.describeCurrentPeriod()
-            economy.nextPeriod()
+            if t < parameters.Periods:
+                economy.nextPeriod()
     
-        logger.info("Simulation completed in {:.2f} seconds.", ((time.time() - runStartTime), scenario), economy=economy)
-        
-        ExportToCSV.exportGranularData(granularResults, timestamp, scenario, experiment, simulationNumber)
+        logger.info("Exporting granular data to CSV.", economy=economy)
+        ExportToCSV.exportGranularData([ResultsData.getHeader()] + granularResults, timestamp, scenario, experiment, simulationNumber)
+        logger.info("Simulation completed in {:.2f} seconds.", (time.time() - runStartTime), economy=economy)
         
         return granularResults
     except ValueError as e:
@@ -129,9 +133,6 @@ if __name__ == '__main__':
                         granularResults = granularResults + result
             else:
                 granularResults = simulate(1, systemConfig, scenario)
-    
-            # Sort results by Run, Period. Then, add header.
-            granularResults = [ResultsData.getHeader()] + sorted(granularResults, key=operator.itemgetter(0,1))
     
             if len(granularResults) > 2:
                 aggregateStatistics = ResultsData.getAggregateStatistics(granularResults)

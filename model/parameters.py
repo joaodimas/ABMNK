@@ -21,8 +21,8 @@ class Parameters:
         Parameters common to all scenarios and experiments.
 
         """
-        self.Periods = 800 # 800
-        self.NumberOfHouseholds = 500 # 500
+        self.Periods = 300 # 800
+        self.NumberOfHouseholds = 10 # 500
 
         self.InnelasticLabourSupply = 1 # 1
         self.TechnologyFactor = 1 # 1
@@ -54,11 +54,11 @@ class Parameters:
         getattr(self, "setExperiment{:d}".format(experiment))()
         getattr(self, "setScenario{:d}".format(scenario))()
         
-        # Windows of observation
-        self.ProfitWindowOfObservation = (int) (-3 * math.log(10) / math.log(self.Ro))
-        self.UtilityWindowOfObservation = (int) (-3 * math.log(10) / math.log(self.Ro))
-        self.InflationWindowOfObservation = (int) (-3 * math.log(10) / math.log(self.Ro))
-        self.IncomeWindowOfObservation = (int) (-3 * math.log(10) / math.log(self.Ro))
+        # Windows of observation (implies that Ro^(t-l) up to 0.00005 is relevant)
+        self.ProfitWindowOfObservation = (int) (-5 * math.log(10) / math.log(self.Ro)) if self.Ro > 0 else 2
+        self.UtilityWindowOfObservation = (int) (-5 * math.log(10) / math.log(self.Ro)) if self.Ro > 0 else 2
+        self.InflationWindowOfObservation = (int) (-5 * math.log(10) / math.log(self.Ro)) if self.Ro > 0 else 2
+        self.IncomeWindowOfObservation = (int) (-5 * math.log(10) / math.log(self.Ro)) if self.Ro > 0 else 2
 
         # Initial values: The paper doesn't explicit these initial values, therefore we are assuming them.
         self.InitialPriceLevel = 1e-10

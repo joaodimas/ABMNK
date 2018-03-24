@@ -153,69 +153,70 @@ class Economy:
     
     def describeCurrentPeriod(self):
         if self.currentPeriod % 10 == 0:
-            message = """ 
-                PERIOD {:d}
-                ----------------------------
-                Unemployment rate: {:.2%}
-                Inflation: {:.2%}
-                Interest rate (nominal): {:.2%}
+            if self.logger.isEnabledForDebug():
+                message = """ 
+                    PERIOD {:d}
+                    ----------------------------
+                    Unemployment rate: {:.2%}
+                    Inflation: {:.2%}
+                    Interest rate (nominal): {:.2%}
+                    
+                    Production: {:.2f}
+                    Goods sold: {:.2f}
+                    Excess supply: {:.2f}
+                    Price: {:.2f}
+                    
+                    Mean expected inflation: {:.2%}
+                    Real interest rate: {:.2%}
+                    Output gap: {:.2%}
+                    
+                    Total profit (real): {:.2f}
+                    Profit trend (real): {:.2f}
+                    Wage rate (real): {:.2f}
+                    
+                    Mean perm. income (real): {:.2f}
+                    Mean current income (real): {:.2f}
+                    Mean savings (real): {:.2f}
+                    Mean index. strat: {:.2f}
+                    Mean subs. strat: {:.2f}
+                    Mean cons. share: {:.2f}
+                    Mean cons. demand: {:.2f}
+        
+                    Std dev expected inflation: {:.2f}
+                    Std dev index. strat: {:.2f}
+                    Std dev subs. strat: {:.2f}
+                    ----------------------------
+                """.format(
+                        self.currentPeriod,
+                        
+                        self.labourMarket.getUnemploymentRate(),
+                        self.goodsMarket.getCurrentInflation(),
+                        self.nominalInterestRate,
+                        
+                        self.firm.getProduction(),
+                        self.goodsMarket.aggregateConsumption,
+                        self.firm.getProduction()-self.goodsMarket.aggregateConsumption,
+                        self.goodsMarket.currentPrice,
+                        
+                        self.getMeanExpectedInflation(),
+                        self.nominalInterestRate - self.getMeanExpectedInflation(),
+                        self.getOutputGap(),
+                        
+                        self.firm.getCurrentRealProfit(),
+                        self.firm.getProfitTrend(),
+                        self.labourMarket.getRealWageRate(),
+                        
+                        statistics.mean([hh.getPermanentIncome() for hh in self.households]),
+                        statistics.mean([hh.getCurrentNominalIncome()/self.goodsMarket.currentPrice for hh in self.households]),
+                        self.getMeanRealSavingsBalance(),
+                        self.getMeanIndexationStrategy(),
+                        self.getMeanSubstitutionStrategy(),
+                        statistics.mean([hh.getConsumptionShare() for hh in self.households]),
+                        statistics.mean([hh.getConsumptionDemand() for hh in self.households]),
+                        
+                        self.getStDevExpectedInflation(),
+                        self.getStDevIndexationStrategy(),
+                        self.getStDevSubstitutionStrategy()
+                    )
                 
-                Production: {:.2f}
-                Goods sold: {:.2f}
-                Excess supply: {:.2f}
-                Price: {:.2f}
-                
-                Mean expected inflation: {:.2%}
-                Real interest rate: {:.2%}
-                Output gap: {:.2%}
-                
-                Total profit (real): {:.2f}
-                Profit trend (real): {:.2f}
-                Wage rate (real): {:.2f}
-                
-                Mean perm. income (real): {:.2f}
-                Mean current income (real): {:.2f}
-                Mean savings (real): {:.2f}
-                Mean index. strat: {:.2f}
-                Mean subs. strat: {:.2f}
-                Mean cons. share: {:.2f}
-                Mean cons. demand: {:.2f}
-    
-                Std dev expected inflation: {:.2f}
-                Std dev index. strat: {:.2f}
-                Std dev subs. strat: {:.2f}
-                ----------------------------
-            """.format(
-                    self.currentPeriod,
-                    
-                    self.labourMarket.getUnemploymentRate(),
-                    self.goodsMarket.getCurrentInflation(),
-                    self.nominalInterestRate,
-                    
-                    self.firm.getProduction(),
-                    self.goodsMarket.aggregateConsumption,
-                    self.firm.getProduction()-self.goodsMarket.aggregateConsumption,
-                    self.goodsMarket.currentPrice,
-                    
-                    self.getMeanExpectedInflation(),
-                    self.nominalInterestRate - self.getMeanExpectedInflation(),
-                    self.getOutputGap(),
-                    
-                    self.firm.getCurrentRealProfit(),
-                    self.firm.getProfitTrend(),
-                    self.labourMarket.getRealWageRate(),
-                    
-                    statistics.mean([hh.getPermanentIncome() for hh in self.households]),
-                    statistics.mean([hh.getCurrentNominalIncome()/self.goodsMarket.currentPrice for hh in self.households]),
-                    self.getMeanRealSavingsBalance(),
-                    self.getMeanIndexationStrategy(),
-                    self.getMeanSubstitutionStrategy(),
-                    statistics.mean([hh.getConsumptionShare() for hh in self.households]),
-                    statistics.mean([hh.getConsumptionDemand() for hh in self.households]),
-                    
-                    self.getStDevExpectedInflation(),
-                    self.getStDevIndexationStrategy(),
-                    self.getStDevSubstitutionStrategy()
-                )
-            
-            self.logger.debug(message)
+                self.logger.debug(message)
