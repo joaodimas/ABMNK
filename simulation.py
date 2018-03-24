@@ -18,10 +18,10 @@ import datetime, os, time, multiprocessing, operator, functools
 
 class SystemConfig:
     def __init__(self):
-        self.LogLevel = {"Console": ["DEBUG"], "File":["DEBUG"]} # Set INFO, DEBUG or TRACE for Console and File.
+        self.LogLevel = {"Console": ["INFO"], "File":["INFO"]} # Set INFO, DEBUG or TRACE for Console and File.
     
-        self.SimulationsPerExperiment = 10 # Number of independent executions.
-        self.Scenarii = [1,3]
+        self.SimulationsPerExperiment = 20 # Number of independent executions.
+        self.Scenarii = [1,2,3,4,5]
         self.Experiments = range(1,18)
     
         self.PauseInterval = None

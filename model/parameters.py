@@ -21,8 +21,8 @@ class Parameters:
         Parameters common to all scenarios and experiments.
 
         """
-        self.Periods = 300 # 800
-        self.NumberOfHouseholds = 10 # 500
+        self.Periods = 800 # 800
+        self.NumberOfHouseholds = 500 # 500
 
         self.InnelasticLabourSupply = 1 # 1
         self.TechnologyFactor = 1 # 1
@@ -37,19 +37,19 @@ class Parameters:
         self.InterestLowerBound = -10000
         
         # Households individual behavior
-        self.setLearningLevel(1)
-        self.Ro = 0.45
-        self.Sigma_mutK = 0.30
-        self.Sigma_mutW = 0.30
+#        self.setLearningLevel(1)
+#        self.Ro = 0.45
+#        self.Sigma_mutK = 0.30
+#        self.Sigma_mutW = 0.30
         
         # Expectations
-        self.HouseholdCoordination = False # Coordination
-        self.Sigma_xi = 0.02 # Noise in the communication of inflation target by the CB
-        self.Chi = 0.7 # Credibility of the central bank
-        
-        # Monetary policy params
-        self.Phi_inflation = 1.2
-        self.Phi_unemployment = 0.2
+#        self.HouseholdCoordination = False # Coordination
+#        self.Sigma_xi = 0.02 # Noise in the communication of inflation target by the CB
+#        self.Chi = 0.7 # Credibility of the central bank
+#        
+#        # Monetary policy params
+#        self.Phi_inflation = 1.2
+#        self.Phi_unemployment = 0.2
         
         # Windows of observation
         self.ProfitWindowOfObservation = (int) (-3 * math.log(10) / math.log(self.Ro))
