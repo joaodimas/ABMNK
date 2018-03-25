@@ -164,7 +164,7 @@ class Household:
             if sumOfProbabilities > pointInCDF:
                 return hh['household']
 
-#        assert False, "No household selected to imitate. Why?!"
+        assert False, "No household selected to imitate. Why?!. pointInCDF: {:.2f}, sumOfUtility: {:.2f}, sumOfProbabilities: {:.2f}, priceLevel: {:.2f}".format(pointInCDF, sumOfUtility, sumOfProbabilities, self.economy.goodsMarket.currentPrice)
 
     def learn(self):        
         pointInCDF = random.random()
