@@ -1,16 +1,27 @@
 rm(list = ls())
 
-setwd("~/GitHub/ABMNK/20180324_data/")
-prefix <- "ABMNK.2018-03-24T16h44m44s"
+file_prefix <- "ABMNK.2018-03-24T16h44m44s"
+folder_prefix <- "20180324"
 
-result <- data.frame(row.names = c("inflation_gap", "unemployment_rate", "mean_indexation_strategy", "mean_substitution_strategy", "var_indexation_strategy", "var_substitution_strategy"))
+
+setwd(paste0("~/GitHub/ABMNK/", folder_prefix, "_data/"))
+
+result <- data.frame()
 for(scenario in c(1:5)) {
-  df <- read.csv(paste0(prefix,"[Sce_",scenario,"]AggregateStatistics.csv"), row.names = 1)
-  result["inflation_gap", paste0("sce_",scenario)] <- df["mean", "inflation_gap"]
-  result["unemployment_rate", paste0("sce_",scenario)] <- df["mean", "unemployment_rate"]
-  result["mean_indexation_strategy", paste0("sce_",scenario)] <- df["mean", "mean_indexation_strategy"]
-  result["mean_substitution_strategy", paste0("sce_",scenario)] <- df["mean", "mean_substitution_strategy"]
-  result["var_indexation_strategy", paste0("sce_",scenario)] <- df["mean", "stdev_indexation_strategy"]^2
-  result["var_substitution_strategy", paste0("sce_",scenario)] <- df["mean", "stdev_substitution_strategy"]^2
+  df <- read.csv(paste0(file_prefix,"[Sce_",scenario,"]AggregateStatistics.csv"), row.names = 1)
+  result["inflation_gap_mean", paste0("sce_",scenario)] <- df["mean", "inflation_gap"]
+  result["inflation_gap_stdev", paste0("sce_",scenario)] <- df["stdev", "inflation_gap"]
+  result["unemployment_rate_mean", paste0("sce_",scenario)] <- df["mean", "unemployment_rate"]
+  result["unemployment_rate_stdev", paste0("sce_",scenario)] <- df["stdev", "unemployment_rate"]
+  result["mean_indexation_strategy_mean", paste0("sce_",scenario)] <- df["mean", "mean_indexation_strategy"]
+  result["mean_indexation_strategy_stdev", paste0("sce_",scenario)] <- df["stdev", "mean_indexation_strategy"]
+  result["mean_substitution_strategy_mean", paste0("sce_",scenario)] <- df["mean", "mean_substitution_strategy"]
+  result["mean_substitution_strategy_stdev", paste0("sce_",scenario)] <- df["stdev", "mean_substitution_strategy"]
+  result["var_indexation_strategy_mean", paste0("sce_",scenario)] <- df["mean", "stdev_indexation_strategy"]^2
+  result["var_indexation_strategy_stdev", paste0("sce_",scenario)] <- df["stdev", "stdev_indexation_strategy"]^2
+  result["var_substitution_strategy_mean", paste0("sce_",scenario)] <- df["mean", "stdev_substitution_strategy"]^2
+  result["var_substitution_strategy_stdev", paste0("sce_",scenario)] <- df["stdev", "stdev_substitution_strategy"]^2
 }
+
+write.csv(result, "Paper_AggregateData.csv")
 
