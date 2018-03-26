@@ -1,7 +1,7 @@
 rm(list = ls())
 
-file_prefix <- "ABMNK.2018-03-24T16h44m44s"
-folder_prefix <- "20180324"
+file_prefix <- "ABMNK.2018-03-25T20h02m30s"
+folder_prefix <- "20180325"
 
 
 setwd(paste0("~/GitHub/ABMNK/", folder_prefix, "_data/"))
