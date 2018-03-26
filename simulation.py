@@ -21,8 +21,8 @@ class SystemConfig:
         self.LogLevel = {"Console": ["INFO"], "File":["INFO"]} # Set INFO, DEBUG or TRACE for Console and File.
     
         self.SimulationsPerExperiment = 20 # 20
-        self.Scenarii = range(1,6) # range(1,6)
-        self.Experiments = range(1,18) # range(1,18)
+        self.Scenarii = [4,5] # range(1,6)
+        self.Experiments = [9,12,17] # range(1,18)
     
         self.PauseInterval = None
     
