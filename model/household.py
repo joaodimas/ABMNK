@@ -43,7 +43,7 @@ class Household:
         if self.reservationWage is None:
             if self.economy.currentPeriod == 1:
                 # Not explicit in the model. We are assuming a random initial reservation wage.
-                self.reservationWage = random.randint(self.economy.parameters.InitialReservationWageRange[0], self.economy.parameters.InitialReservationWageRange[1])
+                self.reservationWage = random.uniform(self.economy.parameters.InitialReservationWageRange[0], self.economy.parameters.InitialReservationWageRange[1])
             else:
                 """ Equation (1) """
                 if self.getExpectedInflation() > 0:
