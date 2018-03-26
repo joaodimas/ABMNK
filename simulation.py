@@ -22,7 +22,7 @@ class SystemConfig:
     
         self.SimulationsPerExperiment = 20 # 20
         self.Scenarii = [4,5] # range(1,6)
-        self.Experiments = [9,12,17] # range(1,18)
+        self.Experiments = range(1,18) # range(1,18)
     
         self.PauseInterval = None
     

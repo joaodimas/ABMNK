@@ -61,7 +61,7 @@ class Parameters:
         self.IncomeWindowOfObservation = (int) (-5 * math.log(10) / math.log(self.Ro)) if self.Ro > 0 else 2
 
         # Initial values: The paper doesn't explicit these initial values, therefore we are assuming them.
-        self.InitialPriceLevel = 1e-300
+        self.InitialPriceLevel = 1
         self.InitialLabourDemand = 0.1 * self.NumberOfHouseholds
         self.InitialMeanIndexationStrategy = 0.2
         self.InitialMeanSubstitutionStrategy = 0.2
@@ -69,7 +69,7 @@ class Parameters:
         self.InitialSavingsBalance = 0
         
         # Maximum number for which Python keeps the mathematical precision. After that, abort the simulation.
-        self.MaximumPrecision = 1e1000
+        self.MaximumPrecision = 1e300
         
         
     def setLearningLevel(self, level):
