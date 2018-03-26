@@ -1,0 +1,3 @@
+statistic,inflation_gap,nominal_interest_rate,unemployment_rate,mean_real_savings_balance,mean_indexation_strategy,mean_substitution_strategy,stdev_real_savings_balance,stdev_indexation_strategy,stdev_substitution_strategy
+mean,nan,nan,0.581266957167248,nan,0.39048456299613554,0.21383465617110986,nan,0.20084605703956196,0.21941052943547337
+stdev,nan,nan,0.38993077430016415,nan,0.23206397938263418,0.26164417814460533,nan,0.09750914937122818,0.10834019015813195
