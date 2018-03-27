@@ -43,7 +43,7 @@ class Household:
         if self.reservationWage is None:
             if self.economy.currentPeriod == 1:
                 # Not explicit in the model. We are assuming a random initial reservation wage.
-                self.reservationWage = random.uniform(self.economy.parameters.InitialReservationWageRange[0], self.economy.parameters.InitialReservationWageRange[1])
+                self.reservationWage =self.economy.parameters.InitialReservationWage
             else:
                 """ Equation (1) """
                 if self.getExpectedInflation() > 0:
@@ -126,7 +126,7 @@ class Household:
 
     def getUtility(self):
         # The paper does not specify what would happend when a household has 0 consumption. Since this might happen, and the log function is undefined for 0, we specify a fixed negative utility.
-        return math.log(self.effectivelyConsumedGoods) if self.effectivelyConsumedGoods > 0 else -1000
+        return math.log(self.effectivelyConsumedGoods) if self.effectivelyConsumedGoods > 0 else -2
 
     def imitateSomeone(self):
         other = self.selectHouseholdToImitate()

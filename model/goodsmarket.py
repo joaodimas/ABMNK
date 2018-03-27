@@ -26,11 +26,11 @@ class GoodsMarket:
             return 0
 
     def getPrevInflation(self):
-        return self.pastInflation[-1] if self.economy.currentPeriod > 1 else 0
+        return self.pastInflation[-1] if self.economy.currentPeriod > 1 else self.economy.parameters.InitialInflation
 
     def getPastInflationTrend(self):
         if self.economy.currentPeriod <= 2:
-            return 0
+            return self.economy.parameters.InitialInflation
         
         # We believe there's a mistake in the paper, equation 17. According to the paper, for workers to form their expected inflation, they need the inflation trend at time t (using all PAST AND CURRENT inflation rates, analogous to the formulas for permanent income and smoothed utility).
         # However, before we can calculate current inflation (rate of change in goods' price), we need the result of the whole process from the wage bargain until production. Since expected inflation is an input parameter in the wage bargain function, we can use only past values of inflation to form the trend.
@@ -38,7 +38,6 @@ class GoodsMarket:
         summation = 0
         for l in range(len(self.pastInflation)): # l = [0,20]
             summation = summation + self.economy.parameters.Ro ** (l) * self.pastInflation[-l-1]
-#            assert l != 19 or self.pastInflation[-l-1] == self.pastInflation[0]
 
         return (1-self.economy.parameters.Ro)*summation
 
@@ -79,10 +78,6 @@ class GoodsMarket:
 
         self.pastInflation.append(self.getCurrentInflation())
         self.pastInflation = self.pastInflation[-self.economy.parameters.InflationWindowOfObservation:]
-#        if self.economy.currentPeriod > self.economy.parameters.InflationWindowOfObservation:
-##            assert len(self.pastInflation) == self.economy.parameters.InflationWindowOfObservation, "len(self.pastPrices) = {:d}".format(len(self.pastPrices))
-#        else:
-#            len(self.pastInflation) == self.economy.currentPeriod
             
         self.prevPrice = self.currentPrice
         self.currentPrice = None

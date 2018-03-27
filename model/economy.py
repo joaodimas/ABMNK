@@ -24,6 +24,8 @@ class Economy:
         self.simulationNumber = simulationNumber
         self.prevInterestRate = 0
         self.outputGap = None
+        self.welfare = None  
+        self.nonConsumingHouseholds = None        
         self.meanExpectedInflation = None
         self.meanRealSavingsBalance = None
         self.meanIndexationStrategy = None 
@@ -39,7 +41,6 @@ class Economy:
             householdId = i+1
             household = Household(householdId, self)
             self.households.append(household)
-        self.priceLevel = self.parameters.InitialPriceLevel
         self.centralBank = CentralBank(self)
         self.labourMarket = LabourMarket(self)
         self.goodsMarket = GoodsMarket(self)
@@ -67,7 +68,7 @@ class Economy:
         if self.parameters.LearningLevel is not None:
             for hh in self.households:
                 hh.learn() # Mutate or imitate
-
+                
     def getOutputGap(self):
         if self.outputGap is None:
             potentialOutput = self.firm.productionFunction(self.labourMarket.getTotalLabourSupply())
@@ -88,6 +89,8 @@ class Economy:
         self.prevInterestRate = self.nominalInterestRate
 
         self.outputGap = None
+        self.welfare = None
+        self.nonConsumingHouseholds = None
         self.meanExpectedInflation = None
         self.meanRealSavingsBalance = None
         self.meanIndexationStrategy = None 
@@ -97,6 +100,17 @@ class Economy:
         self.stdevIndexationStrategy = None
         self.stdevSubstitutionStrategy = None
         
+    def getWelfare(self):
+        if self.welfare is None:
+            self.welfare = sum([hh.getUtility() for hh in self.households])
+        return self.welfare
+        
+    def getNonConsumingHouseholds(self):
+        if self.nonConsumingHouseholds is None:
+            self.nonConsumingHouseholds = len([hh for hh in self.households if hh.effectivelyConsumedGoods == 0])
+            
+        return self.nonConsumingHouseholds
+    
     def getHomogeneousNoiseInflationTarget(self):
         if self.homogeneousNoiseInflationTarget is None:
             self.homogeneousNoiseInflationTarget = random.gauss(0,self.parameters.Sigma_xi)
@@ -155,39 +169,44 @@ class Economy:
         if self.currentPeriod % 10 == 0:
             if self.logger.isEnabledForDebug():
                 message = """ 
-                    PERIOD {:d}
-                    ----------------------------
-                    Unemployment rate: {:.2%}
-                    Inflation: {:.2%}
-                    Interest rate (nominal): {:.2%}
-                    
-                    Production: {:.2f}
-                    Goods sold: {:.2f}
-                    Excess supply: {:.2f}
-                    Price: {:.2f}
-                    
-                    Mean expected inflation: {:.2%}
-                    Real interest rate: {:.2%}
-                    Output gap: {:.2%}
-                    
-                    Total profit (real): {:.2f}
-                    Profit trend (real): {:.2f}
-                    Wage rate (real): {:.2f}
-                    
-                    Mean perm. income (real): {:.2f}
-                    Mean current income (real): {:.2f}
-                    Mean savings (real): {:.2f}
-                    Mean index. strat: {:.2f}
-                    Mean subs. strat: {:.2f}
-                    Mean cons. share: {:.2f}
-                    Mean cons. demand: {:.2f}
-        
-                    Std dev expected inflation: {:.2f}
-                    Std dev index. strat: {:.2f}
-                    Std dev subs. strat: {:.2f}
-                    ----------------------------
+    PERIOD {:d}
+    ----------------------------
+    Welfare: {:.2f}
+    
+    Unemployment rate: {:.2%}
+    Inflation: {:.2%}
+    Interest rate (nominal): {:.2%}
+    
+    Production: {:.2f}
+    Goods sold: {:.2f}
+    Excess supply: {:.2f}
+    Price: {:.2f}
+    
+    Mean expected inflation: {:.2%}
+    Real interest rate: {:.2%}
+    Output gap: {:.2%}
+    
+    Total profit (real): {:.2f}
+    Profit trend (real): {:.2f}
+    Wage rate (real): {:.2f}
+    
+    Mean perm. income (real): {:.2f}
+    Mean current income (real): {:.2f}
+    Mean savings (real): {:.2f}
+    Mean index. strat: {:.2f}
+    Mean subs. strat: {:.2f}
+    Mean cons. share: {:.2f}
+    Mean cons. demand: {:.2f}
+
+    Std dev expected inflation: {:.2f}
+    Std dev index. strat: {:.2f}
+    Std dev subs. strat: {:.2f}
+    ----------------------------
                 """.format(
+                
                         self.currentPeriod,
+
+                        self.getWelfare(),
                         
                         self.labourMarket.getUnemploymentRate(),
                         self.goodsMarket.getCurrentInflation(),

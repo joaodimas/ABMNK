@@ -26,6 +26,7 @@ class ResultsData:
                 economy.getMeanExpectedInflation(),
                 economy.nominalInterestRate - economy.getMeanExpectedInflation(),
                 economy.labourMarket.getUnemploymentRate(),
+                economy.getWelfare(),
                 economy.getOutputGap(),
                 economy.goodsMarket.aggregateConsumption,
                 economy.labourMarket.getRealWageRate(),
@@ -35,11 +36,12 @@ class ResultsData:
                 economy.getStDevRealSavingsBalance(),
                 economy.getStDevIndexationStrategy(),
                 economy.getStDevSubstitutionStrategy(),
+                economy.getNonConsumingHouseholds()
                 ]
 
     @classmethod
     def getHeader(cls):
-        return ["experiment", "simulation_number", "period", "inflation", "inflation_target", "nominal_interest_rate", "mean_exp_inflation", "real_interest_rate", "unemployment_rate", "output_gap", "consumption", "real_wage_rate", "mean_real_savings_balance", "mean_indexation_strategy", "mean_substitution_strategy", "stdev_real_savings_balance", "stdev_indexation_strategy", "stdev_substitution_strategy"]
+        return ["experiment", "simulation_number", "period", "inflation", "inflation_target", "nominal_interest_rate", "mean_exp_inflation", "real_interest_rate", "unemployment_rate", "welfare", "output_gap", "consumption", "real_wage_rate", "mean_real_savings_balance", "mean_indexation_strategy", "mean_substitution_strategy", "stdev_real_savings_balance", "stdev_indexation_strategy", "stdev_substitution_strategy", "non_consuming_households"]
 
     @classmethod
     def getAverageGranularData(cls, resultsdata):
@@ -66,7 +68,7 @@ class ResultsData:
 
     @classmethod
     def getAggregateStatistics(cls, granular_data):
-        header_aggregate = ["statistic", "inflation_gap", "nominal_interest_rate", "unemployment_rate", "mean_real_savings_balance", "mean_indexation_strategy", "mean_substitution_strategy", "stdev_real_savings_balance", "stdev_indexation_strategy", "stdev_substitution_strategy"]
+        header_aggregate = ["statistic", "inflation_gap", "nominal_interest_rate", "unemployment_rate", "welfare", "mean_real_savings_balance", "mean_indexation_strategy", "mean_substitution_strategy", "stdev_real_savings_balance", "stdev_indexation_strategy", "stdev_substitution_strategy"]
 
         header_granular = cls.getHeader()
         
@@ -77,6 +79,7 @@ class ResultsData:
                     statistics.mean([d[header_granular.index("inflation")] - d[header_granular.index("inflation_target")] for d in granular_data]), # inflation gap
                     statistics.mean([d[header_granular.index("nominal_interest_rate")] for d in granular_data]), # interest rate
                     statistics.mean([d[header_granular.index("unemployment_rate")] for d in granular_data]), # unemployment
+                    statistics.mean([d[header_granular.index("welfare")] for d in granular_data]), # welfare                    
                     statistics.mean([d[header_granular.index("mean_real_savings_balance")] for d in granular_data]), # mean_real_savings_balance
                     statistics.mean([d[header_granular.index("mean_indexation_strategy")] for d in granular_data]), # mean_indexation_strategy
                     statistics.mean([d[header_granular.index("mean_substitution_strategy")] for d in granular_data]), # mean_substitution_strategy
@@ -91,6 +94,7 @@ class ResultsData:
                     statistics.stdev([d[header_granular.index("inflation")] - d[header_granular.index("inflation_target")] for d in granular_data]), # inflation gap
                     statistics.stdev([d[header_granular.index("nominal_interest_rate")] for d in granular_data]), # interest rate
                     statistics.stdev([d[header_granular.index("unemployment_rate")] for d in granular_data]), # unemployment
+                    statistics.stdev([d[header_granular.index("welfare")] for d in granular_data]), # welfare                                        
                     statistics.stdev([d[header_granular.index("mean_real_savings_balance")] for d in granular_data]), # stdev_real_savings_balance
                     statistics.stdev([d[header_granular.index("mean_indexation_strategy")] for d in granular_data]), # stdev_indexation_strategy
                     statistics.stdev([d[header_granular.index("mean_substitution_strategy")] for d in granular_data]), # stdev_substitution_strategy
