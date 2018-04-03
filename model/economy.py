@@ -34,6 +34,7 @@ class Economy:
         self.stdevRealSavingsBalance = None
         self.stdevIndexationStrategy = None
         self.stdevSubstitutionStrategy = None
+        self.mustScalePrices = False
 
         self.currentPeriod = 1
         self.households = []
@@ -99,6 +100,23 @@ class Economy:
         self.stdevRealSavingsBalance = None
         self.stdevIndexationStrategy = None
         self.stdevSubstitutionStrategy = None
+        
+        if self.mustScalePrices:
+            self.scalePrices()
+        
+    def scalePrices(self):
+        self.logger.info("SCALING PRICES")
+        self.mustScalePrices = False
+#        for hh in self.households:
+#        scale = 1 / (self.parameters.MaximumPrecision / 2)
+#        self.goodsMarket.prevPrice = self.goodsMarket.prevPrice * scale
+#        
+#        for hh in self.households:
+#            hh.prevSavingsBalance = hh.prevSavingsBalance * scale
+#            hh.prevWage = hh.prevWage * scale
+            
+    def scheduleScalingOfPrices(self):
+        self.mustScalePrices = True
         
     def getWelfare(self):
         if self.welfare is None:
@@ -166,7 +184,7 @@ class Economy:
         return self.stdevSubstitutionStrategy
     
     def describeCurrentPeriod(self):
-        if self.currentPeriod % 10 == 0:
+        if True:#self.currentPeriod % 10 == 0:
             if self.logger.isEnabledForDebug():
                 message = """ 
     PERIOD {:d}

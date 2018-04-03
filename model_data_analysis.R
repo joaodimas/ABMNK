@@ -1,78 +1,92 @@
+# Prepare the environment ----
 library(plotly)
 library(tseries)
 library(vars)
+rm(list = ls())
 
-setwd("/Users/jdimas/GitHub/ABMNK/data")
-data = read.csv("ABMNK.LAST.GranularData.csv")
-
-firstSim <- data[data$simulation_number == 1,]
-firstSim$simulation_number <- NULL
-last <- tail(firstSim, 10)
-
-plot_ly(firstSim, x = last$period, y = last$inflation, name = 'inflation', type="scatter", mode = 'lines+markers') %>%
-  add_trace(y = last$real_interest_rate, name = 'real interest rate') %>%
-  add_trace(y = last$nominal_interest_rate, name = 'nominal interest rate') %>%
-  add_trace(y = last$mean_exp_inflation, name = 'expected inflation') %>%
-  add_trace(y = last$output_gap, name = 'output gap')
-
-plot_ly(firstSim, x=~period, y=~mean_substitution_strategy, type="scatter", mode="lines")
-plot_ly(firstSim, x=~period, y=~consumption, type="scatter", mode="lines")
-plot_ly(firstSim, x=~period, y=~mean_real_savings_balance, type="scatter", mode="lines")
-
-plot_ly(firstSim, x=~period, y=~inflation, type="scatter", mode="lines")
-print(paste("Inflation is stationary:", adf.test(firstSim$inflation)$p.value <= 0.05))
-
-plot_ly(firstSim, x=~period, y=~nominal_interest_rate, type="scatter", mode="lines")
-print(paste("Nominal interest rate is stationary:", adf.test(firstSim$nominal_interest_rate)$p.value <= 0.05))
-
-plot_ly(firstSim, x=~period, y=~output_gap, type="scatter", mode="lines")
-print(paste("Output gap is stationary:", adf.test(firstSim$output_gap)$p.value <= 0.05))
-
-plot_ly(firstSim, x=~period, y=~consumption, type="scatter", mode="lines")
-print(paste("Consumption stationary:", adf.test(firstSim$consumption)$p.value <= 0.05))
+# Parameters ----
+dataFolder <- "20180403"
+scenario <- 5
+experiment <- 5
 
 
-var <- VAR(firstSim[,c("inflation", "output_gap", "nominal_interest_rate")], lag.max=4, ic="AIC")
-summary(var)
+fileName <- paste0("ABMNK.LAST[Sce_",scenario,"][Exp_",experiment,"][Sim_1]GranularData")
+fileName2 <- paste0("ABMNK.LAST[Sce_",scenario,"][Exp_",experiment,"][Sim_2]GranularData")
 
-Amat = diag(3)
-Amat[2,1] <- NA
-Amat[3,1] <- NA
-Amat[3,2] <- NA
-# 1 0 0
-# NA 1 0
-# NA NA 1
+# Import and prepare data ----
+setwd(paste0("/Users/jdimas/GitHub/ABMNK/",dataFolder,"_data"))
+data <- read.csv(paste0(fileName,".csv"))
+data$simulation_number <- NULL
+data$experiment <- NULL
 
-svar <- SVAR(var, estmethod = "direct", Amat=Amat, Bmat=NULL, max.iter=1000)
-summary(svar)
-svar
-cor(x=firstSim$nominal_interest_rate, y=firstSim$consumption)
-interestrate_inflation <- irf(svar, impulse="nominal_interest_rate", response="inflation", n.ahead=100)
-plot(interestrate_inflation)
-outputgap_inflation  <- irf(svar, impulse="output_gap", response="inflation")
-plot(outputgap_inflation)
-interestrate_consumption <- irf(svar, impulse="nominal_interest_rate", response="consumption")
-plot(interestrate_consumption)
-savings_consumption <- irf(svar, impulse="mean_real_savings_balance", response="consumption")
-plot(savings_consumption)
+data2 <- read.csv(paste0(fileName2,".csv"))
+data2$experiment <- NULL
+data2$simulation_number <- NULL
 
 
-###########
-#
-# Analyse averages over all simulations
-#
-###########
+# Exploratory ----
 
-setwd("/Users/jdimas/GitHub/ABMNK/data")
-fileName <- "ABMNK.2018-02-21T18h35m14s"
-data500 = read.csv(paste0(fileName,".GranularData.csv"))
-avgData <- aggregate(. ~ period, data=data500, mean)
-rm(data500)
-avgData$simulation_number <- NULL
-write.csv(avgData, file=paste0(fileName,".AverageGranularData.csv"), row.names=FALSE)
-tailAvgData <- tail(avgData, 50)
-plot_ly(avgData, x = ~period, y = ~inflation, name = 'inflation', type="scatter", mode = 'lines') %>%
+cor(x=data$nominal_interest_rate, y=data$consumption)
+
+plot_ly(data, x = ~period, y = ~inflation, name = 'inflation', type="scatter", mode = 'lines') %>%
   add_trace(y = ~real_interest_rate, name = 'real interest rate') %>%
   add_trace(y = ~nominal_interest_rate, name = 'nominal interest rate') %>%
   add_trace(y = ~mean_exp_inflation, name = 'expected inflation') %>%
   add_trace(y = ~output_gap, name = 'output gap')
+
+plot_ly(data, x=~period, y=~mean_substitution_strategy, type="scatter", mode="lines")
+plot_ly(data, x=~period, y=~consumption, type="scatter", mode="lines")
+plot_ly(data, x=~period, y=~mean_real_savings_balance, type="scatter", mode="lines")
+
+plot_ly(data, x=~period, y=~inflation, type="scatter", mode="lines")
+print(paste("Inflation is stationary:", adf.test(data$inflation)$p.value <= 0.05))
+
+plot_ly(data, x=~period, y=~nominal_interest_rate, type="scatter", mode="lines")
+print(paste("Nominal interest rate is stationary:", adf.test(data$nominal_interest_rate)$p.value <= 0.05))
+
+plot_ly(data, x=~period, y=~output_gap, type="scatter", mode="lines")
+print(paste("Output gap is stationary:", adf.test(data$output_gap)$p.value <= 0.05))
+
+plot_ly(data, x=~period, y=~consumption, type="scatter", mode="lines")
+print(paste("Consumption stationary:", adf.test(data$consumption)$p.value <= 0.05))
+
+# VAR ----
+var <- VAR(data[,c("inflation", "output_gap", "nominal_interest_rate")], lag.max=4, ic="AIC")
+
+# SVAR ----
+Amat = diag(3)
+Amat[2,1] <- NA
+Amat[3,1] <- NA
+Amat[3,2] <- NA
+svar <- SVAR(var, estmethod = "direct", Amat=Amat, Bmat=NULL, max.iter=1000)
+
+# IRF ----
+irf.interestrate.inflation <- irf(svar, impulse="nominal_interest_rate", response="inflation", n.ahead=100, cumulative = TRUE)
+irf.interestrate.inflation.df <- data.frame(irf.interestrate.inflation$irf[[1]], irf.interestrate.inflation$Upper[[1]], irf.interestrate.inflation$Lower[[1]])
+# irf.interestrate.inflation.cum <- irf(svar, impulse="nominal_interest_rate", response="inflation", n.ahead=100, cumulative = TRUE)
+# irf.interestrate.inflation.cum.df <- data.frame(irf.interestrate.inflation.cum$irf[[1]], irf.interestrate.inflation.cum$Upper[[1]], irf.interestrate.inflation.cum$Lower[[1]])
+# irf.interestrate.output_gap <- irf(svar, impulse="nominal_interest_rate", response="output_gap", n.ahead=100)
+# irf.interestrate.output_gap.cum <- irf(svar, impulse="nominal_interest_rate", response="output_gap", n.ahead=100, cumulative = TRUE)
+# irf.inflation.interestrate <- irf(svar, impulse="inflation", response="nominal_interest_rate", n.ahead=100)
+# irf.inflation.interestrate.cum <- irf(svar, impulse="inflation", response="nominal_interest_rate", n.ahead=100, cumulative = TRUE)
+# plot(irf.inflation.interestrate.cum)
+# irf.outputgap.inflation  <- irf(svar, impulse="output_gap", response="inflation")
+# irf.outputgap.inflation.cum  <- irf(svar, impulse="output_gap", response="inflation", n.ahead=100, cumulative = TRUE)
+# irf.interestrate.consumption <- irf(svar, impulse="nominal_interest_rate", response="consumption", n.ahead=100)
+# irf.interestrate.consumption.cum <- irf(svar, impulse="nominal_interest_rate", response="consumption", n.ahead=100, cumulative = TRUE)
+# irf.savings.consumption <- irf(svar, impulse="mean_real_savings_balance", response="consumption", n.ahead=100)
+# irf.savings.consumption.cum <- irf(svar, impulse="mean_real_savings_balance", response="consumption", n.ahead=100, cumulative = TRUE)
+
+var2 <- VAR(data2[,c("inflation", "output_gap", "nominal_interest_rate")], lag.max=4, ic="AIC")
+Amat = diag(3)
+Amat[2,1] <- NA
+Amat[3,1] <- NA
+Amat[3,2] <- NA
+svar2 <- SVAR(var2, estmethod = "direct", Amat=Amat, Bmat=NULL, max.iter=1000)
+irf2.interestrate.inflation <- irf(svar2, impulse="nominal_interest_rate", response="inflation", n.ahead=100, cumulative = TRUE)
+irf2.interestrate.inflation.df <- data.frame(irf2.interestrate.inflation$irf[[1]], irf2.interestrate.inflation$Upper[[1]], irf2.interestrate.inflation$Lower[[1]])
+
+plot_ly(irf.interestrate.inflation.df, y=~inflation, name="sim 1", type="scatter", mode="lines") %>%
+  add_trace(data=irf2.interestrate.inflation.df, y = ~inflation, name = 'sim 2')
+
+# Import a second data set for comparison ----

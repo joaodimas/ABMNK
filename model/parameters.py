@@ -62,9 +62,9 @@ class Parameters:
 
         # Initial values: The paper doesn't explicit these initial values, therefore we are assuming them.
         self.InitialInflation = self.InflationTarget
-        self.InitialLabourDemand = 0.9 * self.NumberOfHouseholds
+        self.InitialLabourDemand = self.NumberOfHouseholds
         self.InitialMeanIndexationStrategy = 1
-        self.InitialMeanSubstitutionStrategy = 0.5
+        self.InitialMeanSubstitutionStrategy = 1
         self.InitialReservationWage = 10
         self.InitialSavingsBalance = 0
         
@@ -287,3 +287,30 @@ class Parameters:
         self.Phi_unemployment = 0.4
         self.Sigma_xi = 0.016 # Noise in the communication of inflation target by the CB
         self.Chi = 0.4
+        
+    def setExperiment18(self):
+        self.setLearningLevel(2)
+        self.Ro = 0.5
+        self.Sigma_mutK = 0.14
+        self.Sigma_mutW = 0.07
+        self.Phi_inflation = 1.2
+        self.Phi_unemployment = 0.8
+    
+    def setExperiment19(self):
+        self.setLearningLevel(2)
+        self.Ro = 0.5
+        self.Sigma_mutK = 0.14
+        self.Sigma_mutW = 0.07
+        self.Phi_inflation = 1.2
+        self.Phi_unemployment = 0.8        
+        self.Chi = 0.4
+        
+    def setExperiment20(self):
+        self.setLearningLevel(2)
+        self.Ro = 0.5
+        self.Sigma_mutK = 0.38
+        self.Sigma_mutW = 0.38
+        self.Phi_inflation = 1.2
+        self.Phi_unemployment = 0.8        
+        self.Chi = 0.2        
+        

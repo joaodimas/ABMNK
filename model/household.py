@@ -89,9 +89,8 @@ class Household:
         """ Permanent income in Real terms """
         if self.permanentIncome is None:
             summation = self.getCurrentRealIncome()
-            for l in range(1, len(self.pastRealIncomes)+1): # l = [1,20]
+            for l in range(1, len(self.pastRealIncomes)+1):
                 summation = summation + self.economy.parameters.Ro ** l * self.pastRealIncomes[-l]
-#                assert l != 20 or self.pastRealIncomes[-l] == self.pastRealIncomes[0]
             self.permanentIncome = (1-self.economy.parameters.Ro)*summation
         return self.permanentIncome
 
@@ -110,7 +109,7 @@ class Household:
         if self.savingsBalance is None:
             self.savingsBalance = self.getCurrentNominalIncome() - self.effectivelyConsumedGoods * self.economy.goodsMarket.currentPrice
             if self.savingsBalance > self.economy.parameters.MaximumPrecision:
-                raise ValueError("Nominal savings balance is above Python's mathematical precision. Aborting simulation.")
+                self.economy.scheduleScalingOfPrices()
             
         return self.savingsBalance
 

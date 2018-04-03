@@ -18,11 +18,11 @@ import datetime, os, time, multiprocessing, functools
 
 class SystemConfig:
     def __init__(self):
-        self.LogLevel = {"Console": ["INFO"], "File":[""]} # Set INFO, DEBUG or TRACE for Console and File.
+        self.LogLevel = {"Console": ["DEBUG"], "File":["DEBUG"]} # Set INFO, DEBUG or TRACE for Console and File.
     
-        self.SimulationsPerExperiment = 20 # 20
-        self.Scenarii = range(1,6)
-        self.Experiments = range(1,18)
+        self.SimulationsPerExperiment = 2 # 20
+        self.Scenarii = [5]
+        self.Experiments = [5]
     
         self.PauseInterval = None
     
@@ -90,7 +90,7 @@ def simulate(item, systemConfig, scenario):
         for t in range(1,parameters.Periods+1):
             checkPause(systemConfig, economy, t)
             economy.runCurrentPeriod()
-            if t % 50 == 0 and t >= 100:
+            if True:#t % 50 == 0 and t >= 100:
                 granularResults.append(ResultsData.getCurrentPeriodData(economy))
             economy.describeCurrentPeriod()
             if t < parameters.Periods:

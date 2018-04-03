@@ -27,9 +27,12 @@ class Firm:
     def getProduction(self):
         """ Equation (9) """
         if self.production is None:
-            self.production = self.productionFunction(self.economy.labourMarket.aggregateHiredLabour)
+            self.production = self.productionFunction(self.getHiredLabour())
 
         return self.production
+    
+    def getHiredLabour(self):
+        return self.economy.labourMarket.aggregateHiredLabour
     
     def productionFunction(self, labour):
         return self.economy.parameters.TechnologyFactor * labour ** (1 - self.economy.parameters.Alpha)
@@ -51,7 +54,7 @@ class Firm:
             self.sellingPrice = (1 + self.economy.parameters.Mu) * self.getTotalCost() / ((1 - self.economy.parameters.Alpha) * self.getProduction())
 
         if self.sellingPrice > self.economy.parameters.MaximumPrecision:
-            raise ValueError("Price is above Python's mathematical precision. Aborting simulation.")
+            self.economy.scheduleScalingOfPrices()
 
         return self.sellingPrice
 
@@ -62,6 +65,9 @@ class Firm:
 
         return self.profit
 
+    def getExcessSupply(self):
+        return self.getProduction()-self.economy.goodsMarket.aggregateConsumption
+    
     def getProfitTrend(self):
         if self.profitTrend is None:
             summation = self.getCurrentRealProfit()
@@ -72,8 +78,10 @@ class Firm:
         return self.profitTrend
 
     def chooseNextPeriodLabourDemand(self):
-        if self.getCurrentRealProfit() >= self.getProfitTrend():
-            self.labourDemand = self.labourDemand * (1 + self.economy.parameters.Epsilon)
+        #if self.getCurrentRealProfit() >= self.getProfitTrend():
+        if self.getExcessSupply() == 0:
+            if self.getHiredLabour() < self.economy.labourMarket.getTotalLabourSupply():
+                self.labourDemand = self.labourDemand * (1 + self.economy.parameters.Epsilon)
         else:
             self.labourDemand = self.labourDemand * (1 - self.economy.parameters.Epsilon)
 

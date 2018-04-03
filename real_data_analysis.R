@@ -8,6 +8,12 @@ while (!require("ecm")) install.packages("ecm")
 rm(list = ls())
 setwd("/Users/jdimas/GitHub/ABMNK/real_data")
 data <- read.csv("data.csv", colClasses=c("Date", rep("numeric", 21)))
+data2 <- tail(na.omit(data[,c("date", "inflation", "exp_inflation", "nominal_interest_rate", "output_gap")]),88)
+data2$inflation_diff <- c(NA, diff(data2$inflation))
+data2$exp_inflation_diff <- c(NA, diff(data2$exp_inflation))
+data2$nominal_interest_rate_diff <- c(NA, diff(data2$nominal_interest_rate))
+data2$output_gap_diff <- c(NA, diff(data2$output_gap))
+write.csv(data2, file ="data2.csv", row.names=FALSE)
 
 # Monetary policy responding to expected inflation ------------------------
 
@@ -61,10 +67,10 @@ plot_ly(df, x=~date, y = ~nominal_interest_rate, name = 'nominal interest rate',
 # Other analysis  ---------------------------------------------------------
 
 # CONTINUE TO ANALYSE WHAT DROVE INTEREST RATES. PAY ATTENTION TO THE BREAK AROUND 2012.
-df$inflation_diff <- c(0, diff(df$inflation))
-df$exp_inflation_diff <- c(0, diff(df$exp_inflation))
-df$nominal_interest_rate_diff <- c(0, diff(df$nominal_interest_rate))
-df$output_gap_diff <- c(0, diff(df$output_gap))
+df$inflation_diff <- c(NA, diff(df$inflation))
+df$exp_inflation_diff <- c(NA, diff(df$exp_inflation))
+df$nominal_interest_rate_diff <- c(NA, diff(df$nominal_interest_rate))
+df$output_gap_diff <- c(NA, diff(df$output_gap))
 
 plot_ly(df, x=~date, y=~inflation_diff, type="scatter", mode="lines")
 adf.test(df$inflation_diff)
