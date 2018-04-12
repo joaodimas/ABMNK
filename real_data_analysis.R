@@ -5,19 +5,19 @@ while (!require("strucchange")) install.packages("strucchange")
 while (!require("ecm")) install.packages("ecm")
 
 # Initial import ----------------------------------------------------------
-rm(list = ls())
+# rm(list = ls())
 setwd("/Users/jdimas/GitHub/ABMNK/real_data")
-data <- read.csv("data.csv", colClasses=c("Date", rep("numeric", 21)))
-data2 <- tail(na.omit(data[,c("date", "inflation", "exp_inflation", "nominal_interest_rate", "output_gap")]),88)
-data2$inflation_diff <- c(NA, diff(data2$inflation))
-data2$exp_inflation_diff <- c(NA, diff(data2$exp_inflation))
-data2$nominal_interest_rate_diff <- c(NA, diff(data2$nominal_interest_rate))
-data2$output_gap_diff <- c(NA, diff(data2$output_gap))
-write.csv(data2, file ="data2.csv", row.names=FALSE)
+real_data <- read.csv("data.csv", colClasses=c("Date", rep("numeric", 21)))
+real_data2 <- tail(na.omit(real_data[,c("date", "inflation", "exp_inflation", "nominal_interest_rate", "output_gap")]),88)
+real_data2$inflation_diff <- c(NA, diff(real_data2$inflation))
+real_data2$exp_inflation_diff <- c(NA, diff(real_data2$exp_inflation))
+real_data2$nominal_interest_rate_diff <- c(NA, diff(real_data2$nominal_interest_rate))
+real_data2$output_gap_diff <- c(NA, diff(real_data2$output_gap))
+write.csv(real_data2, file ="data2.csv", row.names=FALSE)
 
 # Monetary policy responding to expected inflation ------------------------
 
-df <- na.omit(data[,c("date", "exp_inflation", "nominal_interest_rate", "real_interest_rate")])
+df <- na.omit(real_data[,c("date", "exp_inflation", "nominal_interest_rate", "real_interest_rate")])
 rownames(df) <- c(1:nrow(df))
 plot_ly(df, x=~date, y = ~exp_inflation, name = 'expected inflation', type="scatter", mode = 'lines+markers',  hoverinfo = 'text', text = ~paste(rownames(df), date, exp_inflation, sep="<br>")) %>%
   add_trace(y = ~real_interest_rate, name = 'real interest rate') %>%
@@ -47,7 +47,7 @@ breakpoints(real_interest_rate ~ lagpad(exp_inflation,1), data=df)$breakpoints
 
 # Monetary policy x Output gap and expected inflation ---------
 
-df <- na.omit(data[,c("date", "nominal_interest_rate", "real_interest_rate", "output_gap", "exp_inflation", "inflation")])
+df <- na.omit(realdata[,c("date", "nominal_interest_rate", "real_interest_rate", "output_gap", "exp_inflation", "inflation")])
 rownames(df) <- c(1:nrow(df))
 plot_ly(df, x=~date, y = ~nominal_interest_rate, name = 'nominal interest rate', type="scatter", mode = 'lines+markers',  hoverinfo = 'text', text = ~paste(rownames(df), date, output_gap, exp_inflation, sep="<br>")) %>%
   add_trace(y = ~output_gap, name = 'output gap')  %>%
@@ -55,7 +55,7 @@ plot_ly(df, x=~date, y = ~nominal_interest_rate, name = 'nominal interest rate',
 
 # Monetary policy x Inflation ---------------------------------
 
-df <- tail(na.omit(data[,c("date","inflation", "nominal_interest_rate", "output_gap", "q2", "q3", "q4")]),88)
+df <- tail(na.omit(realdata[,c("date","inflation", "nominal_interest_rate", "output_gap", "q2", "q3", "q4")]),88)
 rownames(df) <- c(1:nrow(df))
 lm1 <- lm(inflation ~ q2 + q3 + q4, df)
 summary(lm1)
