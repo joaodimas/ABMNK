@@ -5,16 +5,16 @@ library(vars)
 rm(list = ls())
 
 # Parameters ----
-dataFolder <- "20180403"
+dataFolder <- "20180412"
 scenario <- 1
 experiment <- 18
 simulation <- 1
 
 
-fileName <- paste0("ABMNK.LAST[Sce_",scenario,"][Exp_",experiment,"][Sim_",simulation,"]GranularData.csv")
-
+# fileName <- paste0("ABMNK.LAST[Sce_",scenario,"][Exp_",experiment,"][Sim_",simulation,"]GranularData.csv")
+fileName <- "/Users/jdimas/GitHub/ABMNK/data/ABMNK.LAST[Sce_1][Exp_21][Sim_1]GranularData.csv"
 # Import and prepare data ----
-setwd(paste0("../ABMNK_model_output/",dataFolder,"_data"))
+# setwd(paste0("/Users/jdimas/GitHub/ABMNK_model_output/",dataFolder,"_data"))
 data <- read.csv(fileName)
 data$simulation_number <- NULL
 data$experiment <- NULL
@@ -46,14 +46,15 @@ plot_ly(data, x=~period, y=~consumption, type="scatter", mode="lines")
 print(paste("Consumption stationary:", adf.test(data$consumption)$p.value <= 0.05))
 
 # VAR ----
-var <- VAR(data[,c("inflation", "output_gap", "consumption", "real_wage_rate", "nominal_interest_rate", "mean_real_savings_balance")], lag.max=10, ic="AIC")
-
+var <- VAR(data[,c("inflation", "real_wage_rate", "unemployment_rate", "consumption", "nominal_interest_rate", "mean_real_savings_balance")], lag.max=100, ic="AIC")
+serial.test(var, lags.bg = var$p, type="BG")
 # SVAR ----
 Amat = diag(var$K)
 Amat[lower.tri(Amat)] <- NA
 svar <- SVAR(var, estmethod = "direct", Amat=Amat, Bmat=NULL, max.iter=1000)
 
 # IRF ----
-irf.interestrate.inflation <- irf(svar, impulse="nominal_interest_rate", response="inflation", n.ahead=50)
+irf.interestrate.inflation <- irf(svar, impulse="nominal_interest_rate", response="inflation", n.ahead=150)
 irf.interestrate.inflation.df <- data.frame(irf.interestrate.inflation$irf[[1]], irf.interestrate.inflation$Upper[[1]], irf.interestrate.inflation$Lower[[1]])
 plot_ly(irf.interestrate.inflation.df, y=~inflation, type="scatter", mode="lines")
+

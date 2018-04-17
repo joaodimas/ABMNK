@@ -1,0 +1,66 @@
+% Preamble
+\documentclass[12pt,hidelinks]{report} 
+\usepackage{amsmath} % Advanced math typesetting
+\usepackage[utf8]{inputenc} % Unicode support (Umlauts etc.)
+\usepackage{hyperref} % Add a link to your document
+\usepackage{graphicx} % Add pictures to your document
+\graphicspath{ {Images/} }
+\usepackage{subfig}
+\usepackage{float}
+\usepackage{listings} % Source code formatting and highlighting
+%\usepackage[backend=biber, citestyle=authoryear, maxbibnames=9, maxcitenames=2, mincitenames=1]{biblatex}
+\usepackage[
+    backend=biber,
+    style=apa,
+    %style=authoryear-comp,
+    natbib=true,
+    url=false, 
+    doi=true,
+    eprint=false
+]{biblatex}
+\usepackage[american]{babel}
+\DeclareLanguageMapping{american}{american-apa}
+\usepackage[a4paper, margin=1in]{geometry}
+%\usepackage{indentfirst}
+\usepackage{setspace}
+\usepackage{csquotes}
+\usepackage{datetime}
+\usepackage{accents}
+\usepackage{xcolor}
+\usepackage{relsize}
+\usepackage{pdfpages}
+\usepackage{tikz}
+\usepackage{titling}
+\usetikzlibrary{shapes,arrows,positioning}
+\usepackage{caption}
+\captionsetup[figure]{labelfont=bf,font=footnotesize}
+\usepackage{longtable}
+\usepackage{lipsum}
+\usepackage{ragged2e}
+\onehalfspacing
+\renewcommand{\baselinestretch}{1.5}
+\setlength{\parskip}{1em}
+\bibliography{library}
+\numberwithin{equation}{subsection}
+\AtEveryBibitem{%
+  \clearfield{issn} % Remove issn
+  \clearfield{doi} % Remove doi
+
+  \ifentrytype{online}{}{% Remove url except for @online
+    \clearfield{url}
+  }
+}
+\newcommand{\myparagraph}[1]{\paragraph{#1}\mbox{}\\}
+\newcommand{\hl}[1]{\colorbox{yellow}{#1}}
+\setcounter{page}{3}
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\makeatletter
+
+
+\title{The effects of monetary policy shocks in a small open economy}
+\author{João \textsc{Dimas}} 
+\newcommand{\@institution}{Université Paris 1 Panthéon-Sorbonne}
+\newcommand{\@supervisor}{Professor Jean-Bernard \textsc{Chatelain}}
+\newcommand{\@department}{UFR 02 Economics}
+\newcommand{\@program}{M2R Financial Economics}

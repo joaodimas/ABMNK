@@ -313,4 +313,11 @@ class Parameters:
         self.Phi_inflation = 1.2
         self.Phi_unemployment = 0.8        
         self.Chi = 0.2        
-        
+
+    def setExperiment21(self):
+        self.setLearningLevel(2)
+        self.Ro = 0.5
+        self.Sigma_mutK = 0.14
+        self.Sigma_mutW = 0.07
+        self.Phi_inflation = 1.2
+        self.Phi_unemployment = 1.2       

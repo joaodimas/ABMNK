@@ -1,5 +1,6 @@
 while (!require("zoo")) install.packages("zoo")
 while (!require("Quandl")) install.packages("Quandl")
+while (!require("ecoseries")) install.packages("ecoseries")
 
 # Set up
 rm(list = ls())
@@ -21,7 +22,7 @@ IBCBR <- TRUE
 INITIAL_YEAR <- 1960
 
 
-date <- as.yearqtr(INITIAL_YEAR + seq(0, 235)/4)
+date <- as.yearqtr(INITIAL_YEAR + seq(0, 231)/4)
 data <- data.frame(date, row.names="date")
 
 # Import Output Gap (IPEA)
@@ -43,6 +44,10 @@ if (OUTPUT_GAP) {
 # As a result we have annualized quarterly inflation.
 if (INFLATION) {
   inflation <- Quandl("BCB/433")
+  inflation <- inflation[which(inflation$Date > "1995-01-01"),]
+  inflation <- inflation[order(inflation$Date),]
+  infl_ts <- ts(inflation$Value, start=1995, frequency = 12)
+  temp <- data.frame(date = inflation$Date, inflation = inflation$Value, adj = final(seas(infl_ts)))
   inflation$Date <- as.yearqtr(inflation$Date)
   # Aggregate by quarter
   inflation <- aggregate(inflation$Value/100+1, by=list(inflation$Date), "prod")
@@ -160,7 +165,7 @@ if (IMF_FINANCIAL_STATS) {
 }
 
 if(QUARTER_DUMMIES) {
-  for(q in 2:4) {
+  for(q in 1:4) {
     data[grep(paste0("Q",q), data$date, fixed=TRUE),paste0("q",q)] <- 1
     data[-grep(paste0("Q",q), data$date, fixed=TRUE),paste0("q",q)] <- 0
   } 
