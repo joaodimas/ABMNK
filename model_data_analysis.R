@@ -11,10 +11,9 @@ experiment <- 18
 simulation <- 1
 
 
-# fileName <- paste0("ABMNK.LAST[Sce_",scenario,"][Exp_",experiment,"][Sim_",simulation,"]GranularData.csv")
-fileName <- "/Users/jdimas/GitHub/ABMNK/data/ABMNK.LAST[Sce_1][Exp_21][Sim_1]GranularData.csv"
+# fileName <- paste0("data/ABMNK.LAST[Sce_",scenario,"][Exp_",experiment,"][Sim_",simulation,"]GranularData.csv")
+fileName <- "data/ABMNK.LAST[Sce_1][Exp_21][Sim_1]GranularData.csv"
 # Import and prepare data ----
-# setwd(paste0("/Users/jdimas/GitHub/ABMNK_model_output/",dataFolder,"_data"))
 data <- read.csv(fileName)
 data$simulation_number <- NULL
 data$experiment <- NULL

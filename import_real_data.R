@@ -4,7 +4,6 @@ while (!require("ecoseries")) install.packages("ecoseries")
 
 # Set up
 rm(list = ls())
-setwd("/Users/jdimas/GitHub/ABMNK/real_data")
 Quandl.api_key("iyqies2dKE9mRZpR2zUm")
 
 # Select the series to import
@@ -14,6 +13,8 @@ INTEREST <- TRUE
 EXP_INFLATION <- TRUE
 BCB_GDP_DEFLATOR <- FALSE
 UNCERTAINTY <- TRUE
+COMMODITY_INDEX <- TRUE
+REAL_EXCHANGE_RATE <- TRUE
 QUARTER_DUMMIES <- TRUE
 IMF_FINANCIAL_STATS <- TRUE
 IBCBR <- TRUE
@@ -27,7 +28,7 @@ data <- data.frame(date, row.names="date")
 
 # Import Output Gap (IPEA)
 if (OUTPUT_GAP) {
-  outputGap <- read.csv("ipea-CC37_Produto-Potencial-trimestral-1993t1-2017t3.csv", sep=";", skip=5, header=FALSE, col.names=c("date", "pot_gdp", "real_gdp", "output_gap", "X1", "X2", "X3", "X4"))
+  outputGap <- read.csv("real_data/ipea-CC38_Produto-Potencial-trimestral-1993t1-2017t4.csv", sep=";", skip=5, header=FALSE, col.names=c("date", "pot_gdp", "real_gdp", "output_gap", "X1", "X2", "X3", "X4"))
   outputGap <- outputGap[,c("date","output_gap")]
   outputGap$date <- as.yearqtr(outputGap$date, format="%Y T%q")
   rownames(outputGap) <- outputGap$date
@@ -44,10 +45,6 @@ if (OUTPUT_GAP) {
 # As a result we have annualized quarterly inflation.
 if (INFLATION) {
   inflation <- Quandl("BCB/433")
-  inflation <- inflation[which(inflation$Date > "1995-01-01"),]
-  inflation <- inflation[order(inflation$Date),]
-  infl_ts <- ts(inflation$Value, start=1995, frequency = 12)
-  temp <- data.frame(date = inflation$Date, inflation = inflation$Value, adj = final(seas(infl_ts)))
   inflation$Date <- as.yearqtr(inflation$Date)
   # Aggregate by quarter
   inflation <- aggregate(inflation$Value/100+1, by=list(inflation$Date), "prod")
@@ -80,7 +77,7 @@ if (INTEREST) {
 # The expected inflation is computed daily and represents the expected inflation for the next 12 months.
 # We take the last value for each quarter.
 if (EXP_INFLATION) {
-  expInfl <- read.csv("bcb-expected inflation-2001jan-2018fev.csv", colClasses=c("Date", "numeric"))
+  expInfl <- read.csv("real_data/bcb-expected inflation-2001jan-2018fev.csv", colClasses=c("Date", "numeric"))
   expInfl$dateqtr <- as.yearqtr(expInfl$date)
   expInfl <- aggregate(expInfl$"exp_inflation", by=list(expInfl$dateqtr), "tail", n=1)
   rownames(expInfl) <- expInfl$Group.1
@@ -113,7 +110,7 @@ if (BCB_GDP_DEFLATOR) {
 # Import index of uncertainty calculated by FGV (IIE-br) from 2000 to 2018. 
 # The index comes in monthly values. I keep the last month of each quarter.
 if(UNCERTAINTY) {
-  uncertainty <- read.csv("FGV-uncertainty-IIE-br-2000to2018.csv", skip=1, colClasses = c("character", "numeric"))
+  uncertainty <- read.csv("real_data/FGV-uncertainty-IIE-br-2000to2018.csv", skip=1, colClasses = c("character", "numeric"))
   uncertainty$date <- as.yearqtr(uncertainty$date, format="%m/%Y")
   uncertainty <- aggregate(uncertainty$uncertainty, by=list(uncertainty$date), "tail", n=1)
   rownames(uncertainty) <- uncertainty$Group.1
@@ -128,7 +125,7 @@ if(UNCERTAINTY) {
 }
 
 if(IBCBR) {
-  ibcbr <- read.csv("bcb-IBC-br-monthly-2003to2017.csv", skip=1, colClasses = c("character", "numeric"))
+  ibcbr <- read.csv("real_data/bcb-IBC-br-monthly-2003to2017.csv", skip=1, colClasses = c("character", "numeric"))
   ibcbr$date <- as.yearqtr(ibcbr$date, format="%d/%m/%Y")
   ibcbr <- aggregate(ibcbr$ibcbr, by=list(ibcbr$date), "tail", n=1)
   rownames(ibcbr) <- ibcbr$Group.1
@@ -142,9 +139,29 @@ if(IBCBR) {
   data$Row.names <- NULL
 }
 
+if(REAL_EXCHANGE_RATE) {
+  realExR <- data.frame(Quandl("BCB/11752", collapse="quarterly", type="zoo"))
+  colnames(realExR) <- "real_ex_rate"
+  data <- merge(data, realExR, by="row.names", all=TRUE)
+  rm(realExR)
+  rownames(data) <- data$Row.names
+  data$date <- rownames(data)
+  data$Row.names <- NULL 
+}
+
+if(COMMODITY_INDEX) {
+  commodity_index <- data.frame(Quandl("BCB/20048", collapse="quarterly", type="zoo"))
+  colnames(commodity_index) <- "commodity_index"
+  data <- merge(data, commodity_index, by="row.names", all=TRUE)
+  rm(commodity_index)
+  rownames(data) <- data$Row.names
+  data$date <- rownames(data)
+  data$Row.names <- NULL 
+}
+
 # Import several variables (IMF International Financial Statistics (IFS), Brazil, from 1990Q1 to 2017Q4, http://data.imf.org/regular.aspx?key=61545852)
 if (IMF_FINANCIAL_STATS) {
-  imfFinStats <- read.csv("International_Financial_Statistics.csv", skip=1, sep=";")
+  imfFinStats <- read.csv("real_data/International_Financial_Statistics.csv", skip=1, sep=";")
   imfFinStats$date <- as.yearqtr(imfFinStats$date, format="Q%q %Y")
   for (i in 2:12) {
     imfFinStats[,i] <- as.numeric(gsub(',', '', imfFinStats[,i]))
@@ -173,4 +190,4 @@ if(QUARTER_DUMMIES) {
 
 # Save a CSV consolidated with all variables
 data$date <- as.Date(as.yearqtr(as.character(data$date)))
-write.csv(data, "data.csv", row.names = FALSE)
+write.csv(data, "real_data/data.csv", row.names = FALSE)
