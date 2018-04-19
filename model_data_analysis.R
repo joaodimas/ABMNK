@@ -44,16 +44,13 @@ print(paste("Output gap is stationary:", adf.test(data$output_gap)$p.value <= 0.
 plot_ly(data, x=~period, y=~consumption, type="scatter", mode="lines")
 print(paste("Consumption stationary:", adf.test(data$consumption)$p.value <= 0.05))
 
-# VAR ----
-var <- VAR(data[,c("inflation", "real_wage_rate", "unemployment_rate", "consumption", "nominal_interest_rate", "mean_real_savings_balance")], lag.max=100, ic="AIC")
-serial.test(var, lags.bg = var$p, type="BG")
-# SVAR ----
-Amat = diag(var$K)
-Amat[lower.tri(Amat)] <- NA
-svar <- SVAR(var, estmethod = "direct", Amat=Amat, Bmat=NULL, max.iter=1000)
+# VAR 1 ----
+var1 <- VAR(data[,c("inflation", "output_gap", "nominal_interest_rate")], lag=2)
+serial.test(var1, lags.bg = var$p, type="BG")
 
-# IRF ----
-irf.interestrate.inflation <- irf(svar, impulse="nominal_interest_rate", response="inflation", n.ahead=150)
+# IRF
+var1.irf.nominal_interest_rate.inflation <- irf(var1, impulse="nominal_interest_rate", response="inflation", n.ahead=250)
+plot(var1.irf.nominal_interest_rate.inflation)
 irf.interestrate.inflation.df <- data.frame(irf.interestrate.inflation$irf[[1]], irf.interestrate.inflation$Upper[[1]], irf.interestrate.inflation$Lower[[1]])
 plot_ly(irf.interestrate.inflation.df, y=~inflation, type="scatter", mode="lines")
 

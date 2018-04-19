@@ -51,3 +51,67 @@ checkVARSerialCorr <- function(var) {
   }
   
 }
+
+checkVARHeteroskedasticity <- function(var1) {
+  test <- arch.test(var1)
+  print(test)
+  if(test$arch.mul$p.value < 0.1) {
+    print("Detected heteroskedasticity!")
+  } else {
+    print("No heteroskedasticity!")
+  }
+}
+
+checkVARErrorNormality <- function(var1) {
+  test <- normality.test(var1)
+  print(test)
+  if(test$jb.mul$JB$p.value < 0.1) {
+    print("Errors are not Normally distributed!")
+  } else {
+    print("Erros are normal!")
+  }
+}
+
+formatBrazilianMonth <- function(date) {
+  date <- gsub("janeiro ","01/",date, fixed=TRUE)
+  date <- gsub("fevereiro ","02/",date, fixed=TRUE)
+  date <- gsub("março ","03/",date, fixed=TRUE)
+  date <- gsub("abril ","04/",date, fixed=TRUE)
+  date <- gsub("maio ","05/",date, fixed=TRUE)
+  date <- gsub("junho ","06/",date, fixed=TRUE)
+  date <- gsub("julho ","07/",date, fixed=TRUE)
+  date <- gsub("agosto ","08/",date, fixed=TRUE)
+  date <- gsub("setembro ","09/",date, fixed=TRUE)
+  date <- gsub("outubro ","10/",date, fixed=TRUE)
+  date <- gsub("novembro ","11/",date, fixed=TRUE)
+  date <- gsub("dezembro ","12/",date, fixed=TRUE)
+  return(date)
+}
+
+plotIRF <- function(irf, impulseSize=1, impulseName, responseName, yAxisFormat = ".1%", yAxisDTick = 0.005) {
+  df <- data.frame(mean = irf$irf[[1]], upper = irf$Upper[[1]], lower = irf$Lower[[1]])
+  colnames(df) <- c("mean", "upper", "lower")
+  df$mean <- df$mean * impulseSize
+  df$upper <- df$upper * impulseSize
+  df$lower <- df$lower * impulseSize
+  if(missing(impulseName)) {
+    impulseName <- irf$impulse
+  }
+  if(missing(responseName)) {
+    responseName <- irf$response
+  }
+  title <- paste("Dynamic response of", responseName,"to a shock of size",impulseSize,"to",impulseName)
+  xTicks <- seq(0, nrow(df), by=2)
+  emptyTicks <- rep("",length(xTicks)-1)
+  xTickText <- c()
+  for(i in c(1:length(xTicks))) {
+    xTickText <- c(xTickText, xTicks[i])
+    if (i <= length(emptyTicks))
+      xTickText <- c(xTickText, emptyTicks[i])
+  }
+  
+  plot_ly(df, y=~mean, type="scatter", mode="lines", name= "Mean") %>%
+    add_trace(y=~upper, name="Upper bound", line = list(color = 'red', dash = 'dash')) %>%
+    add_trace(y=~lower, name="Lower bound", line = list(color = 'red', dash = 'dash')) %>%
+    layout(title = title, yaxis = list(tickformat = yAxisFormat, title="", dtick=yAxisDTick), xaxis = list(dtick=2, tickvals=seq(0, nrow(df), by=1), ticktext=xTickText, ticklen=5))
+}

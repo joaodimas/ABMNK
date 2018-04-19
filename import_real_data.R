@@ -4,6 +4,7 @@ while (!require("ecoseries")) install.packages("ecoseries")
 
 # Set up
 rm(list = ls())
+source("util.R")
 Quandl.api_key("iyqies2dKE9mRZpR2zUm")
 
 # Select the series to import
@@ -15,9 +16,11 @@ BCB_GDP_DEFLATOR <- FALSE
 UNCERTAINTY <- TRUE
 COMMODITY_INDEX <- TRUE
 REAL_EXCHANGE_RATE <- TRUE
-QUARTER_DUMMIES <- TRUE
-IMF_FINANCIAL_STATS <- TRUE
 IBCBR <- TRUE
+INDUSTRIAL_PRODUCTION <- TRUE
+
+IMF_FINANCIAL_STATS <- TRUE
+QUARTER_DUMMIES <- TRUE
 
 # Select the first year in the series
 INITIAL_YEAR <- 1960
@@ -40,7 +43,7 @@ if (OUTPUT_GAP) {
   data$Row.names <- NULL
 }
 
-# Import inflation (Central Bank of Brazil, IPCA)
+# Import inflation (IBGE, IPCA)
 # We download monthly inflation, aggregate by quarter, and then we annualize.
 # As a result we have annualized quarterly inflation.
 if (INFLATION) {
@@ -124,10 +127,13 @@ if(UNCERTAINTY) {
   data$Row.names <- NULL
 }
 
+# Downloaded from BCB website; monthly index, seasonally adjusted. Obtained the quarterly data by averaging.
 if(IBCBR) {
-  ibcbr <- read.csv("real_data/bcb-IBC-br-monthly-2003to2017.csv", skip=1, colClasses = c("character", "numeric"))
-  ibcbr$date <- as.yearqtr(ibcbr$date, format="%d/%m/%Y")
-  ibcbr <- aggregate(ibcbr$ibcbr, by=list(ibcbr$date), "tail", n=1)
+  ibcbr <- read.csv("real_data/BCB-IBC-br-jan2003-jan2018.csv", skip=2, sep=";", col.names = c("date", "ibcbr"), as.is = TRUE)
+  ibcbr <- ibcbr[-nrow(ibcbr),]
+  ibcbr$date <- as.yearqtr(ibcbr$date, format="%m/%Y")
+  ibcbr$ibcbr <- as.numeric(ibcbr$ibcbr)
+  ibcbr <- aggregate(ibcbr$ibcbr, by=list(ibcbr$date), "mean", n=1)
   rownames(ibcbr) <- ibcbr$Group.1
   ibcbr$ibcbr <- ibcbr$x
   ibcbr$Group.1 <- NULL
@@ -159,6 +165,24 @@ if(COMMODITY_INDEX) {
   data$Row.names <- NULL 
 }
 
+# Downloaded CSV from IBGE website. Monthly, % change, seasonally adjusted. Quarterly data computed by composing the monthly rate.
+if(INDUSTRIAL_PRODUCTION) {
+  ind_prod <- read.csv("real_data/PIM-PF-variacao-percentual-mensal-ajustado-seasonalidade.csv", skip=4, col.names = c("date", "var", "ind_prod"), as.is = TRUE)
+  ind_prod <- ind_prod[-nrow(ind_prod),c("date","ind_prod")]
+  ind_prod$date <- formatBrazilianMonth(ind_prod$date)
+  ind_prod$date <- as.yearqtr(ind_prod$date, format="%m/%Y")
+  ind_prod$ind_prod <- as.numeric(ind_prod$ind_prod)/100
+  ind_prod <-  aggregate(ind_prod$ind_prod+1, by=list(ind_prod$date), "prod")
+  rownames(ind_prod) <- ind_prod$Group.1
+  ind_prod$ind_prod <- ind_prod$x-1
+  ind_prod$Group.1 <- NULL
+  ind_prod$x <- NULL
+  data <- merge(data, ind_prod, by="row.names", all=TRUE)
+  rm(ind_prod)
+  rownames(data) <- data$Row.names
+  data$date <- rownames(data)
+  data$Row.names <- NULL  
+}
 # Import several variables (IMF International Financial Statistics (IFS), Brazil, from 1990Q1 to 2017Q4, http://data.imf.org/regular.aspx?key=61545852)
 if (IMF_FINANCIAL_STATS) {
   imfFinStats <- read.csv("real_data/International_Financial_Statistics.csv", skip=1, sep=";")
