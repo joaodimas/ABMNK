@@ -39,9 +39,9 @@ if(VAR_1) {
   var1.irf.nominal_interest_rate.output_gap <- irf(var1, impulse="nominal_interest_rate", response="output_gap", n.ahead=20, boot = TRUE)
   plotIRF(var1.irf.nominal_interest_rate.output_gap, yAxisDTick = 0.0015)
   var1.irf.output_gap.nominal_interest_rate  <- irf(var1, impulse="output_gap", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plot(var1.irf.output_gap.nominal_interest_rate)
+  plotIRF(var1.irf.output_gap.nominal_interest_rate)
   var1.irf.inflation_adj.nominal_interest_rate <- irf(var1, impulse="inflation_adj", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plot(var1.irf.inflation_adj.nominal_interest_rate)
+  plotIRF(var1.irf.inflation_adj.nominal_interest_rate)
 }
 
 # VAR 2: "output_gap", "inflation_adj", "nominal_interest_rate" = Stable, no serial correlation ----
