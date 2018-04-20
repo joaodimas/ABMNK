@@ -31,7 +31,7 @@ data <- data.frame(date, row.names="date")
 
 # Import Output Gap (IPEA)
 if (OUTPUT_GAP) {
-  outputGap <- read.csv("real_data/ipea-CC38_Produto-Potencial-trimestral-1993t1-2017t4.csv", sep=";", skip=5, header=FALSE, col.names=c("date", "pot_gdp", "real_gdp", "output_gap", "X1", "X2", "X3", "X4"))
+  outputGap <- read.csv("real_data/datasources/ipea-CC38_Produto-Potencial-trimestral-1993t1-2017t4.csv", sep=";", skip=5, header=FALSE, col.names=c("date", "pot_gdp", "real_gdp", "output_gap", "X1", "X2", "X3", "X4"))
   outputGap <- outputGap[,c("date","output_gap")]
   outputGap$date <- as.yearqtr(outputGap$date, format="%Y T%q")
   rownames(outputGap) <- outputGap$date
@@ -80,7 +80,7 @@ if (INTEREST) {
 # The expected inflation is computed daily and represents the expected inflation for the next 12 months.
 # We take the last value for each quarter.
 if (EXP_INFLATION) {
-  expInfl <- read.csv("real_data/bcb-expected inflation-2001jan-2018fev.csv", colClasses=c("Date", "numeric"))
+  expInfl <- read.csv("real_data/datasources/bcb-expected inflation-2001jan-2018fev.csv", colClasses=c("Date", "numeric"))
   expInfl$dateqtr <- as.yearqtr(expInfl$date)
   expInfl <- aggregate(expInfl$"exp_inflation", by=list(expInfl$dateqtr), "tail", n=1)
   rownames(expInfl) <- expInfl$Group.1
@@ -113,7 +113,7 @@ if (BCB_GDP_DEFLATOR) {
 # Import index of uncertainty calculated by FGV (IIE-br) from 2000 to 2018. 
 # The index comes in monthly values. I keep the last month of each quarter.
 if(UNCERTAINTY) {
-  uncertainty <- read.csv("real_data/FGV-uncertainty-IIE-br-2000to2018.csv", skip=1, colClasses = c("character", "numeric"))
+  uncertainty <- read.csv("real_data/datasources/FGV-uncertainty-IIE-br-2000to2018.csv", skip=1, colClasses = c("character", "numeric"))
   uncertainty$date <- as.yearqtr(uncertainty$date, format="%m/%Y")
   uncertainty <- aggregate(uncertainty$uncertainty, by=list(uncertainty$date), "tail", n=1)
   rownames(uncertainty) <- uncertainty$Group.1
@@ -129,7 +129,7 @@ if(UNCERTAINTY) {
 
 # Downloaded from BCB website; monthly index, seasonally adjusted. Obtained the quarterly data by averaging.
 if(IBCBR) {
-  ibcbr <- read.csv("real_data/BCB-IBC-br-jan2003-jan2018.csv", skip=2, sep=";", col.names = c("date", "ibcbr"), as.is = TRUE)
+  ibcbr <- read.csv("real_data/datasources/BCB-IBC-br-jan2003-jan2018.csv", skip=2, sep=";", col.names = c("date", "ibcbr"), as.is = TRUE)
   ibcbr <- ibcbr[-nrow(ibcbr),]
   ibcbr$date <- as.yearqtr(ibcbr$date, format="%m/%Y")
   ibcbr$ibcbr <- as.numeric(ibcbr$ibcbr)
@@ -167,7 +167,7 @@ if(COMMODITY_INDEX) {
 
 # Downloaded CSV from IBGE website. Monthly, % change, seasonally adjusted. Quarterly data computed by composing the monthly rate.
 if(INDUSTRIAL_PRODUCTION) {
-  ind_prod <- read.csv("real_data/PIM-PF-variacao-percentual-mensal-ajustado-seasonalidade.csv", skip=4, col.names = c("date", "var", "ind_prod"), as.is = TRUE)
+  ind_prod <- read.csv("real_data/datasources/PIM-PF-variacao-percentual-mensal-ajustado-seasonalidade.csv", skip=4, col.names = c("date", "var", "ind_prod"), as.is = TRUE)
   ind_prod <- ind_prod[-nrow(ind_prod),c("date","ind_prod")]
   ind_prod$date <- formatBrazilianMonth(ind_prod$date)
   ind_prod$date <- as.yearqtr(ind_prod$date, format="%m/%Y")
@@ -185,7 +185,7 @@ if(INDUSTRIAL_PRODUCTION) {
 }
 # Import several variables (IMF International Financial Statistics (IFS), Brazil, from 1990Q1 to 2017Q4, http://data.imf.org/regular.aspx?key=61545852)
 if (IMF_FINANCIAL_STATS) {
-  imfFinStats <- read.csv("real_data/International_Financial_Statistics.csv", skip=1, sep=";")
+  imfFinStats <- read.csv("real_data/datasources/International_Financial_Statistics.csv", skip=1, sep=";")
   imfFinStats$date <- as.yearqtr(imfFinStats$date, format="Q%q %Y")
   for (i in 2:12) {
     imfFinStats[,i] <- as.numeric(gsub(',', '', imfFinStats[,i]))
@@ -214,4 +214,4 @@ if(QUARTER_DUMMIES) {
 
 # Save a CSV consolidated with all variables
 data$date <- as.Date(as.yearqtr(as.character(data$date)))
-write.csv(data, "real_data/data.csv", row.names = FALSE)
+write.csv(data, "real_data/data_quarter.csv", row.names = FALSE)

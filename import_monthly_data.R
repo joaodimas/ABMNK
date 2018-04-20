@@ -17,7 +17,7 @@ COMMODITY_INDEX <- TRUE
 REAL_EXCHANGE_RATE <- TRUE
 IBCBR <- TRUE
 INDUSTRIAL_PRODUCTION <- TRUE
-
+M1 <- TRUE
 
 data_mon <- data.frame(date = seq(as.Date("1960-01-01"), as.Date("2017-12-01"), "months"), row.names="date")
 data_mon$date = rownames(data_mon)
@@ -57,7 +57,7 @@ if (INTEREST) {
 # The expected inflation is computed daily and represents the expected inflation for the next 12 months.
 # We take the average value for each month
 if (EXP_INFLATION) {
-  expInfl <- read.csv("real_data/bcb-expected inflation-2001jan-2018fev.csv", colClasses=c("Date", "numeric"))
+  expInfl <- read.csv("real_data/datasources/bcb-expected inflation-2001jan-2018fev.csv", colClasses=c("Date", "numeric"))
   expInfl$datemon <- as.yearmon(expInfl$date)
   expInfl <- aggregate(expInfl$"exp_inflation", by=list(expInfl$datemon), "tail", n=1)
   rownames(expInfl) <- as.Date(expInfl$Group.1)
@@ -79,7 +79,7 @@ if(INTEREST & EXP_INFLATION) {
 # Import index of uncertainty calculated by FGV (IIE-br) from 2000 to 2018. 
 # The index comes in monthly values.
 if(UNCERTAINTY) {
-  uncertainty <- read.csv("real_data/FGV-uncertainty-IIE-br-2000to2018.csv", skip=1, colClasses = c("character", "numeric"))
+  uncertainty <- read.csv("real_data/datasources/FGV-uncertainty-IIE-br-2000to2018.csv", skip=1, colClasses = c("character", "numeric"))
   rownames(uncertainty) <- as.Date(as.yearmon(uncertainty$date, format="%m/%Y"))
   uncertainty$date <- NULL
   data_mon <- merge(data_mon, uncertainty, by="row.names", all=TRUE)
@@ -91,7 +91,7 @@ if(UNCERTAINTY) {
 
 # Downloaded from BCB website; monthly index, seasonally adjusted.
 if(IBCBR) {
-  ibcbr <- read.csv("real_data/BCB-IBC-br-jan2003-jan2018.csv", skip=2, sep=";", col.names = c("date", "ibcbr"), as.is = TRUE)
+  ibcbr <- read.csv("real_data/datasources/BCB-IBC-br-jan2003-jan2018.csv", skip=2, sep=";", col.names = c("date", "ibcbr"), as.is = TRUE)
   ibcbr <- ibcbr[-nrow(ibcbr),]
   rownames(ibcbr) <- as.Date(as.yearmon(ibcbr$date, format="%m/%Y"))
   ibcbr$ibcbr <- as.numeric(ibcbr$ibcbr)
@@ -129,7 +129,7 @@ if(COMMODITY_INDEX) {
 
 # Downloaded CSV from IBGE website. Monthly, % change, seasonally adjusted.
 if(INDUSTRIAL_PRODUCTION) {
-  ind_prod <- read.csv("real_data/PIM-PF-variacao-percentual-mensal-ajustado-seasonalidade.csv", skip=4, col.names = c("date", "var", "ind_prod"), as.is = TRUE)
+  ind_prod <- read.csv("real_data/datasources/PIM-PF-variacao-percentual-mensal-ajustado-seasonalidade.csv", skip=4, col.names = c("date", "var", "ind_prod"), as.is = TRUE)
   ind_prod <- ind_prod[-nrow(ind_prod),c("date","ind_prod")]
   rownames(ind_prod) <- as.Date(as.yearmon(formatBrazilianMonth(ind_prod$date), format="%m/%Y"))
   ind_prod$date <- NULL
@@ -141,6 +141,18 @@ if(INDUSTRIAL_PRODUCTION) {
   data_mon$Row.names <- NULL  
 }
 
+if(M1) {
+  m1 <- data.frame(Quandl("BCB/1827", collapse="monthly", type="raw"))
+  rownames(m1) <- as.Date(as.yearmon(m1$Date))
+  m1$Date <- NULL
+  colnames(m1) <- "m1"
+  data_mon <- merge(data_mon, m1, by="row.names", all=TRUE)
+  rm(m1)
+  rownames(data_mon) <- data_mon$Row.names
+  data_mon$date <- rownames(data_mon)
+  data_mon$Row.names <- NULL 
+}
+
 # Save a CSV consolidated with all variables
 data_mon$date <- as.Date(data_mon$date)
-write.csv(data_mon, "real_data/data_mon.csv", row.names = FALSE)
+write.csv(data_mon, "real_data/data_month.csv", row.names = FALSE)

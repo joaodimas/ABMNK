@@ -12,9 +12,9 @@ rm(list = ls())
 source("util.R")
 
 # Import data ----
-real_data <- read.csv("real_data/data.csv", colClasses = c("date"="Date"))
+real_data_quarter <- read.csv("real_data/data_quarter.csv", colClasses = c("date"="Date"))
 # Select time period after Real ----
-real_data_afterReal <- real_data[which(real_data$date >= "1995-01-01" & real_data$date <= "2017-12-31"),]
+real_data_afterReal <- real_data_quarter[which(real_data_quarter$date >= "1995-01-01" & real_data_quarter$date <= "2017-12-31"),]
 # (1) Check stationarity of level variables ----
 #   (1.1) Commodity index ---- Not stationary
 plotline(real_data_afterReal$commodity_index)
@@ -93,4 +93,4 @@ plot_ly(real_data_afterReal, x=~date, y=~logdiff_commodity_index, mode="lines", 
 real_data_afterReal$logdiff_commodity_index_adj <- NULL # delete the unnecessary adjusted series.
 
 # Write CSV ---- 
-write.csv(real_data_afterReal, "real_data/real_data_afterReal.csv", row.names = FALSE)
+write.csv(real_data_afterReal, "real_data/real_data_afterReal_quarter.csv", row.names = FALSE)

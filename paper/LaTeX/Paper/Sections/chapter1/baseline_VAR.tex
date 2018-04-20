@@ -1,13 +1,18 @@
 \section{Baseline VAR}
     Starting from the seminal work of \citet{Sims1992}, we build a structural vector autoregressive model using Cholesky decomposition to restrict contemporaneous interactions among the variables. The recursive ordering is necessary to obtain dynamic responses from an exogenous shock---specifically, to assess the effects of a monetary policy shock on the other variables of the system.
+
+VAR monthly with industrial production
+    - extra variables for robustness check
+    - alternative measures of activity
+        - ibc-br
+        - gdp growth
+        - output gap (quarterly data)
+
+    
     \input{Sections/chapter1/baseline_VAR.specification}
     \input{Sections/chapter1/baseline_VAR.diagnosis}
     \subsection{Robustness checks}
         \myparagraph{Commodities prices}
         \myparagraph{Real effective exchange rate}
-    \subsection{Forecast performance}
-        \lipsum[1]
-    \subsection{Alternative scenarios}
-        \lipsum[1]
     \subsection{Impulse responses}
         \lipsum[1]

@@ -1,17 +1,7 @@
 \section{VAR with monthly data}
-    We now experiment with a different variable for economic activity. The IBC-br, an index composed of \hl{20 variables}, is calculated by the Central Bank of Brazil and available in monthly frequency. This granularity will give us with more degrees of freedom and allow for a larger VAR if desired.
+    This granularity will give us with more degrees of freedom and allow for a larger VAR if desired. Following advice from \citet{Ivanov2005} for the method with the lowest RMSE when comparing impulse responses with the true data generating process in monthly frequency, we chose the lag order according to the Akaike Information Criterion.
     \subsection{Specification}
         Our first specification is composed by \(\pi_t\), \(Y_t\), \(R_t\) in monthly frequency, where \(Y_t\) represents the IBC-br.
-    \subsection{Robustness checks}
-        \myparagraph{Commodities prices}
-        \myparagraph{Real effective exchange rate}
-        \subsubsection{Alternative measures of economic activity}
-            \myparagraph{Real GDP growth}
-            \myparagraph{Industrial output}
-            \myparagraph{Uncertainty index}
-    \subsection{Forecast performance}
-        \lipsum[1]
-    \subsection{Alternative scenarios}
-        \lipsum[1]
+    \input{Sections/chapter1/monthly_VAR.robustness}
     \subsection{Impulse responses}
         \lipsum[1]

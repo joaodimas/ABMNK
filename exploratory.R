@@ -11,7 +11,7 @@ while (!require("forecast")) install.packages("forecast")
 rm(list = ls())
 
 # Import data ----
-real_data <- read.csv("real_data/data.csv", colClasses = c("date"="Date"))
+real_data <- read.csv("real_data/data_quarter.csv", colClasses = c("date"="Date"))
 
 # Enable parts of the code ----
 ENABLE_1 <- TRUE

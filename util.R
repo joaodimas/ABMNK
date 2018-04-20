@@ -1,8 +1,9 @@
 while (!require("plotly")) install.packages("plotly")
+
 plotline <- function(y1, y2, x) {
   df <- get(strsplit(deparse(substitute(y1)), "$", fixed=TRUE)[[1]][1])
   if(missing(x)) {
-    if(!"date" %in% colnames(real_data_afterReal)) {
+    if(!"date" %in% colnames(df)) {
       stop("Can't find column 'date' in the same data.frame. Please specify a date variable by setting argument x.")
     }
     formula_x <- ~date
@@ -88,7 +89,7 @@ formatBrazilianMonth <- function(date) {
   return(date)
 }
 
-plotIRF <- function(irf, impulseSize=1, impulseName, responseName, yAxisFormat = ".1%", yAxisDTick = 0.005) {
+plotIRF <- function(irf, impulseSize=1, impulseName, responseName, yAxisFormat = NULL, yAxisDTick = NULL) {
   df <- data.frame(mean = irf$irf[[1]], upper = irf$Upper[[1]], lower = irf$Lower[[1]])
   colnames(df) <- c("mean", "upper", "lower")
   df$mean <- df$mean * impulseSize
@@ -100,7 +101,7 @@ plotIRF <- function(irf, impulseSize=1, impulseName, responseName, yAxisFormat =
   if(missing(responseName)) {
     responseName <- irf$response
   }
-  title <- paste("Dynamic response of", responseName,"to a shock of size",impulseSize,"to",impulseName)
+  title <- paste("Response of", responseName,"to a shock in",impulseName,ifelse(irf$cumulative,"(cumulative)",""))
   xTicks <- seq(0, nrow(df), by=2)
   emptyTicks <- rep("",length(xTicks)-1)
   xTickText <- c()
@@ -113,5 +114,17 @@ plotIRF <- function(irf, impulseSize=1, impulseName, responseName, yAxisFormat =
   plot_ly(df, y=~mean, type="scatter", mode="lines", name= "Mean") %>%
     add_trace(y=~upper, name="Upper bound", line = list(color = 'red', dash = 'dash')) %>%
     add_trace(y=~lower, name="Lower bound", line = list(color = 'red', dash = 'dash')) %>%
-    layout(title = title, yaxis = list(tickformat = yAxisFormat, title="", dtick=yAxisDTick), xaxis = list(dtick=2, tickvals=seq(0, nrow(df), by=1), ticktext=xTickText, ticklen=5))
+    layout(title = title, yaxis = list(tickformat = yAxisFormat, title="", dtick=yAxisDTick, autotick = is.null(yAxisDTick)), xaxis = list(dtick=2, tickvals=seq(0, nrow(df), by=1), ticktext=xTickText, ticklen=5), showlegend=FALSE)
+}
+
+findOrderNoSerialCorr <- function(data, max.lags=30) {
+  for(p in c(1:max.lags)) {
+    var <- VAR(data, p=p, type="const")
+    test <- serial.test(var, lags.bg = var$p, type="BG")
+    if(test$serial$p.value > 0.05) {
+      print(test)
+      print(paste("Lag order", p, "has no serial correlation at 5%."))
+      return(p)
+    } 
+  }
 }
