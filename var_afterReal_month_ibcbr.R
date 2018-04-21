@@ -22,10 +22,12 @@ VAR_4A = TRUE
 VAR_4B = TRUE
 
 real_data_afterReal_month <- read.csv("real_data/real_data_afterReal_month.csv", row.names="date", colClasses = c("date"="Date"))
-
+labelsMap <- hashmap(c("ind_prod", "nominal_interest_rate", "inflation_adj", "logdiff_m1_adj", "real_ex_rate", "logdiff_commodity_index", "logdiff_ibcbr"),
+                     c("Industrial Production", "Nominal Interest Rate", "Inflation", "M1 (log diff.)", "Real Exchange Rate", "Commodity Index (log diff.)", "Economic Activity Index (log diff.)"))
 # VAR 1A: "nominal_interest_rate", "logdiff_ibcbr", "inflation_adj" =  = stable; detected serial correlation ----
 if(VAR_1A) {
   var1A.data <- na.omit(real_data_afterReal_month[,c("nominal_interest_rate", "logdiff_ibcbr", "inflation_adj")])
+  printVARVariables(var1A.data)
   print(VARselect(var1A.data, lag.max = 10)$selection)
   # AIC: 4 lags
   var1A <- VAR(var1A.data, p=4, type="const")
@@ -39,14 +41,14 @@ if(VAR_1A) {
   # Errors are not normally distributed. What should I do?
   
   # Generate orthogonal impulse responses (Cholesky decomposition), shock of 1 unit.
-  var1A.irf.nominal_interest_rate.inflation_adj<- irf(var1A, impulse="nominal_interest_rate", response="inflation_adj", n.ahead=20, boot = TRUE)
-  plotIRF(var1A.irf.nominal_interest_rate.inflation_adj)
-  var1A.irf.nominal_interest_rate.ibcbr <- irf(var1A, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=20, boot = TRUE)
-  plotIRF(var1A.irf.nominal_interest_rate.ibcbr, yAxisDTick = 0.15)
-  var1A.irf.ibcbr.nominal_interest_rate  <- irf(var1A, impulse="logdiff_ibcbr", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var1A.irf.ibcbr.nominal_interest_rate)
-  var1A.irf.inflation_adj.nominal_interest_rate <- irf(var1A, impulse="inflation_adj", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var1A.irf.inflation_adj.nominal_interest_rate)
+  var1A.irf.nominal_interest_rate.inflation_adj<- irf(var1A, impulse="nominal_interest_rate", response="inflation_adj", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var1A.irf.nominal_interest_rate.inflation_adj)
+  var1A.irf.nominal_interest_rate.ibcbr <- irf(var1A, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var1A.irf.nominal_interest_rate.ibcbr)
+  var1A.irf.ibcbr.nominal_interest_rate  <- irf(var1A, impulse="logdiff_ibcbr", response="nominal_interest_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var1A.irf.ibcbr.nominal_interest_rate)
+  var1A.irf.inflation_adj.nominal_interest_rate <- irf(var1A, impulse="inflation_adj", response="nominal_interest_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var1A.irf.inflation_adj.nominal_interest_rate)
 }
 
 # VAR 1B: "logdiff_ibcbr", "inflation_adj", "nominal_interest_rate" = stable; detected serial correlation ----
@@ -65,14 +67,14 @@ if(VAR_1B) {
   # Errors are not normally distributed. What should I do?
   
   # Generate orthogonal impulse responses (Cholesky decomposition), shock of 1 unit.
-  var1B.irf.nominal_interest_rate.inflation_adj<- irf(var1B, impulse="nominal_interest_rate", response="inflation_adj", n.ahead=40, boot = TRUE)
-  plotIRF(var1B.irf.nominal_interest_rate.inflation_adj, impulseName = "Interest Rate", responseName = "Inflation", yAxisDTick = 0.002)
-  var1B.irf.nominal_interest_rate.logdiff_ibcbr <- irf(var1B, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=20, boot = TRUE)
-  plotIRF(var1B.irf.nominal_interest_rate.logdiff_ibcbr)
-  var1B.irf.logdiff_ibcbr.nominal_interest_rate  <- irf(var1B, impulse="logdiff_ibcbr", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var1B.irf.logdiff_ibcbr.nominal_interest_rate, yAxisDTick = 0.005)
-  var1B.irf.inflation_adj.nominal_interest_rate <- irf(var1B, impulse="inflation_adj", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var1B.irf.inflation_adj.nominal_interest_rate, yAxisDTick = 0.005)
+  var1B.irf.nominal_interest_rate.inflation_adj<- irf(var1B, impulse="nominal_interest_rate", response="inflation_adj", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var1B.irf.nominal_interest_rate.inflation_adj)
+  var1B.irf.nominal_interest_rate.logdiff_ibcbr <- irf(var1B, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var1B.irf.nominal_interest_rate.logdiff_ibcbr)
+  var1B.irf.logdiff_ibcbr.nominal_interest_rate  <- irf(var1B, impulse="logdiff_ibcbr", response="nominal_interest_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var1B.irf.logdiff_ibcbr.nominal_interest_rate)
+  var1B.irf.inflation_adj.nominal_interest_rate <- irf(var1B, impulse="inflation_adj", response="nominal_interest_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var1B.irf.inflation_adj.nominal_interest_rate)
 }
 
 
@@ -92,22 +94,22 @@ if(VAR_2A) {
   # Errors are not normally distributed. What should I do?
   
   # Generate orthogonal impulse responses (Cholesky decomposition), shock of 1 unit.
-  var2A.irf.nominal_interest_rate.inflation_adj<- irf(var2A, impulse="nominal_interest_rate", response="inflation_adj", n.ahead=20, boot = TRUE)
-  plotIRF(var2A.irf.nominal_interest_rate.inflation_adj)
-  var2A.irf.nominal_interest_rate.logdiff_m1_adj<- irf(var2A, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=20, boot = TRUE)
-  plotIRF(var2A.irf.nominal_interest_rate.logdiff_m1_adj)
-  var2A.irf.nominal_interest_rate.ibcbr <- irf(var2A, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=20, boot = TRUE)
-  plotIRF(var2A.irf.nominal_interest_rate.ibcbr, yAxisDTick = 0.001)
-  var2A.irf.ibcbr.nominal_interest_rate  <- irf(var2A, impulse="logdiff_ibcbr", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var2A.irf.ibcbr.nominal_interest_rate)
-  var2A.irf.inflation_adj.nominal_interest_rate <- irf(var2A, impulse="inflation_adj", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var2A.irf.inflation_adj.nominal_interest_rate)
+  var2A.irf.nominal_interest_rate.inflation_adj<- irf(var2A, impulse="nominal_interest_rate", response="inflation_adj", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var2A.irf.nominal_interest_rate.inflation_adj)
+  var2A.irf.nominal_interest_rate.logdiff_m1_adj<- irf(var2A, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var2A.irf.nominal_interest_rate.logdiff_m1_adj)
+  var2A.irf.nominal_interest_rate.ibcbr <- irf(var2A, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var2A.irf.nominal_interest_rate.ibcbr)
+  var2A.irf.ibcbr.nominal_interest_rate  <- irf(var2A, impulse="logdiff_ibcbr", response="nominal_interest_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var2A.irf.ibcbr.nominal_interest_rate)
+  var2A.irf.inflation_adj.nominal_interest_rate <- irf(var2A, impulse="inflation_adj", response="nominal_interest_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var2A.irf.inflation_adj.nominal_interest_rate)
   
   # Cumulative IRF for differenced variables
-  var2A.irf.nominal_interest_rate.logdiff_m1_adj.cum <- irf(var2A, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=20, boot = TRUE, cumulative = TRUE)
-  plotIRF(var2A.irf.nominal_interest_rate.logdiff_m1_adj.cum)
-  var2A.irf.nominal_interest_rate.ibcbr.cum <- irf(var2A, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=20, boot = TRUE, cumulative = TRUE)
-  plotIRF(var2A.irf.nominal_interest_rate.ibcbr.cum, yAxisDTick = 0.15)
+  var2A.irf.nominal_interest_rate.logdiff_m1_adj.cum <- irf(var2A, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=50, boot = TRUE, cumulative = TRUE)
+  plotIRFToPS(var2A.irf.nominal_interest_rate.logdiff_m1_adj.cum)
+  var2A.irf.nominal_interest_rate.ibcbr.cum <- irf(var2A, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=50, boot = TRUE, cumulative = TRUE)
+  plotIRFToPS(var2A.irf.nominal_interest_rate.ibcbr.cum)
 }
 
 # VAR 2B: "logdiff_m1_adj","logdiff_ibcbr", "inflation_adj", "nominal_interest_rate" = stable; detected serial correlation ----
@@ -126,28 +128,28 @@ if(VAR_2B) {
   # Errors are not normally distributed. What should I do?
   
   # Generate orthogonal impulse responses (Cholesky decomposition), shock of 1 unit.
-  var2B.irf.nominal_interest_rate.logdiff_m1_adj<- irf(var2B, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=20, boot = TRUE)
-  plotIRF(var2B.irf.nominal_interest_rate.logdiff_m1_adj)
+  var2B.irf.nominal_interest_rate.logdiff_m1_adj<- irf(var2B, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var2B.irf.nominal_interest_rate.logdiff_m1_adj)
   
-  var2B.irf.nominal_interest_rate.inflation_adj<- irf(var2B, impulse="nominal_interest_rate", response="inflation_adj", n.ahead=20, boot = TRUE)
-  plotIRF(var2B.irf.nominal_interest_rate.inflation_adj)
+  var2B.irf.nominal_interest_rate.inflation_adj<- irf(var2B, impulse="nominal_interest_rate", response="inflation_adj", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var2B.irf.nominal_interest_rate.inflation_adj)
   
-  var2B.irf.nominal_interest_rate.ibcbr <- irf(var2B, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=20, boot = TRUE)
-  plotIRF(var2B.irf.nominal_interest_rate.ibcbr, yAxisDTick = 0.001)
+  var2B.irf.nominal_interest_rate.ibcbr <- irf(var2B, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var2B.irf.nominal_interest_rate.ibcbr)
   
-  var2B.irf.ibcbr.nominal_interest_rate  <- irf(var2B, impulse="logdiff_ibcbr", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var2B.irf.ibcbr.nominal_interest_rate)
+  var2B.irf.ibcbr.nominal_interest_rate  <- irf(var2B, impulse="logdiff_ibcbr", response="nominal_interest_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var2B.irf.ibcbr.nominal_interest_rate)
   
-  var2B.irf.inflation_adj.nominal_interest_rate <- irf(var2B, impulse="inflation_adj", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var2B.irf.inflation_adj.nominal_interest_rate)
+  var2B.irf.inflation_adj.nominal_interest_rate <- irf(var2B, impulse="inflation_adj", response="nominal_interest_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var2B.irf.inflation_adj.nominal_interest_rate)
   
   # Cumulative IRF for differenced variables
-  var2B.irf.nominal_interest_rate.logdiff_m1_adj.cum <- irf(var2B, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=20, boot = TRUE, cumulative = TRUE)
-  plotIRF(var2B.irf.nominal_interest_rate.logdiff_m1_adj.cum)
+  var2B.irf.nominal_interest_rate.logdiff_m1_adj.cum <- irf(var2B, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=50, boot = TRUE, cumulative = TRUE)
+  plotIRFToPS(var2B.irf.nominal_interest_rate.logdiff_m1_adj.cum)
   
-  var2B.irf.nominal_interest_rate.ibcbr.cum <- irf(var2B, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=20, boot = TRUE, cumulative = TRUE)
-  plotIRF(var2B.irf.nominal_interest_rate.ibcbr.cum, yAxisDTick = 0.15)
-sta}
+  var2B.irf.nominal_interest_rate.ibcbr.cum <- irf(var2B, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=50, boot = TRUE, cumulative = TRUE)
+  plotIRFToPS(var2B.irf.nominal_interest_rate.ibcbr.cum)
+}
 
 # VAR 3A: "nominal_interest_rate", "real_ex_rate", "logdiff_m1_adj", "logdiff_ibcbr", "inflation_adj" = stable; detected serial correlation ----
 if(VAR_3A) {
@@ -168,35 +170,35 @@ if(VAR_3A) {
   # Generate orthogonal impulse responses (Cholesky decomposition), shock of 1 unit.
   
   # Effects of monetary policy:
-  var3A.irf.nominal_interest_rate.inflation_adj<- irf(var3A, impulse="nominal_interest_rate", response="inflation_adj", n.ahead=20, boot = TRUE)
-  plotIRF(var3A.irf.nominal_interest_rate.inflation_adj)
+  var3A.irf.nominal_interest_rate.inflation_adj<- irf(var3A, impulse="nominal_interest_rate", response="inflation_adj", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var3A.irf.nominal_interest_rate.inflation_adj)
   
-  var3A.irf.nominal_interest_rate.logdiff_m1_adj<- irf(var3A, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=20, boot = TRUE)
-  plotIRF(var3A.irf.nominal_interest_rate.logdiff_m1_adj)
+  var3A.irf.nominal_interest_rate.logdiff_m1_adj<- irf(var3A, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var3A.irf.nominal_interest_rate.logdiff_m1_adj)
   
-  var3A.irf.nominal_interest_rate.ibcbr <- irf(var3A, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=20, boot = TRUE)
-  plotIRF(var3A.irf.nominal_interest_rate.ibcbr)
+  var3A.irf.nominal_interest_rate.ibcbr <- irf(var3A, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var3A.irf.nominal_interest_rate.ibcbr)
   
-  var3A.irf.nominal_interest_rate.real_ex_rate<- irf(var3A, impulse="nominal_interest_rate", response="real_ex_rate", n.ahead=20, boot = TRUE)
-  plotIRF(var3A.irf.nominal_interest_rate.real_ex_rate)  
+  var3A.irf.nominal_interest_rate.real_ex_rate<- irf(var3A, impulse="nominal_interest_rate", response="real_ex_rate", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var3A.irf.nominal_interest_rate.real_ex_rate)  
   # Curiously, exchange rate starts depreciating after period 8.
   
   # Monetary policy reaction to other variables:
-  var3A.irf.ibcbr.nominal_interest_rate  <- irf(var3A, impulse="logdiff_ibcbr", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var3A.irf.ibcbr.nominal_interest_rate)
+  var3A.irf.ibcbr.nominal_interest_rate  <- irf(var3A, impulse="logdiff_ibcbr", response="nominal_interest_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var3A.irf.ibcbr.nominal_interest_rate)
   
-  var3A.irf.inflation_adj.nominal_interest_rate <- irf(var3A, impulse="inflation_adj", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var3A.irf.inflation_adj.nominal_interest_rate)
+  var3A.irf.inflation_adj.nominal_interest_rate <- irf(var3A, impulse="inflation_adj", response="nominal_interest_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var3A.irf.inflation_adj.nominal_interest_rate)
   
-  var3A.irf.real_ex_rate.nominal_interest_rate <- irf(var3A, impulse="real_ex_rate", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var3A.irf.real_ex_rate.nominal_interest_rate)
+  var3A.irf.real_ex_rate.nominal_interest_rate <- irf(var3A, impulse="real_ex_rate", response="nominal_interest_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var3A.irf.real_ex_rate.nominal_interest_rate)
   
   # Cumulative IRF for differenced variables
-  var3A.irf.nominal_interest_rate.logdiff_m1_adj.cum <- irf(var3A, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=20, boot = TRUE, cumulative = TRUE)
-  plotIRF(var3A.irf.nominal_interest_rate.logdiff_m1_adj.cum)
+  var3A.irf.nominal_interest_rate.logdiff_m1_adj.cum <- irf(var3A, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=50, boot = TRUE, cumulative = TRUE)
+  plotIRFToPS(var3A.irf.nominal_interest_rate.logdiff_m1_adj.cum)
   
-  var3A.irf.nominal_interest_rate.ibcbr.cum <- irf(var3A, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=20, boot = TRUE, cumulative = TRUE)
-  plotIRF(var3A.irf.nominal_interest_rate.ibcbr.cum)
+  var3A.irf.nominal_interest_rate.ibcbr.cum <- irf(var3A, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=50, boot = TRUE, cumulative = TRUE)
+  plotIRFToPS(var3A.irf.nominal_interest_rate.ibcbr.cum)
 }
 
 # VAR 3B: "real_ex_rate", "logdiff_m1_adj","logdiff_ibcbr", "inflation_adj", "nominal_interest_rate" = stable; detected serial correlation ----
@@ -218,35 +220,35 @@ if(VAR_3B) {
   # Generate orthogonal impulse responses (Cholesky decomposition), shock of 1 unit.
   
   # Effects of monetary policy:
-  var3B.irf.nominal_interest_rate.inflation_adj<- irf(var3B, impulse="nominal_interest_rate", response="inflation_adj", n.ahead=20, boot = TRUE)
-  plotIRF(var3B.irf.nominal_interest_rate.inflation_adj)
+  var3B.irf.nominal_interest_rate.inflation_adj<- irf(var3B, impulse="nominal_interest_rate", response="inflation_adj", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var3B.irf.nominal_interest_rate.inflation_adj)
   
-  var3B.irf.nominal_interest_rate.logdiff_m1_adj<- irf(var3B, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=20, boot = TRUE)
-  plotIRF(var3B.irf.nominal_interest_rate.logdiff_m1_adj)
+  var3B.irf.nominal_interest_rate.logdiff_m1_adj<- irf(var3B, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var3B.irf.nominal_interest_rate.logdiff_m1_adj)
   
-  var3B.irf.nominal_interest_rate.ibcbr <- irf(var3B, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=20, boot = TRUE)
-  plotIRF(var3B.irf.nominal_interest_rate.ibcbr)
+  var3B.irf.nominal_interest_rate.ibcbr <- irf(var3B, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var3B.irf.nominal_interest_rate.ibcbr)
   
-  var3B.irf.nominal_interest_rate.real_ex_rate<- irf(var3B, impulse="nominal_interest_rate", response="real_ex_rate", n.ahead=20, boot = TRUE)
-  plotIRF(var3B.irf.nominal_interest_rate.real_ex_rate)  
+  var3B.irf.nominal_interest_rate.real_ex_rate<- irf(var3B, impulse="nominal_interest_rate", response="real_ex_rate", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var3B.irf.nominal_interest_rate.real_ex_rate)  
   # Curiously, exchange rate starts depreciating after period 8.
   
   # Monetary policy reaction to other variables:
-  var3B.irf.ibcbr.nominal_interest_rate  <- irf(var3B, impulse="logdiff_ibcbr", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var3B.irf.ibcbr.nominal_interest_rate)
+  var3B.irf.ibcbr.nominal_interest_rate  <- irf(var3B, impulse="logdiff_ibcbr", response="nominal_interest_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var3B.irf.ibcbr.nominal_interest_rate)
   
-  var3B.irf.inflation_adj.nominal_interest_rate <- irf(var3B, impulse="inflation_adj", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var3B.irf.inflation_adj.nominal_interest_rate)
+  var3B.irf.inflation_adj.nominal_interest_rate <- irf(var3B, impulse="inflation_adj", response="nominal_interest_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var3B.irf.inflation_adj.nominal_interest_rate)
   
-  var3B.irf.real_ex_rate.nominal_interest_rate <- irf(var3B, impulse="real_ex_rate", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var3B.irf.real_ex_rate.nominal_interest_rate)
+  var3B.irf.real_ex_rate.nominal_interest_rate <- irf(var3B, impulse="real_ex_rate", response="nominal_interest_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var3B.irf.real_ex_rate.nominal_interest_rate)
   
   # Cumulative IRF for differenced variables
-  var3B.irf.nominal_interest_rate.logdiff_m1_adj.cum <- irf(var3B, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=20, boot = TRUE, cumulative = TRUE)
-  plotIRF(var3B.irf.nominal_interest_rate.logdiff_m1_adj.cum)
+  var3B.irf.nominal_interest_rate.logdiff_m1_adj.cum <- irf(var3B, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=50, boot = TRUE, cumulative = TRUE)
+  plotIRFToPS(var3B.irf.nominal_interest_rate.logdiff_m1_adj.cum)
   
-  var3B.irf.nominal_interest_rate.ibcbr.cum <- irf(var3B, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=20, boot = TRUE, cumulative = TRUE)
-  plotIRF(var3B.irf.nominal_interest_rate.ibcbr.cum)
+  var3B.irf.nominal_interest_rate.ibcbr.cum <- irf(var3B, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=50, boot = TRUE, cumulative = TRUE)
+  plotIRFToPS(var3B.irf.nominal_interest_rate.ibcbr.cum)
 }
 
 # VAR 4A: "nominal_interest_rate", "real_ex_rate", "logdiff_commodity_index", "logdiff_m1_adj", "logdiff_ibcbr", "inflation_adj" = stable; detected serial correlation ----
@@ -268,42 +270,42 @@ if(VAR_4A) {
   # Generate orthogonal impulse responses (Cholesky decomposition), shock of 1 unit.
   
   # Effects of monetary policy:
-  var4A.irf.nominal_interest_rate.inflation_adj<- irf(var4A, impulse="nominal_interest_rate", response="inflation_adj", n.ahead=20, boot = TRUE)
-  plotIRF(var4A.irf.nominal_interest_rate.inflation_adj)
+  var4A.irf.nominal_interest_rate.inflation_adj<- irf(var4A, impulse="nominal_interest_rate", response="inflation_adj", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var4A.irf.nominal_interest_rate.inflation_adj)
   
-  var4A.irf.nominal_interest_rate.logdiff_m1_adj<- irf(var4A, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=20, boot = TRUE)
-  plotIRF(var4A.irf.nominal_interest_rate.logdiff_m1_adj)
+  var4A.irf.nominal_interest_rate.logdiff_m1_adj<- irf(var4A, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var4A.irf.nominal_interest_rate.logdiff_m1_adj)
   
-  var4A.irf.nominal_interest_rate.ibcbr <- irf(var4A, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=20, boot = TRUE)
-  plotIRF(var4A.irf.nominal_interest_rate.ibcbr)
+  var4A.irf.nominal_interest_rate.ibcbr <- irf(var4A, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var4A.irf.nominal_interest_rate.ibcbr)
   
-  var4A.irf.nominal_interest_rate.real_ex_rate<- irf(var4A, impulse="nominal_interest_rate", response="real_ex_rate", n.ahead=20, boot = TRUE)
-  plotIRF(var4A.irf.nominal_interest_rate.real_ex_rate)  
+  var4A.irf.nominal_interest_rate.real_ex_rate<- irf(var4A, impulse="nominal_interest_rate", response="real_ex_rate", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var4A.irf.nominal_interest_rate.real_ex_rate)  
   # Curiously, exchange rate starts depreciating after period 8.
   
   # Monetary policy reaction to other variables:
-  var4A.irf.ibcbr.nominal_interest_rate  <- irf(var4A, impulse="logdiff_ibcbr", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var4A.irf.ibcbr.nominal_interest_rate)
+  var4A.irf.ibcbr.nominal_interest_rate  <- irf(var4A, impulse="logdiff_ibcbr", response="nominal_interest_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var4A.irf.ibcbr.nominal_interest_rate)
   
-  var4A.irf.inflation_adj.nominal_interest_rate <- irf(var4A, impulse="inflation_adj", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var4A.irf.inflation_adj.nominal_interest_rate)
+  var4A.irf.inflation_adj.nominal_interest_rate <- irf(var4A, impulse="inflation_adj", response="nominal_interest_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var4A.irf.inflation_adj.nominal_interest_rate)
   
-  var4A.irf.real_ex_rate.nominal_interest_rate <- irf(var4A, impulse="real_ex_rate", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var4A.irf.real_ex_rate.nominal_interest_rate)
+  var4A.irf.real_ex_rate.nominal_interest_rate <- irf(var4A, impulse="real_ex_rate", response="nominal_interest_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var4A.irf.real_ex_rate.nominal_interest_rate)
   
-  var4A.irf.logdiff_commodity_index.nominal_interest_rate <- irf(var4A, impulse="logdiff_commodity_index", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var4A.irf.logdiff_commodity_index.nominal_interest_rate)
+  var4A.irf.logdiff_commodity_index.nominal_interest_rate <- irf(var4A, impulse="logdiff_commodity_index", response="nominal_interest_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var4A.irf.logdiff_commodity_index.nominal_interest_rate)
   
   # How commodity prices affect real exchange rate:
-  var4A.irf.logdiff_commodity_index.real_ex_rate <- irf(var4A, impulse="logdiff_commodity_index", response="real_ex_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var4A.irf.logdiff_commodity_index.real_ex_rate)
+  var4A.irf.logdiff_commodity_index.real_ex_rate <- irf(var4A, impulse="logdiff_commodity_index", response="real_ex_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var4A.irf.logdiff_commodity_index.real_ex_rate)
   
   # Cumulative IRF for differenced variables
-  var4A.irf.nominal_interest_rate.logdiff_m1_adj.cum <- irf(var4A, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=20, boot = TRUE, cumulative = TRUE)
-  plotIRF(var4A.irf.nominal_interest_rate.logdiff_m1_adj.cum)
+  var4A.irf.nominal_interest_rate.logdiff_m1_adj.cum <- irf(var4A, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=50, boot = TRUE, cumulative = TRUE)
+  plotIRFToPS(var4A.irf.nominal_interest_rate.logdiff_m1_adj.cum)
   
-  var4A.irf.nominal_interest_rate.ibcbr.cum <- irf(var4A, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=20, boot = TRUE, cumulative = TRUE)
-  plotIRF(var4A.irf.nominal_interest_rate.ibcbr.cum)
+  var4A.irf.nominal_interest_rate.ibcbr.cum <- irf(var4A, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=50, boot = TRUE, cumulative = TRUE)
+  plotIRFToPS(var4A.irf.nominal_interest_rate.ibcbr.cum)
 }
 
 # VAR 4B: "real_ex_rate", "logdiff_commodity_index", "logdiff_m1_adj", "logdiff_ibcbr", "inflation_adj", "nominal_interest_rate" = stable; detected serial correlation ----
@@ -325,40 +327,40 @@ if(VAR_4B) {
   # Generate orthogonal impulse responses (Cholesky decomposition), shock of 1 unit.
   
   # Effects of monetary policy:
-  var4B.irf.nominal_interest_rate.inflation_adj<- irf(var4B, impulse="nominal_interest_rate", response="inflation_adj", n.ahead=20, boot = TRUE)
-  plotIRF(var4B.irf.nominal_interest_rate.inflation_adj)
+  var4B.irf.nominal_interest_rate.inflation_adj<- irf(var4B, impulse="nominal_interest_rate", response="inflation_adj", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var4B.irf.nominal_interest_rate.inflation_adj)
   
-  var4B.irf.nominal_interest_rate.logdiff_m1_adj<- irf(var4B, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=20, boot = TRUE)
-  plotIRF(var4B.irf.nominal_interest_rate.logdiff_m1_adj)
+  var4B.irf.nominal_interest_rate.logdiff_m1_adj<- irf(var4B, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var4B.irf.nominal_interest_rate.logdiff_m1_adj)
   
-  var4B.irf.nominal_interest_rate.ibcbr <- irf(var4B, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=20, boot = TRUE)
-  plotIRF(var4B.irf.nominal_interest_rate.ibcbr)
+  var4B.irf.nominal_interest_rate.ibcbr <- irf(var4B, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var4B.irf.nominal_interest_rate.ibcbr)
   
-  var4B.irf.nominal_interest_rate.real_ex_rate<- irf(var4B, impulse="nominal_interest_rate", response="real_ex_rate", n.ahead=20, boot = TRUE)
-  plotIRF(var4B.irf.nominal_interest_rate.real_ex_rate)  
+  var4B.irf.nominal_interest_rate.real_ex_rate<- irf(var4B, impulse="nominal_interest_rate", response="real_ex_rate", n.ahead=50, boot = TRUE)
+  plotIRFToPS(var4B.irf.nominal_interest_rate.real_ex_rate)  
   # Curiously, exchange rate starts depreciating after period 8.
   
   # Monetary policy reaction to other variables:
-  var4B.irf.ibcbr.nominal_interest_rate  <- irf(var4B, impulse="logdiff_ibcbr", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var4B.irf.ibcbr.nominal_interest_rate)
+  var4B.irf.ibcbr.nominal_interest_rate  <- irf(var4B, impulse="logdiff_ibcbr", response="nominal_interest_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var4B.irf.ibcbr.nominal_interest_rate)
   
-  var4B.irf.inflation_adj.nominal_interest_rate <- irf(var4B, impulse="inflation_adj", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var4B.irf.inflation_adj.nominal_interest_rate)
+  var4B.irf.inflation_adj.nominal_interest_rate <- irf(var4B, impulse="inflation_adj", response="nominal_interest_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var4B.irf.inflation_adj.nominal_interest_rate)
   
-  var4B.irf.real_ex_rate.nominal_interest_rate <- irf(var4B, impulse="real_ex_rate", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var4B.irf.real_ex_rate.nominal_interest_rate)
+  var4B.irf.real_ex_rate.nominal_interest_rate <- irf(var4B, impulse="real_ex_rate", response="nominal_interest_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var4B.irf.real_ex_rate.nominal_interest_rate)
   
-  var4B.irf.logdiff_commodity_index.nominal_interest_rate <- irf(var4B, impulse="logdiff_commodity_index", response="nominal_interest_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var4B.irf.logdiff_commodity_index.nominal_interest_rate)
+  var4B.irf.logdiff_commodity_index.nominal_interest_rate <- irf(var4B, impulse="logdiff_commodity_index", response="nominal_interest_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var4B.irf.logdiff_commodity_index.nominal_interest_rate)
   
   # How commodity prices affect real exchange rate:
-  var4B.irf.logdiff_commodity_index.real_ex_rate <- irf(var4B, impulse="logdiff_commodity_index", response="real_ex_rate", n.ahead=20, boot=TRUE)
-  plotIRF(var4B.irf.logdiff_commodity_index.real_ex_rate)
+  var4B.irf.logdiff_commodity_index.real_ex_rate <- irf(var4B, impulse="logdiff_commodity_index", response="real_ex_rate", n.ahead=50, boot=TRUE)
+  plotIRFToPS(var4B.irf.logdiff_commodity_index.real_ex_rate)
   
   # Cumulative IRF for differenced variables
-  var4B.irf.nominal_interest_rate.logdiff_m1_adj.cum <- irf(var4B, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=20, boot = TRUE, cumulative = TRUE)
-  plotIRF(var4B.irf.nominal_interest_rate.logdiff_m1_adj.cum)
+  var4B.irf.nominal_interest_rate.logdiff_m1_adj.cum <- irf(var4B, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=50, boot = TRUE, cumulative = TRUE)
+  plotIRFToPS(var4B.irf.nominal_interest_rate.logdiff_m1_adj.cum)
   
-  var4B.irf.nominal_interest_rate.ibcbr.cum <- irf(var4B, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=20, boot = TRUE, cumulative = TRUE)
-  plotIRF(var4B.irf.nominal_interest_rate.ibcbr.cum)
+  var4B.irf.nominal_interest_rate.ibcbr.cum <- irf(var4B, impulse="nominal_interest_rate", response="logdiff_ibcbr", n.ahead=50, boot = TRUE, cumulative = TRUE)
+  plotIRFToPS(var4B.irf.nominal_interest_rate.ibcbr.cum)
 }
