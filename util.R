@@ -154,7 +154,7 @@ plotIRF2 <- function(irf, impulse, response) {
       }
     }
   }
-  return(plot(var1A.irf.ind_prod.nominal_interest_rate, ylab=response, main=paste("Orthogonal Impulse Responses: shock to",impulse)))
+  return(plot(irf, ylab=response, main=paste("Orthogonal Impulse Responses: shock to",impulse)))
 }
 
 plotIRFToPS <- function(irf, impulse, response, aspectRatio=1.6, width=10, fileName, path="./paper/LaTeX/Paper/Images/", latexFont=TRUE) {

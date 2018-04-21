@@ -22,8 +22,8 @@ VAR_4A = TRUE
 VAR_4B = TRUE
 
 real_data_afterReal_month <- read.csv("real_data/real_data_afterReal_month.csv", row.names="date", colClasses = c("date"="Date"))
-labelsMap <- hashmap(c("ind_prod", "nominal_interest_rate", "inflation_adj", "logdiff_m1_adj", "real_ex_rate", "logdiff_commodity_index", "logdiff_ibcbr"),
-                     c("Industrial Production", "Nominal Interest Rate", "Inflation", "M1 (log diff.)", "Real Exchange Rate", "Commodity Index (log diff.)", "Economic Activity Index (log diff.)"))
+labelsMap <- hashmap(c("ind_prod", "nominal_interest_rate", "inflation_adj", "logdiff_m1_adj", "real_ex_rate", "logdiff_commodity_index", "logdiff_ibcbr", "real_interest_rate"),
+                     c("Industrial Production", "Nominal Interest Rate", "Inflation", "M1 (log diff.)", "Real Exchange Rate", "Commodity Index (log diff.)", "Economic Activity Index (log diff.)", "Real Interest Rate"))
 # VAR 1A: "nominal_interest_rate", "logdiff_ibcbr", "inflation_adj" =  = stable; detected serial correlation ----
 if(VAR_1A) {
   var1A.data <- na.omit(real_data_afterReal_month[,c("nominal_interest_rate", "logdiff_ibcbr", "inflation_adj")])
@@ -55,8 +55,8 @@ if(VAR_1A) {
 if(VAR_1B) {
   var1Bdata <- na.omit(real_data_afterReal_month[,c("logdiff_ibcbr", "inflation_adj", "nominal_interest_rate")])
   print(VARselect(var1Bdata, lag.max = 8)$selection)
-  # AIC: 2 lags
-  var1B <- VAR(var1Bdata, p=2, type="const")
+  # AIC: 4 lags
+  var1B <- VAR(var1Bdata, p=4, type="const")
   checkVARStability(var1B)
   # VAR stable!
   checkVARSerialCorr(var1B)
@@ -253,7 +253,8 @@ if(VAR_3B) {
 
 # VAR 4A: "nominal_interest_rate", "real_ex_rate", "logdiff_commodity_index", "logdiff_m1_adj", "logdiff_ibcbr", "inflation_adj" = stable; detected serial correlation ----
 if(VAR_4A) {
-  var4A.data <- na.omit(real_data_afterReal_month[,c("nominal_interest_rate", "real_ex_rate", "logdiff_commodity_index", "logdiff_m1_adj", "logdiff_ibcbr", "inflation_adj")])
+  var4A.data <- na.omit(real_data_afterReal_month[,c("real_interest_rate", "real_ex_rate", "logdiff_commodity_index", "logdiff_m1_adj", "logdiff_ibcbr", "inflation_adj")])
+  printVARVariables(var4A.data)
   print(VARselect(var4A.data, lag.max = 8)$selection)
   # AIC: 4 lags
   var4A <- VAR(var4A.data, p=4, type="const")
@@ -270,8 +271,8 @@ if(VAR_4A) {
   # Generate orthogonal impulse responses (Cholesky decomposition), shock of 1 unit.
   
   # Effects of monetary policy:
-  var4A.irf.nominal_interest_rate.inflation_adj<- irf(var4A, impulse="nominal_interest_rate", response="inflation_adj", n.ahead=50, boot = TRUE)
-  plotIRFToPS(var4A.irf.nominal_interest_rate.inflation_adj)
+  var4A.irf.real_interest_rate.inflation_adj<- irf(var4A, impulse="real_interest_rate", response="inflation_adj", n.ahead=50, boot = TRUE)
+  plotIRF2(var4A.irf.real_interest_rate.inflation_adj)
   
   var4A.irf.nominal_interest_rate.logdiff_m1_adj<- irf(var4A, impulse="nominal_interest_rate", response="logdiff_m1_adj", n.ahead=50, boot = TRUE)
   plotIRFToPS(var4A.irf.nominal_interest_rate.logdiff_m1_adj)

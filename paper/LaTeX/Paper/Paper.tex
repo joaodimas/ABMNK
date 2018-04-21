@@ -6,5 +6,44 @@
 %    \input{Sections/chapter2}
     
 %    \printbibliography
+\section{Draft - Preliminary results with Brazilian data}
+
+All VARs are stable, present heteroskedasticity, and have errors NOT normally distributed.
+Some specifications do not have serial correlation, although the majority has. In those cases, adding more lags or variables did not solve the problem.
+
+The challenge is caused by the low number of lags (4 in monthly data, 2 in quarterly data; chosen according to AIC) due to the series availability starting in 2002 for Industrial Production (monthly), 2003 for Central Bank's Economic Activity Index - IBC-br (monthly), 1995 for Output Gap (quarterly) and 1995 for real GDP growth (quarterly).
+
+All estimations used Cholesky decomposition with economic activity (output gap, industrial production, real GDP growth, or IBC-br) ordered before Inflation rate; the nominal interest rate was ordered both firstly (assuming a lagged reaction of monetary policy) and lastly (assuming a contemporaneous reaction of monetary policy).
+
+Below I wrote a short description of the variables. Afterwards I show all impulse responses of Inflation to a shock in Monetary policy using different specifications. I start with few variables and increment the model as a robustness check.
+
+
+\myparagraph{Inflation}
+I adjusted Inflation (monthly rate annualized) for seasonality using X13-ARIMA.
+
+\myparagraph{money supply M1}
+Seasonally adjusted using X13-ARIMA.
+
+\myparagraph{Commodities prices}
+No seasonality detected.
+
+\myparagraph{Real exchange rate}
+The effective rate weighted by trade share.
+
+\myparagraph{Industrial Production}
+This series is calculated by the Instituto Nacional de Geografia e Estatística (IBGE) with the name PIM-PF. I have downloaded it from the IBGE's website in monthly \% change, seasonally adjusted. Importantly, though, this series has been modified two times since its conception in 1985. The first modification, in 2004, incorporated data retrospectively up to 1991, with the older series, from 1991 to 2004, being deprecated. The second modification---current version---came to light in 2014, and incorporates data retrospectively up to 2002. As a result, I have three distinct series for different time periods : version 1 (from 1985 to 2004), version 2 (from 1991 to 2014), and version 3 (from 2002 onwards). Our estimations used the last version.
+
+\myparagraph{Economic activity index (IBC-br)}
+The IBC-br is an index calculated by the Central Bank of Brazil. It is an aggregate of 21 variables of economic activity. It is intended to be used as an anticipation of the real GDP, since the latter is measured only quarterly. I downloaded the series from the Central Bank's website in monthly level, already seasonally adjusted.
+
+\myparagraph{Output Gap}
+Quarterly data calculated by FGV. Uses an estimation of NAIRU to calculate potential GDP.
+
+\myparagraph{Real GDP growth}
+Quarterly data from IMF database. Strong seasonality detected; adjusted with X13-ARIMA.
+
 \input{allVars}
+\input{allVars2}
+\input{allVars3}
+\input{allVars4}
  \end{document}

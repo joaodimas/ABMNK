@@ -1,18 +1,20 @@
-\section{Economic activity measured by the Central Bank's Economic Activity Index (IBC-br)}
+\subsection{Central Bank's Economic Activity Index (IBC-br)}
+
+All VARs presented serial correlation.
+
 \begin{figure}[H]
     \centering
     \begin{subfigure}[b]{0.45\textwidth}
         \includegraphics[width=\textwidth]{/ibcbr/{var1A.irf.nominal_interest_rate.inflation_adj}.eps}
-        \caption{Interest Rate ordered first; No serial correlation.}
-    \end{subfigure}
+        \caption{Interest Rate ordered first. Serial correlation detected.}
+    \end{subfigure} 
     ~ 
     \begin{subfigure}[b]{0.45\textwidth}
         \includegraphics[width=\textwidth]{/ibcbr/{var1B.irf.nominal_interest_rate.inflation_adj}.eps}
-        \caption{Interest Rate ordered last; No serial correlation.}
+        \caption{Interest Rate ordered last. Serial correlation detected.}
     \end{subfigure}
-    \caption{VAR 1: Nominal Interest Rate, IBC-br, Inflation. }
+    \caption{VAR 1: Nominal Interest Rate, IBC-br (log diff.), Inflation. }
 \end{figure}
-
 
 \begin{figure}[H]
     \centering
@@ -25,7 +27,7 @@
         \includegraphics[width=\textwidth]{/ibcbr/{var2B.irf.nominal_interest_rate.inflation_adj}.eps}
         \caption{Interest rate ordered last. Serial correlation detected.}
     \end{subfigure}
-    \caption{VAR 2: Nominal Interest Rate, M1 (log diff.), IBC-br, Inflation}
+    \caption{VAR 2: Nominal Interest Rate, M1 (log diff.), IBC-br (log diff.), Inflation}
 \end{figure}
 
 \begin{figure}[H]
@@ -39,7 +41,7 @@
         \includegraphics[width=\textwidth]{/ibcbr/{var3B.irf.nominal_interest_rate.inflation_adj}.eps}
         \caption{Interest rate ordered last. Serial correlation detected.}
     \end{subfigure}
-    \caption{VAR 3: Nominal Interest Rate, Real Exchange Rate, M1 (log diff.), IBC-br, Inflation}
+    \caption{VAR 3: Nominal Interest Rate, Real Exchange Rate, M1 (log diff.), IBC-br (log diff.), Inflation}
 \end{figure}
 
 \begin{figure}[H]
@@ -53,5 +55,5 @@
         \includegraphics[width=\textwidth]{/ibcbr/{var4B.irf.nominal_interest_rate.inflation_adj}.eps}
         \caption{Interest rate ordered last. Serial correlation detected.}
     \end{subfigure}
-    \caption{VAR 4: Nominal Interest Rate, Real Exchange Rate, Commodity Index (log diff.), M1 (log diff.), IBC-br, Inflation}
+    \caption{VAR 4: Nominal Interest Rate, Real Exchange Rate, Commodity Index (log diff.), M1 (log diff.), IBC-br (log diff.), Inflation}
 \end{figure}
