@@ -1,9 +1,0 @@
-[0] Config.pm:343> INFO - This is Biber 2.5
-[0] Config.pm:346> INFO - Logfile is 'Output/Paper.blg'
-[53] biber-darwin:290> INFO - === Sat Apr 21, 2018, 15:38:35
-[79] Biber.pm:351> INFO - Reading 'Output/Paper.bcf'
-[244] Biber.pm:776> INFO - Found 0 citekeys in bib section 0
-[255] Utils.pm:149> WARN - The file 'Output/Paper.bcf' does not contain any citations!
-[264] bbl.pm:526> INFO - Writing 'Output/Paper.bbl' with encoding 'UTF-8'
-[265] bbl.pm:619> INFO - Output to Output/Paper.bbl
-[265] Biber.pm:108> INFO - WARNINGS: 1
