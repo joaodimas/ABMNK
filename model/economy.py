@@ -101,8 +101,8 @@ class Economy:
         self.stdevIndexationStrategy = None
         self.stdevSubstitutionStrategy = None
         
-        if self.mustScalePrices:
-            self.scalePrices()
+#        if self.mustScalePrices:
+#            self.scalePrices()
         
     def scalePrices(self):
         self.logger.info("SCALING PRICES")
@@ -184,7 +184,7 @@ class Economy:
         return self.stdevSubstitutionStrategy
     
     def describeCurrentPeriod(self):
-        if True:#self.currentPeriod % 10 == 0:
+        if self.currentPeriod % 10 == 0:
             if self.logger.isEnabledForDebug():
                 message = """ 
     PERIOD {:d}

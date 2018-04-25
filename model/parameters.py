@@ -105,7 +105,8 @@ class Parameters:
 
     def setScenario4(self):
         self.HouseholdCoordination = True # Coordination
-        self.Sigma_xi = 0 # Perfect precision        
+        self.Sigma_xi = 0 # Perfect precision  
+        # Variable credibility
 
     def setScenario5(self):
         self.HouseholdCoordination = True # Coordination

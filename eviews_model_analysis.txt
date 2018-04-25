@@ -1,5 +1,0 @@
-wfopen Z:\USERS\JDIMAS\GITHUB\ABMNK\data\ABMNK.LAST[Sce_1][Exp_21][Sim_1]GranularData.csv ftype=ascii rectype=crlf skip=0 fieldtype=delimited delim=comma colhead=1 eoltype=pad badfield=NA @freq U 1 @smpl @all
-var var01.ls 1 26 inflation real_wage_rate unemployment_rate consumption nominal_interest_rate mean_substitution_strategy mean_indexation_strategy 
-var01.laglen(100)
-var01.impulse nominal_interest_rate @imp inflation unemployment_rate
-
