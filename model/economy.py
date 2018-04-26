@@ -86,6 +86,7 @@ class Economy:
         self.firm.nextPeriod()
         self.goodsMarket.nextPeriod()
         self.labourMarket.nextPeriod()
+        self.centralBank.nextPeriod()
         self.currentPeriod = self.currentPeriod + 1
         self.prevInterestRate = self.nominalInterestRate
 
@@ -195,6 +196,8 @@ class Economy:
     Inflation: {:.2%}
     Interest rate (nominal): {:.2%}
     
+    Monetary policy shock: {:.3%}
+    
     Production: {:.2f}
     Goods sold: {:.2f}
     Excess supply: {:.2f}
@@ -229,6 +232,8 @@ class Economy:
                         self.labourMarket.getUnemploymentRate(),
                         self.goodsMarket.getCurrentInflation(),
                         self.nominalInterestRate,
+                        
+                        self.centralBank.shock,
                         
                         self.firm.getProduction(),
                         self.goodsMarket.aggregateConsumption,
