@@ -323,4 +323,14 @@ class Parameters:
         self.Sigma_mutK = 0.14
         self.Sigma_mutW = 0.07
         self.Phi_inflation = 1.2
-        self.Phi_unemployment = 1.2       
+        self.Phi_unemployment = 1.2   
+        
+    def setExperiment22(self):
+        self.setLearningLevel(1)
+        self.Ro = 0.45
+        self.Sigma_mutK = 0.3
+        self.Sigma_mutW = 0.3
+        self.Phi_inflation = 1.3
+        self.Phi_unemployment = 0.8
+        self.Sigma_xi = 0.05 # Noise in the communication of inflation target by the CB
+        self.Chi = 0.9    
