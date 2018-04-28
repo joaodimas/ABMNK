@@ -20,7 +20,7 @@ class SystemConfig:
     def __init__(self):
         self.LogLevel = {"Console": ["INFO"], "File":[""]} # Set INFO, DEBUG or TRACE for Console and File.
     
-        self.SimulationsPerExperiment = 1 # 20
+        self.SimulationsPerExperiment = 5 # 20
         self.Scenarii = [4]
         self.Experiments = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
     

@@ -54,7 +54,7 @@ class Parameters:
         getattr(self, "setExperiment{:d}".format(experiment))()
         getattr(self, "setScenario{:d}".format(scenario))()
         
-        self.Chi = 0.9
+        self.Chi = 0.1
         
         # Windows of observation (implies that Ro^(t-l) up to 0.00005 is relevant)
         self.ProfitWindowOfObservation = (int) (-5 * math.log(10) / math.log(self.Ro)) if self.Ro > 0 else 2
