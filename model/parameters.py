@@ -36,25 +36,8 @@ class Parameters:
         self.InflationTarget = 0.02 # 0.02
         self.InterestLowerBound = -0.005
         
-        # Households individual behavior
-#        self.setLearningLevel(1)
-#        self.Ro = 0.45
-#        self.Sigma_mutK = 0.30
-#        self.Sigma_mutW = 0.30
-        
-        # Expectations
-#        self.HouseholdCoordination = False # Coordination
-#        self.Sigma_xi = 0.02 # Noise in the communication of inflation target by the CB
-#        self.Chi = 0.7 # Credibility of the central bank
-#        
-#        # Monetary policy params
-#        self.Phi_inflation = 1.2
-#        self.Phi_unemployment = 0.2
-        
         getattr(self, "setExperiment{:d}".format(experiment))()
         getattr(self, "setScenario{:d}".format(scenario))()
-        
-        self.Chi = 0.1
         
         # Windows of observation (implies that Ro^(t-l) up to 0.00005 is relevant)
         self.ProfitWindowOfObservation = (int) (-5 * math.log(10) / math.log(self.Ro)) if self.Ro > 0 else 2

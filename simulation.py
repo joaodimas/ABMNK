@@ -20,9 +20,9 @@ class SystemConfig:
     def __init__(self):
         self.LogLevel = {"Console": ["INFO"], "File":[""]} # Set INFO, DEBUG or TRACE for Console and File.
     
-        self.SimulationsPerExperiment = 5 # 20
-        self.Scenarii = [4]
-        self.Experiments = [22]
+        self.SimulationsPerExperiment = 20
+        self.Scenarii = [1,2,3,4,5]
+        self.Experiments = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
     
         self.PauseInterval = None
     
@@ -90,7 +90,7 @@ def simulate(item, systemConfig, scenario):
         for t in range(1,parameters.Periods+1):
             checkPause(systemConfig, economy, t)
             economy.runCurrentPeriod()
-            if True:#t % 50 == 0 and t >= 100:
+            if t % 50 == 0 and t >= 100:
                 granularResults.append(ResultsData.getCurrentPeriodData(economy))
             economy.describeCurrentPeriod()
             if t < parameters.Periods:
